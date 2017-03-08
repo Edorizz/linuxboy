@@ -1,9 +1,17 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "../include/linuxboy.h"
 
 int
 main(int argc, char **argv)
 {
-	printf("El emiuleitor este\n");
+	gb_cpu cpu;
+
+	if (load_rom(&cpu, "tetris.gb") != 0)
+		return 1;
+
+	disassemble(&cpu);
 
 	return 0;
 }
