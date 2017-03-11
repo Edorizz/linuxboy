@@ -21,13 +21,11 @@ main(int argc, char **argv)
 
 			if ((op_size = exec_op(&cpu)) == -1)
 				return 1;
-			cpu.pc += op_size;
 
 			getchar();
 #else
 			if ((op_size = exec_op(&cpu)) == -1)
 				return 1;
-			cpu.pc += op_size;
 #endif
 	}
 
