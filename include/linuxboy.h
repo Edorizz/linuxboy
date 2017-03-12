@@ -1,9 +1,13 @@
 #ifndef LINUXBOY_H
 #define LINUXBOY_H
 
+#define SIGNED 			4
+
 #define LO(word)		((word) & 0x00FF) /* *((BYTE*)&w) */
 #define HI(word)		(((word) & 0xFF00) >> 8) /* *((BYTE*)&w + 1) */
 
+#define FLAG(cpu)		((cpu)->regs[REG_AF].lo)
+#define FLAG_P(cpu)		(&(FLAG(cpu)))
 #define BIT(b)			(1 << (b))
 #define RESET_FLAGS(f, b)	((f) &= ~(b))
 
@@ -74,7 +78,7 @@ void op_0x14(gb_cpu *cpu);
 void op_0x15(gb_cpu *cpu);
 void op_0x16(gb_cpu *cpu, BYTE d8);
 void op_0x17(gb_cpu *cpu);
-void op_0x18(gb_cpu *cpu, BYTE r8);
+void op_0x18(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0x19(gb_cpu *cpu);
 void op_0x1A(gb_cpu *cpu);
 void op_0x1B(gb_cpu *cpu);
@@ -83,7 +87,7 @@ void op_0x1D(gb_cpu *cpu);
 void op_0x1E(gb_cpu *cpu, BYTE d8);
 void op_0x1F(gb_cpu *cpu);
 
-void op_0x20(gb_cpu *cpu, BYTE r8);
+void op_0x20(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0x21(gb_cpu *cpu, WORD d16);
 void op_0x22(gb_cpu *cpu);
 void op_0x23(gb_cpu *cpu);
@@ -91,7 +95,7 @@ void op_0x24(gb_cpu *cpu);
 void op_0x25(gb_cpu *cpu);
 void op_0x26(gb_cpu *cpu, BYTE d8);
 void op_0x27(gb_cpu *cpu);
-void op_0x28(gb_cpu *cpu, BYTE r8);
+void op_0x28(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0x29(gb_cpu *cpu);
 void op_0x2A(gb_cpu *cpu);
 void op_0x2B(gb_cpu *cpu);
@@ -100,7 +104,7 @@ void op_0x2D(gb_cpu *cpu);
 void op_0x2E(gb_cpu *cpu, BYTE d8);
 void op_0x2F(gb_cpu *cpu);
 
-void op_0x30(gb_cpu *cpu, BYTE r8);
+void op_0x30(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0x31(gb_cpu *cpu, WORD d16);
 void op_0x32(gb_cpu *cpu);
 void op_0x33(gb_cpu *cpu);
@@ -108,7 +112,7 @@ void op_0x34(gb_cpu *cpu);
 void op_0x35(gb_cpu *cpu);
 void op_0x36(gb_cpu *cpu, BYTE d8);
 void op_0x37(gb_cpu *cpu);
-void op_0x38(gb_cpu *cpu, BYTE r8);
+void op_0x38(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0x39(gb_cpu *cpu);
 void op_0x3A(gb_cpu *cpu);
 void op_0x3B(gb_cpu *cpu);
@@ -184,5 +188,141 @@ void op_0x7C(gb_cpu *cpu);
 void op_0x7D(gb_cpu *cpu);
 void op_0x7E(gb_cpu *cpu);
 void op_0x7F(gb_cpu *cpu);
+
+void op_0x80(gb_cpu *cpu);
+void op_0x81(gb_cpu *cpu);
+void op_0x82(gb_cpu *cpu);
+void op_0x83(gb_cpu *cpu);
+void op_0x84(gb_cpu *cpu);
+void op_0x85(gb_cpu *cpu);
+void op_0x86(gb_cpu *cpu);
+void op_0x87(gb_cpu *cpu);
+void op_0x88(gb_cpu *cpu);
+void op_0x89(gb_cpu *cpu);
+void op_0x8A(gb_cpu *cpu);
+void op_0x8B(gb_cpu *cpu);
+void op_0x8C(gb_cpu *cpu);
+void op_0x8D(gb_cpu *cpu);
+void op_0x8E(gb_cpu *cpu);
+void op_0x8F(gb_cpu *cpu);
+
+void op_0x90(gb_cpu *cpu);
+void op_0x91(gb_cpu *cpu);
+void op_0x92(gb_cpu *cpu);
+void op_0x93(gb_cpu *cpu);
+void op_0x94(gb_cpu *cpu);
+void op_0x95(gb_cpu *cpu);
+void op_0x96(gb_cpu *cpu);
+void op_0x97(gb_cpu *cpu);
+void op_0x98(gb_cpu *cpu);
+void op_0x99(gb_cpu *cpu);
+void op_0x9A(gb_cpu *cpu);
+void op_0x9B(gb_cpu *cpu);
+void op_0x9C(gb_cpu *cpu);
+void op_0x9D(gb_cpu *cpu);
+void op_0x9E(gb_cpu *cpu);
+void op_0x9F(gb_cpu *cpu);
+
+void op_0xA0(gb_cpu *cpu);
+void op_0xA1(gb_cpu *cpu);
+void op_0xA2(gb_cpu *cpu);
+void op_0xA3(gb_cpu *cpu);
+void op_0xA4(gb_cpu *cpu);
+void op_0xA5(gb_cpu *cpu);
+void op_0xA6(gb_cpu *cpu);
+void op_0xA7(gb_cpu *cpu);
+void op_0xA8(gb_cpu *cpu);
+void op_0xA9(gb_cpu *cpu);
+void op_0xAA(gb_cpu *cpu);
+void op_0xAB(gb_cpu *cpu);
+void op_0xAC(gb_cpu *cpu);
+void op_0xAD(gb_cpu *cpu);
+void op_0xAE(gb_cpu *cpu);
+void op_0xAF(gb_cpu *cpu);
+
+void op_0xB0(gb_cpu *cpu);
+void op_0xB1(gb_cpu *cpu);
+void op_0xB2(gb_cpu *cpu);
+void op_0xB3(gb_cpu *cpu);
+void op_0xB4(gb_cpu *cpu);
+void op_0xB5(gb_cpu *cpu);
+void op_0xB6(gb_cpu *cpu);
+void op_0xB7(gb_cpu *cpu);
+void op_0xB8(gb_cpu *cpu);
+void op_0xB9(gb_cpu *cpu);
+void op_0xBA(gb_cpu *cpu);
+void op_0xBB(gb_cpu *cpu);
+void op_0xBC(gb_cpu *cpu);
+void op_0xBD(gb_cpu *cpu);
+void op_0xBE(gb_cpu *cpu);
+void op_0xBF(gb_cpu *cpu);
+
+void op_0xC0(gb_cpu *cpu);
+void op_0xC1(gb_cpu *cpu);
+void op_0xC2(gb_cpu *cpu, WORD a16);
+void op_0xC3(gb_cpu *cpu, WORD a16);
+void op_0xC4(gb_cpu *cpu, WORD a16);
+void op_0xC5(gb_cpu *cpu);
+void op_0xC6(gb_cpu *cpu, BYTE d8);
+void op_0xC7(gb_cpu *cpu);
+void op_0xC8(gb_cpu *cpu);
+void op_0xC9(gb_cpu *cpu);
+void op_0xCA(gb_cpu *cpu, WORD a16);
+void op_0xCB(gb_cpu *cpu);
+void op_0xCC(gb_cpu *cpu, WORD a16);
+void op_0xCD(gb_cpu *cpu, WORD a16);
+void op_0xCE(gb_cpu *cpu, BYTE d8);
+void op_0xCF(gb_cpu *cpu);
+
+void op_0xD0(gb_cpu *cpu);
+void op_0xD1(gb_cpu *cpu);
+void op_0xD2(gb_cpu *cpu, WORD a16);
+/* -- */
+void op_0xD4(gb_cpu *cpu, WORD a16);
+void op_0xD5(gb_cpu *cpu);
+void op_0xD6(gb_cpu *cpu, BYTE d8);
+void op_0xD7(gb_cpu *cpu);
+void op_0xD8(gb_cpu *cpu);
+void op_0xD9(gb_cpu *cpu);
+void op_0xDA(gb_cpu *cpu, WORD a16);
+/* -- */
+void op_0xDC(gb_cpu *cpu, WORD a16);
+/* -- */
+void op_0xDE(gb_cpu *cpu, BYTE d8);
+void op_0xDF(gb_cpu *cpu);
+
+void op_0xE0(gb_cpu *cpu, BYTE a8);
+void op_0xE1(gb_cpu *cpu);
+void op_0xE2(gb_cpu *cpu);
+/* -- */
+/* -- */
+void op_0xE5(gb_cpu *cpu);
+void op_0xE6(gb_cpu *cpu, BYTE d8);
+void op_0xE7(gb_cpu *cpu);
+void op_0xE8(gb_cpu *cpu, SIGNED_BYTE r8);
+void op_0xE9(gb_cpu *cpu);
+void op_0xEA(gb_cpu *cpu, WORD a16);
+/* -- */
+/* -- */
+/* -- */
+void op_0xEE(gb_cpu *cpu, BYTE d8);
+void op_0xEF(gb_cpu *cpu);
+
+void op_0xF0(gb_cpu *cpu, BYTE a8);
+void op_0xF1(gb_cpu *cpu);
+void op_0xF2(gb_cpu *cpu);
+void op_0xF3(gb_cpu *cpu);
+/* -- */
+void op_0xF5(gb_cpu *cpu);
+void op_0xF6(gb_cpu *cpu, BYTE d8);
+void op_0xF7(gb_cpu *cpu);
+void op_0xF8(gb_cpu *cpu, BYTE r8);
+void op_0xF9(gb_cpu *cpu);
+void op_0xFA(gb_cpu *cpu, WORD a16);
+void op_0xFB(gb_cpu *cpu);
+/* -- */
+/* -- */
+void op_0xFE(gb_cpu *cpu, BYTE d8);
+void op_0xFF(gb_cpu *cpu);
 
 #endif /* LINUXBOY_H */

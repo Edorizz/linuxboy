@@ -29,7 +29,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "DEC D", 1, op_0x15 },
 			{ "LD D,%02x", 2, op_0x16 },
 			{ "RLA", 1, op_0x17 },
-			{ "JR %s%02x", 2 | SIGNED, op_0x18 },
+			{ "JR %02x", 2, op_0x18 },
 			{ "ADD HL,DE", 1, op_0x19 },
 			{ "LD A,(DE)", 1, op_0x1A },
 			{ "DEC DE", 1, op_0x1B },
@@ -38,7 +38,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD E,%02x", 2, op_0x1E },
 			{ "RRA", 1, op_0x1F },
 			
-			{ "JR NZ,%s%02x", 2 | SIGNED, op_0x20 },
+			{ "JR NZ,%02x", 2, op_0x20 },
 			{ "LD HL,%04x", 3, op_0x21 },
 			{ "LD (HL+),A", 1, op_0x22 },
 			{ "INC HL", 1, op_0x23 },
@@ -46,7 +46,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "DEC H", 1, op_0x25 },
 			{ "LD H,%02x", 2, op_0x26 },
 			{ "DAA", 1, op_0x27 },
-			{ "JR Z,%s%02x", 2 | SIGNED, op_0x28 },
+			{ "JR Z,%02x", 2, op_0x28 },
 			{ "ADD HL,HL", 1, op_0x29 },
 			{ "LD A,(HL+)", 1, op_0x2A },
 			{ "DEC HL", 1, op_0x2B },
@@ -55,7 +55,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD L,%02x", 2, op_0x2E },
 			{ "CPL", 1, op_0x2F },
 			
-			{ "JR NC,%s%02x", 2 | SIGNED, op_0x30 },
+			{ "JR NC,%02x", 2, op_0x30 },
 			{ "LD SP,%04x", 3, op_0x31 },
 			{ "LD (HL-),A", 1, op_0x32 },
 			{ "INC SP", 1, op_0x33 },
@@ -63,7 +63,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "DEC (HL)", 1, op_0x35 },
 			{ "LD (HL),d8", 2, op_0x36 },
 			{ "SCF", 1, op_0x37 },
-			{ "JR C,%s%02x", 2 | SIGNED, op_0x38 },
+			{ "JR C,%02x", 2, op_0x38 },
 			{ "ADD HL,SP", 1, op_0x39 },
 			{ "LD A,(HL-)", 1, op_0x3A },
 			{ "DEC SP", 1, op_0x3B },
@@ -174,107 +174,107 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "SBC A,(HL)", 1, op_0x9E },
 			{ "SBC A,A", 1, op_0x9F },
 			
-			{ "AND B", 1, op_0xA0 },
-			{ "AND C", 1, op_0xA1 },
-			{ "AND D", 1, op_0xA2 },
-			{ "AND E", 1, op_0xA3 },
-			{ "AND H", 1, op_0xA4 },
-			{ "AND L", 1, op_0xA5 },
-			{ "AND (HL)", 1, op_0xA6 },
-			{ "AND A", 1, op_0xA7 },
-			{ "XOR B", 1, op_0xA8 },
-			{ "XOR C", 1, op_0xA9 },
-			{ "XOR D", 1, op_0xAA },
-			{ "XOR E", 1, op_0xAB },
-			{ "XOR H", 1, op_0xAC },
-			{ "XOR L", 1, op_0xAD },
-			{ "XOR (HL)", 1, op_0xAE },
-			{ "XOR A", 1, op_0xAF },
+			{ "AND B", 1, NULL },
+			{ "AND C", 1, NULL },
+			{ "AND D", 1, NULL },
+			{ "AND E", 1, NULL },
+			{ "AND H", 1, NULL },
+			{ "AND L", 1, NULL },
+			{ "AND (HL)", 1, NULL },
+			{ "AND A", 1, NULL },
+			{ "XOR B", 1, NULL },
+			{ "XOR C", 1, NULL },
+			{ "XOR D", 1, NULL },
+			{ "XOR E", 1, NULL },
+			{ "XOR H", 1, NULL },
+			{ "XOR L", 1, NULL },
+			{ "XOR (HL)", 1, NULL },
+			{ "XOR A", 1, NULL },
 		
-			{ "OR B", 1, op_0xB0 },
-			{ "OR C", 1, op_0xB1 },
-			{ "OR D", 1, op_0xB2 },
-			{ "OR E", 1, op_0xB3 },
-			{ "OR H", 1, op_0xB4 },
-			{ "OR L", 1, op_0xB5 },
-			{ "OR (HL)", 1, op_0xB6 },
-			{ "OR A", 1, op_0xB7 },
-			{ "CP B", 1, op_0xB8 },
-			{ "CP C", 1, op_0xB9 },
-			{ "CP D", 1, op_0xBA },
-			{ "CP E", 1, op_0xBB },
-			{ "CP H", 1, op_0xBC },
-			{ "CP L", 1, op_0xBD },
-			{ "CP (HL)", 1, op_0xBE },
-			{ "CP A", 1, op_0xBF },
+			{ "OR B", 1, NULL },
+			{ "OR C", 1, NULL },
+			{ "OR D", 1, NULL },
+			{ "OR E", 1, NULL },
+			{ "OR H", 1, NULL },
+			{ "OR L", 1, NULL },
+			{ "OR (HL)", 1, NULL },
+			{ "OR A", 1, NULL },
+			{ "CP B", 1, NULL },
+			{ "CP C", 1, NULL },
+			{ "CP D", 1, NULL },
+			{ "CP E", 1, NULL },
+			{ "CP H", 1, NULL },
+			{ "CP L", 1, NULL },
+			{ "CP (HL)", 1, NULL },
+			{ "CP A", 1, NULL },
 			
-			{ "RET NZ", 1, op_0xC0 },
-			{ "POP BC", 1, op_0xC1 },
-			{ "JP NZ,$04x", 3, op_0xC2 },
-			{ "JP $%04x", 3, op_0xC3 },
-			{ "CALL NZ,$%04x", 3, op_0xC4 },
-			{ "PUSH BC", 1, op_0xC5 },
-			{ "ADD A,%02x", 2, op_0xC6 },
-			{ "RST 00H", 1, op_0xC7 },
-			{ "RET Z", 1, op_0xC8 },
-			{ "RET", 1, op_0xC9 },
-			{ "JP Z,$%04x", 3, op_0xCA },
-			{ "PREFIX CB", 1, op_0xCB },
-			{ "CALL Z,$%04x", 3, op_0xCC },
-			{ "CALL $%04x", 3, op_0xCD },
-			{ "ADC A,%02x", 2, op_0xCE },
-			{ "RST 08H", 1, op_0xCF },
+			{ "RET NZ", 1, NULL },
+			{ "POP BC", 1, NULL },
+			{ "JP NZ,a16", 3, NULL },
+			{ "JP $%04x", 3, NULL },
+			{ "CALL NZ,a16", 3, NULL },
+			{ "PUSH BC", 1, NULL },
+			{ "ADD A,d8", 2, NULL },
+			{ "RST 00H", 1, NULL },
+			{ "RET Z", 1, NULL },
+			{ "RET", 1, NULL },
+			{ "JP Z,$%04x", 3, NULL },
+			{ "PREFIX CB", 1, NULL },
+			{ "CALL Z,$%04x", 3, NULL },
+			{ "CALL $%04x", 3, NULL },
+			{ "ADC A,%02x", 2, NULL },
+			{ "RST 08H", 1, NULL },
 			
-			{ "RET NC", 1, op_0xD0 },
-			{ "POP DE", 1, op_0xD1 },
-			{ "JP NC,$%04x", 3, op_0xD2 },
+			{ "RET NC", 1, NULL },
+			{ "POP DE", 1, NULL },
+			{ "JP NC,$%04x", 3, NULL },
 			{ "--", 1, NULL },
-			{ "CALL NC,$%04x", 3, op_0xD4 },
-			{ "PUSH DE", 1, op_0xD5 },
-			{ "SUB %02x", 2, op_0xD6 },
-			{ "RST 10H", 1, op_0xD7 },
-			{ "RET C", 1, op_0xD8 },
-			{ "RETI", 1, op_0xD9 },
-			{ "JP C,$%04x", 3, op_0xDA },
+			{ "CALL NC,$%04x", 3, NULL },
+			{ "PUSH DE", 1, NULL },
+			{ "SUB %02x", 2, NULL },
+			{ "RST 10H", 1, NULL },
+			{ "RET C", 1, NULL },
+			{ "RETI", 1, NULL },
+			{ "JP C, $%04x", 3, NULL },
 			{ "--", 1, NULL },
-			{ "CALL C,$%04x", 3, op_0xDC },
+			{ "CALL C,$%04x", 3, NULL },
 			{ "--", 1, NULL },
-			{ "SBC A,%02x", 2, op_0xDE },
-			{ "RST 18H", 1, op_0xDF },
+			{ "SBC A,%02x", 2, NULL },
+			{ "RST 18H", 1, NULL },
 			
-			{ "LDH (%02x),A", 2, op_0xE0 },
-			{ "POP HL", 1, op_0xE1 },
-			{ "LD (C),A", 1, op_0xE2 }, /* The opcode size may be 2 */
+			{ "LDH (%02x),A", 2, NULL },
+			{ "POP HL", 1, NULL },
+			{ "LD (C),A", 2, NULL },
 			{ "--", 1, NULL },
 			{ "--", 1, NULL },
-			{ "PUSH HL", 1, op_0xE5 },
-			{ "AND %02x", 2, op_0xE6 },
-			{ "RST 20H", 1, op_0xE7 },
-			{ "ADD SP,%02x", 2, op_0xE8 },
-			{ "JP (HL)", 1, op_0xE9 },
-			{ "LD ($%04x),A", 3, op_0xEA },
+			{ "PUSH HL", 1, NULL },
+			{ "AND %02x", 2, NULL },
+			{ "RST 20H", 1, NULL },
+			{ "ADD SP,%02x", 2, NULL },
+			{ "JP (HL)", 1, NULL },
+			{ "LD ($%04x),A", 3, NULL },
 			{ "--", 1, NULL },
 			{ "--", 1, NULL },
 			{ "--", 1, NULL },
-			{ "XOR %02x", 2, op_0xEE },
-			{ "RST 28H", 1, op_0xEF },
+			{ "XOR %02x", 2, NULL },
+			{ "RST 28H", 1, NULL },
 			
-			{ "LDH A,(%02x)", 2, op_0xF0 },
-			{ "POP AF", 1, op_0xF1 },
-			{ "LD A,(C)", 1, op_0xF2 }, /* The opcode size may be 2 */
-			{ "DI", 1, op_0xF3 },
+			{ "LDH A,(%02x)", 2, NULL },
+			{ "POP AF", 1, NULL },
+			{ "LD A,(C)", 2, NULL },
+			{ "DI", 1, NULL },
 			{ "--", 1, NULL },
-			{ "PUSH AF", 1, op_0xF5 },
-			{ "OR %02x", 2, op_0xF6 },
-			{ "RST 30H", 1, op_0xF7 },
-			{ "LD HL,SP+%02x", 2, op_0xF8 },
-			{ "LD SP,HL", 1, op_0xF9 },
-			{ "LD A,($%04x)", 3, op_0xFA },
-			{ "EI", 1, op_0xFB },
+			{ "PUSH AF", 1, NULL },
+			{ "OR %02x", 2, NULL },
+			{ "RST 30H", 1, NULL },
+			{ "LD HL,SP+%02x", 2, NULL },
+			{ "LD SP,HL", 1, NULL },
+			{ "LD A,($%04x)", 3, NULL },
+			{ "EI", 1, NULL },
 			{ "--", 1, NULL },
 			{ "--", 1, NULL },
-			{ "CP %02x", 2, op_0xFE },
-			{ "RST 38H", 1, op_0xFF } };
+			{ "CP %02x", 2, NULL },
+			{ "RST 38H", 1, NULL } };
 
 const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "RLC C", 2, NULL },
@@ -631,7 +631,7 @@ int
 exec_op(gb_cpu *cpu)
 {
 	const op *opcode;
-	void *arg;
+	BYTE *arg;
 
 	opcode = &ops[cpu->memory[cpu->pc]];
 	arg = &cpu->memory[cpu->pc + 1];
@@ -639,39 +639,21 @@ exec_op(gb_cpu *cpu)
 	if (opcode->func == NULL)
 		return -1;
 
-	if (opcode->arg_size & SIGNED) {
-		cpu->pc += opcode->arg_size - SIGNED;
+	cpu->pc += opcode->arg_size;
 
-		switch (opcode->arg_size - SIGNED) {
-		case 1:
-			((void(*)(gb_cpu*))opcode->func)(cpu);
-			break;
-		case 2:
-			((void(*)(gb_cpu*, SIGNED_BYTE))opcode->func)(cpu, *(SIGNED_BYTE*)arg);
-			break;
-		case 3:
-			((void(*)(gb_cpu*, SIGNED_WORD))opcode->func)(cpu, *(SIGNED_WORD*)arg);
-			break;
-		}
-
-		return opcode->arg_size - SIGNED;
-	} else {
-		cpu->pc += opcode->arg_size;
-
-		switch (opcode->arg_size) {
-		case 1:
-			((void(*)(gb_cpu*))opcode->func)(cpu);
-			break;
-		case 2:
-			((void(*)(gb_cpu*, BYTE))opcode->func)(cpu, *(BYTE*)arg);
-			break;
-		case 3:
-			((void(*)(gb_cpu*, WORD))opcode->func)(cpu, *(WORD*)arg);
-			break;
-		}
-
-		return opcode->arg_size;
+	switch (opcode->arg_size) {
+	case 1:
+		((void(*)(gb_cpu*))opcode->func)(cpu);
+		break;
+	case 2:
+		((void(*)(gb_cpu*, BYTE))opcode->func)(cpu, *arg);
+		break;
+	case 3:
+		((void(*)(gb_cpu*, WORD))opcode->func)(cpu, *(WORD*)arg);
+		break;
 	}
+
+	return opcode->arg_size;
 }
 
 void
@@ -700,47 +682,21 @@ disassemble(const gb_cpu *cpu)
 void
 cpu_status(const gb_cpu *cpu)
 {
-	const op *opcode;
-
-	const SIGNED_BYTE *sb;
-	const SIGNED_WORD *sw;
-
-	opcode = &ops[cpu->memory[cpu->pc]];
+	op opcode = ops[cpu->memory[cpu->pc]];
 
 	printf("\x1B[2J\x1B[;H");
-	printf("pc: %04x\tasm: (%02x) ", cpu->pc, cpu->memory[cpu->pc]);
+	printf("pc: %04x\tasm: ", cpu->pc);
 
-	if (opcode->arg_size & SIGNED) {
-		switch (opcode->arg_size - SIGNED) {
-		case 1:
-			printf(opcode->assembly);
-			break;
-		case 2:
-			sb = (SIGNED_BYTE*)&cpu->memory[cpu->pc + 1];
-
-			printf(opcode->assembly,
-			       *sb < 0 ? "-" : "", *sb < 0 ? -*sb : *sb);
-			break;
-		case 3:
-			sw = (SIGNED_WORD*)&cpu->memory[cpu->pc + 1];
-
-			printf(opcode->assembly,
-			       *sw < 0 ? "-" : "", *sw < 0 ? -*sw : *sw);
-			
-			break;
-		}
-	} else {
-		switch (opcode->arg_size) {
-		case 1:
-			printf(opcode->assembly);
-			break;
-		case 2:
-			printf(opcode->assembly, *(BYTE*)&cpu->memory[cpu->pc + 1]);
-			break;
-		case 3:
-			printf(opcode->assembly, *(WORD*)&cpu->memory[cpu->pc + 1]);
-			break;
-		}
+	switch (opcode.arg_size) {
+	case 1:
+		printf(opcode.assembly);
+		break;
+	case 2:
+		printf(opcode.assembly, cpu->memory[cpu->pc + 1]);
+		break;
+	case 3:
+		printf(opcode.assembly, *(WORD*)&cpu->memory[cpu->pc + 1]);
+		break;
 	}
 
 	printf("\nreg_af: %04x\n"
@@ -755,7 +711,7 @@ cpu_status(const gb_cpu *cpu)
 	       "reg_hl: %04x\n"
 	       "\th: %02x\n"
 	       "\tl: %02x\n",
-	       cpu->regs[REG_AF].reg, cpu->regs[REG_AF].hi, FLAG(cpu),
+	       cpu->regs[REG_AF].reg, cpu->regs[REG_AF].hi, cpu->regs[REG_AF].lo,
 	       cpu->regs[REG_BC].reg, cpu->regs[REG_BC].hi, cpu->regs[REG_BC].lo,
 	       cpu->regs[REG_DE].reg, cpu->regs[REG_DE].hi, cpu->regs[REG_DE].lo,
 	       cpu->regs[REG_HL].reg, cpu->regs[REG_HL].hi, cpu->regs[REG_HL].lo);
@@ -820,7 +776,7 @@ rot_byte(BYTE *flag, BYTE *b, int rot_flags)
 }
 
 void
-add_byte(BYTE *flag, BYTE *b, int val)
+add_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
 
@@ -837,7 +793,7 @@ add_byte(BYTE *flag, BYTE *b, int val)
 }
 
 void
-add_word(BYTE *flag, WORD *w, int val)
+add_word(BYTE *flag, WORD *w, WORD val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_N));
 
@@ -849,8 +805,7 @@ add_word(BYTE *flag, WORD *w, int val)
 void
 sub_byte(BYTE *flag, BYTE *b, BYTE val)
 {
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_Z));
-	*flag |= BIT(FLAG_N);
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
 
 	if (*b - val >= 0)
 		*flag |= BIT(FLAG_C);
@@ -868,39 +823,6 @@ void
 and_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_N));
-	*flag |= BIT(FLAG_H);
-
-	*b &= val;
-
-	if (*b == 0)
-		*flag |= BIT(FLAG_Z);
-}
-
-void
-xor_byte(BYTE *flag, BYTE *b, BYTE val)
-{
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
-
-	*b ^= val;
-
-	if (*b == 0)
-		*flag |= BIT(FLAG_Z);
-}
-
-void
-or_byte(BYTE *flag, BYTE *b, BYTE val)
-{
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
-
-	*b |= val;
-
-	if (*b == 0)
-		*flag |= BIT(FLAG_Z);
-}
-void
-cp_byte(BYTE *flag, BYTE b, BYTE val)
-{
-	sub_byte(flag, &b, val);
 }
 
 BYTE
@@ -925,31 +847,6 @@ void
 write_word(gb_cpu *cpu, WORD addr, WORD val)
 {
 	*(WORD*)&cpu->memory[addr] = val;
-}
-
-WORD
-pop(gb_cpu *cpu)
-{
-	return (++cpu->stack)->reg;
-}
-
-void
-push(gb_cpu *cpu, WORD val)
-{
-	(cpu->stack--)->reg = val;
-}
-
-void
-call(gb_cpu *cpu, WORD addr)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = addr;
-}
-
-void
-ret(gb_cpu *cpu)
-{
-	cpu->pc = pop(cpu);
 }
 
 /*
@@ -986,14 +883,14 @@ op_0x03(gb_cpu *cpu)
 void
 op_0x04(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_BC].hi);
 }
 
 /* DEC B */
 void
 op_0x05(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_BC].hi);
 }
 
 /* LD B,d8 */
@@ -1007,7 +904,17 @@ op_0x06(gb_cpu *cpu, BYTE d8)
 void
 op_0x07(gb_cpu *cpu)
 {
-	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT | CIRCULAR);
+	/*
+	BYTE most_sig;
+
+	RESET_FLAGS(cpu->regs[REG_AF].lo, FLAG_C | FLAG_N | FLAG_H);
+
+	most_sig = cpu->regs[REG_AF].hi >> 7;
+
+	cpu->regs[REG_AF].hi = (cpu->regs[REG_AF].hi << 1) | most_sig;
+	cpu->regs[REG_AF].lo ^= (-most_sig ^ cpu->regs[REG_AF].lo) & (most_size << FLAG_C);
+	*/
+	rot_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, LEFT | CIRCULAR);
 }
 
 /* LD (a16),SP */
@@ -1021,7 +928,7 @@ op_0x08(gb_cpu *cpu, WORD a16)
 void
 op_0x09(gb_cpu *cpu)
 {
-	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_BC].reg);
+	add_word(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].reg, cpu->regs[REG_BC].reg);
 }
 
 /* LD A,(BC) */
@@ -1042,14 +949,14 @@ op_0x0B(gb_cpu *cpu)
 void
 op_0x0C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_BC].lo);
 }
 
 /* DEC C */
 void
 op_0x0D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_BC].lo);
 }
 
 /* LD C,d8 */
@@ -1063,7 +970,7 @@ op_0x0E(gb_cpu *cpu, BYTE d8)
 void
 op_0x0F(gb_cpu *cpu)
 {
-	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT | CIRCULAR);
+	rot_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, RIGHT | CIRCULAR);
 }
 
 /* STOP 0 */
@@ -1096,17 +1003,16 @@ op_0x13(gb_cpu *cpu)
 
 /* INC D */
 void
-
 op_0x14(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_DE].hi);
 }
 
 /* DEC D */
 void
 op_0x15(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_DE].hi);
 }
 
 /* LD D,d8 */
@@ -1120,12 +1026,12 @@ op_0x16(gb_cpu *cpu, BYTE d8)
 void
 op_0x17(gb_cpu *cpu)
 {
-	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT);
+	rot_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, LEFT);
 }
 
 /* JR r8 */
 void
-op_0x18(gb_cpu *cpu, SIGNED_BYTE r8)
+op_0x18(gb_cpu *cpu, BYTE r8)
 {
 	cpu->pc += r8;
 }
@@ -1134,7 +1040,7 @@ op_0x18(gb_cpu *cpu, SIGNED_BYTE r8)
 void
 op_0x19(gb_cpu *cpu)
 {
-	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_DE].reg);
+	add_word(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].reg, cpu->regs[REG_DE].reg);
 }
 
 /* LD A,(DE) */
@@ -1155,14 +1061,14 @@ op_0x1B(gb_cpu *cpu)
 void
 op_0x1C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_DE].lo);
 }
 
 /* DEC E */
 void
 op_0x1D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_DE].lo);
 }
 
 /* LD E,d8 */
@@ -1176,14 +1082,14 @@ op_0x1E(gb_cpu *cpu, BYTE d8)
 void
 op_0x1F(gb_cpu *cpu)
 {
-	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT);
+	rot_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, RIGHT);
 }
 
 /* JR NZ,r8 */
 void
-op_0x20(gb_cpu *cpu, SIGNED_BYTE r8)
+op_0x20(gb_cpu *cpu, BYTE r8)
 {
-	if (!(FLAG(cpu) & BIT(FLAG_Z)))
+	if (!(cpu->regs[REG_AF].lo & BIT(FLAG_Z)))
 		cpu->pc += r8;
 }
 
@@ -1210,14 +1116,14 @@ op_0x23(gb_cpu *cpu)
 void
 op_0x24(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].hi);
 }
 
 /* DEC H */
 void
 op_0x25(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].hi);
 }
 
 /* LD H,d8 */
@@ -1236,9 +1142,9 @@ op_0x27(gb_cpu *cpu)
 
 /* JR Z,r8 */
 void
-op_0x28(gb_cpu *cpu, SIGNED_BYTE r8)
+op_0x28(gb_cpu *cpu, BYTE r8)
 {
-	if (FLAG(cpu) & BIT(FLAG_Z))
+	if (cpu->regs[REG_AF].lo & BIT(FLAG_Z))
 		cpu->pc += r8;
 }
 
@@ -1246,7 +1152,7 @@ op_0x28(gb_cpu *cpu, SIGNED_BYTE r8)
 void
 op_0x29(gb_cpu *cpu)
 {
-	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_HL].reg);
+	add_word(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].reg, cpu->regs[REG_HL].reg);
 }
 
 /* LD A,(HL+) */
@@ -1267,14 +1173,14 @@ op_0x2B(gb_cpu *cpu)
 void
 op_0x2C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].lo);
 }
 
 /* DEC L */
 void
 op_0x2D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].lo);
 }
 
 /* LD L,d8 */
@@ -1290,13 +1196,13 @@ op_0x2F(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = ~cpu->regs[REG_AF].hi;
 
-	FLAG(cpu) |= BIT(FLAG_N) | BIT(FLAG_H);
+	cpu->regs[REG_AF].lo |= BIT(FLAG_N) | BIT(FLAG_H);
 }
 
 /* JR NC,r8 */
-void op_0x30(gb_cpu *cpu, SIGNED_BYTE r8)
+void op_0x30(gb_cpu *cpu, BYTE r8)
 {
-	if ((FLAG(cpu) & BIT(FLAG_C)))
+	if ((cpu->regs[REG_AF].lo & BIT(FLAG_C)))
 		cpu->pc += r8;
 }
 
@@ -1322,17 +1228,18 @@ op_0x33(gb_cpu *cpu)
 }
 
 /* INC (HL) */
+/* ?????????????? */
 void
 op_0x34(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->memory[cpu->regs[REG_HL].reg]);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->memory[cpu->regs[REG_HL].reg]);
 }
 
 /* DEC (HL) */
 void
 op_0x35(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->memory[cpu->regs[REG_HL].reg]); 
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->memory[cpu->regs[REG_HL].reg]); 
 }
 
 /* LD (HL),d8 */
@@ -1346,16 +1253,16 @@ op_0x36(gb_cpu *cpu, BYTE d8)
 void
 op_0x37(gb_cpu *cpu)
 {
-	RESET_FLAGS(FLAG(cpu), BIT(FLAG_N) | BIT(FLAG_H));
+	RESET_FLAGS(cpu->regs[REG_AF].lo, BIT(FLAG_N) | BIT(FLAG_H));
 
-	FLAG(cpu) |= BIT(FLAG_C);
+	cpu->regs[REG_AF].lo |= BIT(FLAG_C);
 }
 
 /* JR C,r8 */ 
 void
-op_0x38(gb_cpu *cpu, SIGNED_BYTE r8)
+op_0x38(gb_cpu *cpu, BYTE r8)
 {
-	if (FLAG(cpu) & BIT(FLAG_C))
+	if (cpu->regs[REG_AF].lo & BIT(FLAG_C))
 		cpu->pc += r8;
 }
 
@@ -1363,7 +1270,7 @@ op_0x38(gb_cpu *cpu, SIGNED_BYTE r8)
 void
 op_0x39(gb_cpu *cpu)
 {
-	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->stack->reg);
+	add_word(&cpu->regs[REG_AF].lo, &cpu->regs[REG_HL].reg, cpu->stack->reg);
 }
 
 /* LD A,(HL-) */
@@ -1384,14 +1291,14 @@ op_0x3B(gb_cpu *cpu)
 void
 op_0x3C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi);
+	inc_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi);
 }
 
 /* DEC A */
 void
 op_0x3D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi);
+	dec_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi);
 }
 
 /* LD A,d8 */
@@ -1405,9 +1312,9 @@ op_0x3E(gb_cpu *cpu, BYTE d8)
 void
 op_0x3F(gb_cpu *cpu)
 {
-	RESET_FLAGS(FLAG(cpu), BIT(FLAG_N) | BIT(FLAG_H));
+	RESET_FLAGS(cpu->regs[REG_AF].lo, BIT(FLAG_N) | BIT(FLAG_H));
 
-	FLAG(cpu) ^= BIT(FLAG_C);
+	cpu->regs[REG_AF].lo ^= BIT(FLAG_C);
 }
 
 /* LD B,B */
@@ -1919,113 +1826,113 @@ op_0x87(gb_cpu *cpu)
 void
 op_0x88(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_BC].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,C */
 void
 op_0x89(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_BC].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,D */
 void
 op_0x8A(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_DE].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,E */
 void
 op_0x8B(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_DE].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,H */
 void
 op_0x8C(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_HL].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,L */
 void
 op_0x8D(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_HL].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,(HL) */
 void
 op_0x8E(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* ADC A,A */
 void
 op_0x8F(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+        add_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_AF].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) >> FLAG_C));
 }
 
 /* SUB B */
 void
 op_0x90(gb_cpu *cpu)
 {
-	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
+	sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
 }
 
 /* SUB C */
 void
 op_0x91(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
 }
 
 /* SUB D */
 void
 op_0x92(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
 }
 
 /* SUB E */
 void
 op_0x93(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
 }
 
 /* SUB H */
 void
 op_0x94(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
 }
 
 /* SUB L */
 void
 op_0x95(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
 }
 
 /* SUB (HL) */
 void
 op_0x96(gb_cpu *cpu)
 {
-	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
 		 read_byte(cpu, cpu->regs[REG_HL].reg));
 }
 
@@ -2033,692 +1940,110 @@ op_0x96(gb_cpu *cpu)
 void
 op_0x97(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
 }
 
 /* SBC A,B */
 void
 op_0x98(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_BC].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,C */
 void
 op_0x99(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_BC].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,D */
 void
 op_0x9A(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_DE].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,E */
 void
 op_0x9B(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_DE].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,H */
 void
 op_0x9C(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_HL].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,L */
 void
 op_0x9D(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_HL].lo + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,(HL) */
 void
 op_0x9E(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* SBC A,A */
 void
 op_0x9F(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+        sub_byte(&cpu->regs[REG_AF].lo, &cpu->regs[REG_AF].hi,
+                 cpu->regs[REG_AF].hi + ((cpu->regs[REG_AF].lo & BIT(FLAG_C)) << FLAG_C));
 }
 
 /* AND B */
 void
 op_0xA0(gb_cpu *cpu)
 {
-	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-}
-
-/* AND C */
-void
-op_0xA1(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-}
-
-/* AND D */
-void
-op_0xA2(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-}
-
-/* AND E */
-void
-op_0xA3(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-}
-
-/* AND H */
-void
-op_0xA4(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-}
-
-/* AND L */
-void
-op_0xA5(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-}
-
-/* AND (HL) */
-void
-op_0xA6(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 read_byte(cpu, cpu->regs[REG_HL].reg));
-}
-
-/* AND A */
-void
-op_0xA7(gb_cpu *cpu)
-{
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-}
-
-/* XOR B */
-void
-op_0xA8(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-}
-
-/* XOR C */
-void
-op_0xA9(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-}
-
-/* XOR D */
-void
-op_0xAA(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-}
-
-/* XOR E */
-void
-op_0xAB(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-}
-
-/* XOR H */
-void
-op_0xAC(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-}
-
-/* XOR L */
-void
-op_0xAD(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-}
-
-/* XOR (HL) */
-void
-op_0xAE(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 read_byte(cpu, cpu->regs[REG_HL].reg));
-}
-
-/* XOR A */
-void
-op_0xAF(gb_cpu *cpu)
-{
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-}
-
-/* OR B */
-void
-op_0xB0(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-}
-
-/* OR C */
-void
-op_0xB1(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-}
-
-/* OR D */
-void
-op_0xB2(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-}
-
-/* OR E */
-void
-op_0xB3(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-}
-
-/* OR H */
-void
-op_0xB4(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-}
-
-/* OR L */
-void
-op_0xB5(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-}
-
-/* OR (HL) */
-void
-op_0xB6(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		read_byte(cpu, cpu->regs[REG_HL].reg));
-}
-
-/* OR A */
-void
-op_0xB7(gb_cpu *cpu)
-{
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-}
-
-/* CP B */
-void
-op_0xB8(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-}
-
-/* CP C */
-void
-op_0xB9(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-}
-
-/* CP D */
-void
-op_0xBA(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-}
-
-/* CP E */
-void
-op_0xBB(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-}
-
-/* CP H */
-void
-op_0xBC(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-}
-
-/* CP L */
-void
-op_0xBD(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-}
-
-/* CP (HL) */
-void
-op_0xBE(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi,
-		read_byte(cpu, cpu->regs[REG_HL].reg));
-}
-
-/* CP A */
-void
-op_0xBF(gb_cpu *cpu)
-{
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-}
-
-/* RET NZ */
-void
-op_0xC0(gb_cpu *cpu)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_Z)))
-		ret(cpu);
-}
-
-/* POP BC */
-void
-op_0xC1(gb_cpu *cpu)
-{
-	cpu->regs[REG_BC].reg = pop(cpu);
-}
-
-/* JP NZ,a16 */
-void
-op_0xC2(gb_cpu *cpu, WORD a16)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_Z)))
-		cpu->pc = a16;
-}
-
-/* JP a16 */
-void
-op_0xC3(gb_cpu *cpu, WORD a16)
-{
-	cpu->pc = a16;
-}
-
-/* CALL NZ,a16 */
-void
-op_0xC4(gb_cpu *cpu, WORD a16)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_Z)))
-		call(cpu, a16);
-}
-
-/* PUSH BC */
-void
-op_0xC5(gb_cpu *cpu)
-{
-	push(cpu, cpu->regs[REG_BC].reg);
-}
-
-/* ADD A,d8 */
-void
-op_0xC6(gb_cpu *cpu, BYTE d8)
-{
-	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 00H */
-void
-op_0xC7(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x00;
-}
-
-/* RET Z */
-void
-op_0xC8(gb_cpu *cpu)
-{
-	if (FLAG(cpu) & BIT(FLAG_Z))
-		cpu->pc = pop(cpu);
-}
-
-/* RET */
-void
-op_0xC9(gb_cpu *cpu)
-{
-	cpu->pc = pop(cpu);
-}
 
-/* JP Z,a16 */
-void
-op_0xCA(gb_cpu *cpu, WORD a16)
-{
-	if (FLAG(cpu) & BIT(FLAG_Z))
-		cpu->pc = a16;
 }
 
-/* PREFIX CB */
-void
-op_0xCB(gb_cpu *cpu)
-{
-	IMPLEMENT("PREFIX CB");
-}
-
-/* CALL Z,a16 */
-void
-op_0xCC(gb_cpu *cpu, WORD a16)
-{
-	if (FLAG(cpu) & BIT(FLAG_Z))
-		call(cpu, a16);
-}
-
-/* CALL a16 */
-void
-op_0xCD(gb_cpu *cpu, WORD a16)
-{
-	call(cpu, a16);
-}
-
-/* ADC A,d8 */
-void
-op_0xCE(gb_cpu *cpu, BYTE d8)
-{
-	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 d8 + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-}
-
-/* RST 08H */
-void
-op_0xCF(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x08;
-}
-
-/* RET NC */
-void
-op_0xD0(gb_cpu *cpu)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_C)))
-		cpu->pc = pop(cpu);
-}
-
-/* POP DE */
-void
-op_0xD1(gb_cpu *cpu)
-{
-	cpu->regs[REG_DE].reg = pop(cpu);
-}
-
-/* JP NC,a16 */
-void
-op_0xD2(gb_cpu *cpu, WORD a16)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_C)))
-		cpu->pc = a16;
-}
-
-/* CALL NC,a16 */
-void
-op_0xD4(gb_cpu *cpu, WORD a16)
-{
-	if (!(FLAG(cpu) & BIT(FLAG_C)))
-		call(cpu, a16);
-}
-
-/* PUSH DE */
-void
-op_0xD5(gb_cpu *cpu)
-{
-	push(cpu, cpu->regs[REG_DE].reg);
-}
-
-/* SUB d8 */
-void
-op_0xD6(gb_cpu *cpu, BYTE d8)
-{
-	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 10H */
-void
-op_0xD7(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x10;
-}
-
-/* RET C */
-void
-op_0xD8(gb_cpu *cpu)
-{
-	if (FLAG(cpu) & BIT(FLAG_C))
-		ret(cpu);
-}
-
-/* RETI */
-void
-op_0xD9(gb_cpu *cpu)
-{
-	IMPLEMENT("RETI");
-}
-
-/* JP C,a16 */
-void
-op_0xDA(gb_cpu *cpu, WORD a16)
-{
-	if (FLAG(cpu) & BIT(FLAG_C))
-		cpu->pc = a16;
-}
-
-/* CALL C,a16 */
-void
-op_0xDC(gb_cpu *cpu, WORD a16)
-{
-	if (FLAG(cpu) & BIT(FLAG_C))
-		call(cpu, a16);
-}
-
-/* SBC A,d8 */
-void
-op_0xDE(gb_cpu *cpu, BYTE d8)
-{
-	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 d8 + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-}
-
-/* RST 18H */
-void
-op_0xDF(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x18;
-}
-
-/* LDH (a8),A */
-void
-op_0xE0(gb_cpu *cpu, BYTE a8)
-{
-	write_byte(cpu, 0xFF00 + a8, cpu->regs[REG_AF].hi);
-}
-
-/* POP HL */
-void
-op_0xE1(gb_cpu *cpu)
-{
-	cpu->regs[REG_HL].reg = pop(cpu);
-}
-
-/* LD (C),A */
-void
-op_0xE2(gb_cpu *cpu)
-{
-	write_byte(cpu, 0xFF00 + cpu->regs[REG_BC].lo, cpu->regs[REG_AF].hi);
-}
-
-/* PUSH HL */
-void
-op_0xE5(gb_cpu *cpu)
-{
-	push(cpu, cpu->regs[REG_HL].reg);
-}
-
-/* AND d8 */
-void
-op_0xE6(gb_cpu *cpu, BYTE d8)
-{
-	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 20H */
-void
-op_0xE7(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x20;
-}
-
-/* ADD SP,r8 */
-/* add to the top of the stack or the stack pointer itself? */
-void
-op_0xE8(gb_cpu *cpu, SIGNED_BYTE r8)
-{
-	add_word(FLAG_P(cpu), &cpu->stack->reg, r8);
-}
-
-/* JP (HL) */
-void
-op_0xE9(gb_cpu *cpu)
-{
-	cpu->pc = read_word(cpu, cpu->regs[REG_HL].reg);
-}
-
-/* LD (a16),A */
-void
-op_0xEA(gb_cpu *cpu, WORD a16)
-{
-	write_byte(cpu, a16, cpu->regs[REG_AF].hi);
-}
-
-/* XOR d8 */
-void
-op_0xEE(gb_cpu *cpu, BYTE d8)
-{
-	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 28H */
-void
-op_0xEF(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x28;
-}
-
-/* LDH A,a8 */
-void
-op_0xF0(gb_cpu *cpu, BYTE a8)
-{
-	cpu->regs[REG_AF].hi = read_byte(cpu, 0xFF00 + a8);
-}
-
-/* POP AF */
-void
-op_0xF1(gb_cpu *cpu)
-{
-	cpu->regs[REG_AF].reg = pop(cpu);
-}
-
-/* LD A,(C) */
-void
-op_0xF2(gb_cpu *cpu)
-{
-	cpu->regs[REG_AF].hi = read_byte(cpu, 0xFF00 + cpu->regs[REG_BC].lo);
-}
-
-/* DI */
-void
-op_0xF3(gb_cpu *cpu)
-{
-	IMPLEMENT("DI");
-}
-
-/* PUSH AF */
-void
-op_0xF5(gb_cpu *cpu)
-{
-	push(cpu, cpu->regs[REG_AF].reg);
-}
-
-/* OR d8 */
-void
-op_0xF6(gb_cpu *cpu, BYTE d8)
-{
-	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 30H */
-void
-op_0xF7(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x30;
-}
-
-/* LD HL,SP+r8 */
-void
-op_0xF8(gb_cpu *cpu, BYTE r8)
-{
-	IMPLEMENT("LD HL,SP+r8");
-}
-
-/* LD SP,HL */
-void
-op_0xF9(gb_cpu *cpu)
-{
-	cpu->stack->reg = cpu->regs[REG_HL].reg;
-}
-
-/* LD A,(a16) */
-void
-op_0xFA(gb_cpu *cpu, WORD a16)
-{
-	cpu->regs[REG_AF].hi = read_byte(cpu, a16);
-}
-
-/* EI */
-void
-op_0xFB(gb_cpu *cpu)
-{
-	IMPLEMENT("EI");
-}
-
-/* CP d8 */
-void
-op_0xFE(gb_cpu *cpu, BYTE d8)
-{
-	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, d8);
-}
-
-/* RST 38H */
-void
-op_0xFF(gb_cpu *cpu)
-{
-	push(cpu, cpu->pc);
-	cpu->pc = 0x38;
-}
+void op_0xA1(gb_cpu *cpu);
+void op_0xA2(gb_cpu *cpu);
+void op_0xA3(gb_cpu *cpu);
+void op_0xA4(gb_cpu *cpu);
+void op_0xA5(gb_cpu *cpu);
+void op_0xA6(gb_cpu *cpu);
+void op_0xA7(gb_cpu *cpu);
+void op_0xA8(gb_cpu *cpu);
+void op_0xA9(gb_cpu *cpu);
+void op_0xAA(gb_cpu *cpu);
+void op_0xAB(gb_cpu *cpu);
+void op_0xAC(gb_cpu *cpu);
+void op_0xAD(gb_cpu *cpu);
+void op_0xAE(gb_cpu *cpu);
+void op_0xAF(gb_cpu *cpu);
+
+void op_0xB0(gb_cpu *cpu);
+void op_0xB1(gb_cpu *cpu);
+void op_0xB2(gb_cpu *cpu);
+void op_0xB3(gb_cpu *cpu);
+void op_0xB4(gb_cpu *cpu);
+void op_0xB5(gb_cpu *cpu);
+void op_0xB6(gb_cpu *cpu);
+void op_0xB7(gb_cpu *cpu);
+void op_0xB8(gb_cpu *cpu);
+void op_0xB9(gb_cpu *cpu);
+void op_0xBA(gb_cpu *cpu);
+void op_0xBB(gb_cpu *cpu);
+void op_0xBC(gb_cpu *cpu);
+void op_0xBD(gb_cpu *cpu);
+void op_0xBE(gb_cpu *cpu);
+void op_0xBF(gb_cpu *cpu);
 
