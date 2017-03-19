@@ -3,29 +3,32 @@
 
 #include "../include/linuxboy.h"
 
-#define DEBUG
-
 int
 main(int argc, char **argv)
 {
 	gb_cpu cpu;
-	int op_size;
+	int debug;
 
 	if (load_rom(&cpu, "tetris.gb") != 0)
 		return 1;
 
+	debug = 0;
 	power(&cpu);
 	for (;;) {
-#ifdef DEBUG
+		if (cpu.pc == 0x2817) {
 			cpu_status(&cpu);
+			debug = 1;
+		}
 
-			if ((op_size = exec_op(&cpu)) == -1)
-				return 1;
-#else
-			if ((op_size = exec_op(&cpu)) == -1)
-				return 1;
-#endif
+		if (exec_op(&cpu) == -1)
+			getchar();
+
+		if (debug)
+			getchar();
+
+		handle_interrupts(&cpu);
 	}
 
 	return 0;
 }
+

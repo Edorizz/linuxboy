@@ -21,7 +21,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD C,%02x", 2, op_0x0E },
 			{ "RRCA", 1, op_0x0F },
 			
-			{ "STOP 0", 2, op_0x10 },
+			{ "STOP 0", 2, NULL },
 			{ "LD DE,%04x", 3, op_0x11 },
 			{ "LD (DE),A", 1, op_0x12 },
 			{ "INC DE", 1, op_0x13 },
@@ -45,7 +45,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "INC H", 1, op_0x24 },
 			{ "DEC H", 1, op_0x25 },
 			{ "LD H,%02x", 2, op_0x26 },
-			{ "DAA", 1, op_0x27 },
+			{ "DAA", 1, NULL },
 			{ "JR Z,%s%02x", 2 | SIGNED, op_0x28 },
 			{ "ADD HL,HL", 1, op_0x29 },
 			{ "LD A,(HL+)", 1, op_0x2A },
@@ -129,7 +129,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD (HL),E", 1, op_0x73 },
 			{ "LD (HL),H", 1, op_0x74 },
 			{ "LD (HL),L", 1, op_0x75 },
-			{ "HALT", 1, op_0x76 },
+			{ "HALT", 1, NULL },
 			{ "LD (HL),A", 1, op_0x77 },
 			{ "LD A,B", 1, op_0x78 },
 			{ "LD A,C", 1, op_0x79 },
@@ -219,7 +219,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "RET Z", 1, op_0xC8 },
 			{ "RET", 1, op_0xC9 },
 			{ "JP Z,$%04x", 3, op_0xCA },
-			{ "PREFIX CB", 1, op_0xCB },
+			{ "PREFIX CB", 1, NULL },
 			{ "CALL Z,$%04x", 3, op_0xCC },
 			{ "CALL $%04x", 3, op_0xCD },
 			{ "ADC A,%02x", 2, op_0xCE },
@@ -267,7 +267,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "PUSH AF", 1, op_0xF5 },
 			{ "OR %02x", 2, op_0xF6 },
 			{ "RST 30H", 1, op_0xF7 },
-			{ "LD HL,SP+%02x", 2, op_0xF8 },
+			{ "LD HL,SP+%02x", 2, NULL },
 			{ "LD SP,HL", 1, op_0xF9 },
 			{ "LD A,($%04x)", 3, op_0xFA },
 			{ "EI", 1, op_0xFB },
@@ -576,11 +576,37 @@ load_rom(gb_cpu *cpu, const char *rom_path)
 	return 0;
 }
 
+void
+bootstrap(gb_cpu *cpu)
+{
+	FILE *fp;
+
+	if ((fp = fopen("bootstrap.gb", "rb")) == NULL) {
+		fprintf(stderr, "Failed to open bootstrap.gb: %s\n", strerror(errno));
+		return;
+	}
+
+	cpu->pc = 0x0;
+	fread(&cpu->memory[cpu->pc], 1, 0x100, fp);
+
+	while (cpu->pc != 0x100) {
+		cpu_status(cpu);
+
+		if (exec_op(cpu) == -1)
+			return;
+
+		getchar();
+	}
+}
+
 int
 power(gb_cpu *cpu)
 {
-	/* Load the first two banks (32KB) into main memory */
+	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
+	/* bootstrap(cpu); */
+
+	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->rom, 0x8000);
 
 	/* Initialize Gameboy */
@@ -636,8 +662,10 @@ exec_op(gb_cpu *cpu)
 	opcode = &ops[cpu->memory[cpu->pc]];
 	arg = &cpu->memory[cpu->pc + 1];
 
-	if (opcode->func == NULL)
+	if (opcode->func == NULL) {
+		printf("Missing implementation %s at $%04x", opcode->assembly, cpu->pc);
 		return -1;
+	}
 
 	if (opcode->arg_size & SIGNED) {
 		cpu->pc += opcode->arg_size - SIGNED;
@@ -794,7 +822,7 @@ dec_byte(BYTE *flag, BYTE *b)
 }
 
 void
-rot_byte(BYTE *flag, BYTE *b, int rot_flags)
+rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 {
 	BYTE bit;
 
@@ -2514,7 +2542,8 @@ op_0xD8(gb_cpu *cpu)
 void
 op_0xD9(gb_cpu *cpu)
 {
-	IMPLEMENT("RETI");
+	cpu->ime = 1;
+	ret(cpu);
 }
 
 /* JP C,a16 */
@@ -2654,7 +2683,7 @@ op_0xF2(gb_cpu *cpu)
 void
 op_0xF3(gb_cpu *cpu)
 {
-	IMPLEMENT("DI");
+	cpu->ime = 0;
 }
 
 /* PUSH AF */
@@ -2704,7 +2733,7 @@ op_0xFA(gb_cpu *cpu, WORD a16)
 void
 op_0xFB(gb_cpu *cpu)
 {
-	IMPLEMENT("EI");
+	cpu->ime = 1;
 }
 
 /* CP d8 */

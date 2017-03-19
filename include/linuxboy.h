@@ -2,9 +2,11 @@
 #define LINUXBOY_H
 
 #define SIGNED 			4
+#define IE			0xFFFF
+#define IF			0xFF0F
 
-#define LO(word)		((word) & 0x00FF) /* *((BYTE*)&w) */
-#define HI(word)		(((word) & 0xFF00) >> 8) /* *((BYTE*)&w + 1) */
+#define LO(word)		((word) & 0x00FF)		/* *((BYTE*)&w) */
+#define HI(word)		(((word) & 0xFF00) >> 8)	/* *((BYTE*)&w + 1) */
 
 #define FLAG(cpu)		((cpu)->regs[REG_AF].lo)
 #define FLAG_P(cpu)		(&(FLAG(cpu)))
@@ -13,6 +15,7 @@
 
 #define IMPLEMENT(s)		(fprintf(stderr, "Missing implementation: %s", (s)))
 
+enum interrupts	{ VBLANK, LCD_STAT, TIMER, SERIAL, JOYPAD, INTERRUPT_MAX };
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
 enum rot_flags	{ RIGHT, LEFT, CIRCULAR };
@@ -40,17 +43,45 @@ typedef struct {
 	BYTE memory[0x10000]; /* 64KB */
 	BYTE rom[0x200000];   /* 2MB */
 	reg regs[REG_MAX];
+	BYTE ime; /* Interrupt master switch */
 	WORD pc;
 	reg *stack;
 	int rom_size;
 } gb_cpu;
 
+/* CPU FUNCTIONS */
 int load_rom(gb_cpu *cpu, const char *rom_path);
 int power(gb_cpu *cpu);
 int exec_op(gb_cpu *cpu);
+void handle_interrupts(gb_cpu *cpu);
 
+/* DEBUGGING */
 void disassemble(const gb_cpu *cpu);
 void cpu_status(const gb_cpu *cpu);
+
+/* OPCODE HELPERS */
+void inc_byte(BYTE *flag, BYTE *b);
+void dec_byte(BYTE *flag, BYTE *b);
+void rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags);
+void add_byte(BYTE *flag, BYTE *b, int val);
+void add_word(BYTE *flag, WORD *w, int val);
+void sub_byte(BYTE *flag, BYTE *b, BYTE val);
+
+void and_byte(BYTE *flag, BYTE *b, BYTE val);
+void xor_byte(BYTE *flag, BYTE *b, BYTE val);
+void or_byte(BYTE *flag, BYTE *b, BYTE val);
+void cp_byte(BYTE *flag, BYTE b, BYTE val);
+
+BYTE read_byte(gb_cpu *cpu, WORD addr);
+WORD read_word(gb_cpu *cpu, WORD addr);
+void write_byte(gb_cpu *cpu, WORD addr, BYTE val);
+void write_word(gb_cpu *cpu, WORD addr, WORD val);
+
+WORD pop(gb_cpu *cpu);
+void push(gb_cpu *cpu, WORD val);
+
+void call(gb_cpu *cpu, WORD addr);
+void ret(gb_cpu *cpu);
 
 /* OPCODES */
 void op_0x00(gb_cpu *cpu);
@@ -277,7 +308,6 @@ void op_0xCF(gb_cpu *cpu);
 void op_0xD0(gb_cpu *cpu);
 void op_0xD1(gb_cpu *cpu);
 void op_0xD2(gb_cpu *cpu, WORD a16);
-/* -- */
 void op_0xD4(gb_cpu *cpu, WORD a16);
 void op_0xD5(gb_cpu *cpu);
 void op_0xD6(gb_cpu *cpu, BYTE d8);
@@ -285,26 +315,19 @@ void op_0xD7(gb_cpu *cpu);
 void op_0xD8(gb_cpu *cpu);
 void op_0xD9(gb_cpu *cpu);
 void op_0xDA(gb_cpu *cpu, WORD a16);
-/* -- */
 void op_0xDC(gb_cpu *cpu, WORD a16);
-/* -- */
 void op_0xDE(gb_cpu *cpu, BYTE d8);
 void op_0xDF(gb_cpu *cpu);
 
 void op_0xE0(gb_cpu *cpu, BYTE a8);
 void op_0xE1(gb_cpu *cpu);
 void op_0xE2(gb_cpu *cpu);
-/* -- */
-/* -- */
 void op_0xE5(gb_cpu *cpu);
 void op_0xE6(gb_cpu *cpu, BYTE d8);
 void op_0xE7(gb_cpu *cpu);
 void op_0xE8(gb_cpu *cpu, SIGNED_BYTE r8);
 void op_0xE9(gb_cpu *cpu);
 void op_0xEA(gb_cpu *cpu, WORD a16);
-/* -- */
-/* -- */
-/* -- */
 void op_0xEE(gb_cpu *cpu, BYTE d8);
 void op_0xEF(gb_cpu *cpu);
 
@@ -312,7 +335,6 @@ void op_0xF0(gb_cpu *cpu, BYTE a8);
 void op_0xF1(gb_cpu *cpu);
 void op_0xF2(gb_cpu *cpu);
 void op_0xF3(gb_cpu *cpu);
-/* -- */
 void op_0xF5(gb_cpu *cpu);
 void op_0xF6(gb_cpu *cpu, BYTE d8);
 void op_0xF7(gb_cpu *cpu);
@@ -320,8 +342,6 @@ void op_0xF8(gb_cpu *cpu, BYTE r8);
 void op_0xF9(gb_cpu *cpu);
 void op_0xFA(gb_cpu *cpu, WORD a16);
 void op_0xFB(gb_cpu *cpu);
-/* -- */
-/* -- */
 void op_0xFE(gb_cpu *cpu, BYTE d8);
 void op_0xFF(gb_cpu *cpu);
 
