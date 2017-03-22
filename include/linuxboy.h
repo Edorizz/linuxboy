@@ -1,9 +1,19 @@
 #ifndef LINUXBOY_H
 #define LINUXBOY_H
 
-#define SIGNED 			4
+#include <GL/glew.h>
+#include "../include/glsl_shader.h"
+
+/* SCREEN DIMENSIONS */
+#define SCREEN_WIDTH		160
+#define SCREEN_HEIGHT		144
+
+/* INTERRUPT REGISTERS */
 #define IE			0xFFFF
 #define IF			0xFF0F
+
+/* OTHER FLAGS */
+#define SIGNED			4
 
 #define LO(word)		((word) & 0x00FF)		/* *((BYTE*)&w) */
 #define HI(word)		(((word) & 0xFF00) >> 8)	/* *((BYTE*)&w + 1) */
@@ -25,6 +35,16 @@ typedef signed char	SIGNED_BYTE;
 typedef unsigned short	WORD;
 typedef signed short	SIGNED_WORD;
 
+/* GRAPHICS */
+typedef struct {
+	GLuint shader_program;
+	GLuint vao, vbo;
+	GLuint texture;
+	int screen_width, screen_height;
+	GLubyte *screen_data;
+} gb_gpu;
+
+/* CPU */
 typedef struct {
 	char *assembly;
 	int arg_size;
@@ -47,6 +67,7 @@ typedef struct {
 	WORD pc;
 	reg *stack;
 	int rom_size;
+	gb_gpu gpu;
 } gb_cpu;
 
 /* CPU FUNCTIONS */
@@ -54,6 +75,11 @@ int load_rom(gb_cpu *cpu, const char *rom_path);
 int power(gb_cpu *cpu);
 int exec_op(gb_cpu *cpu);
 void handle_interrupts(gb_cpu *cpu);
+
+/* GPU FUNCTIONS */
+void init_gpu(gb_gpu *gpu, int screen_width, int screen_height);
+void free_gpu(gb_gpu *gpu);
+void draw(gb_gpu *gpu);
 
 /* DEBUGGING */
 void disassemble(const gb_cpu *cpu);

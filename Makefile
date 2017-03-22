@@ -2,7 +2,7 @@ CC := gcc
 C_FILES := $(wildcard src/*.c)
 OBJ_FILES := $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 CFLAGS := -c -std=c99 -Wall
-LDFLAGS :=
+LDFLAGS := -lSDL2 -lGLEW -lGLU -lGL
 RM := rm -f
 NAME := linuxboy
 
