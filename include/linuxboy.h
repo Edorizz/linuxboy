@@ -99,6 +99,7 @@ typedef struct {
 int load_rom(gb_cpu *cpu, const char *rom_path);
 int power(gb_cpu *cpu);
 int exec_op(gb_cpu *cpu);
+void dma_transfer(gb_cpu *cpu, BYTE val);
 void set_frequency(gb_cpu *cpu);
 void divider_register(gb_cpu *cpu, int ops);
 void request_interrupt(gb_cpu *cpu, BYTE interrupt);

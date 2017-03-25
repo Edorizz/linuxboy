@@ -220,7 +220,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "RET Z", 1, op_0xC8 },
 			{ "RET", 1, op_0xC9 },
 			{ "JP Z,$%04x", 3, op_0xCA },
-			{ "PREFIX CB", 1, NULL },
+			{ "PREFIX CB", 1, op_0xCB },
 			{ "CALL Z,$%04x", 3, op_0xCC },
 			{ "CALL $%04x", 3, op_0xCD },
 			{ "ADC A,%02x", 2, op_0xCE },
@@ -676,8 +676,8 @@ exec_op(gb_cpu *cpu)
 	arg = &cpu->memory[cpu->pc + 1];
 
 	if (opcode->func == NULL) {
-		printf("Missing implementation %s at $%04x", opcode->assembly, cpu->pc);
-		return -1;
+		printf("Missing implementation %s at $%04x\n", opcode->assembly, cpu->pc);
+		exit(1);
 	}
 
 	if (opcode->arg_size & SIGNED) {
@@ -705,6 +705,16 @@ exec_op(gb_cpu *cpu)
 	}
 
 	return 0;
+}
+
+void
+dma_transfer(gb_cpu *cpu, BYTE val)
+{
+	WORD address = val * 100;
+
+	for (int i = 0; i != 0xA0; ++i)
+		write_byte(cpu, 0xFE00 + i,
+			   read_byte(cpu, address));
 }
 
 void
@@ -1155,6 +1165,8 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == DIVIDER_REGISTER) {
 		/* Writing to the divider register resets it */
 		cpu->memory[addr] = 0;
+	} else if (addr == 0xFF46) {
+		dma_transfer(cpu, val);
 	} else {
 		cpu->memory[addr] = val;
 	}
@@ -3077,9 +3089,16 @@ op_0xCA(gb_cpu *cpu, WORD a16)
 int
 op_0xCB(gb_cpu *cpu)
 {
-	IMPLEMENT("PREFIX CB");
+	const op *opcode;
 
-	return 4;
+	opcode = &ext_ops[cpu->memory[cpu->pc]];
+
+	if (opcode->func == NULL) {
+		printf("Missing implementation (CB)%s at $%04x\n", opcode->assembly, cpu->pc);
+		exit(1);
+	}
+
+	return ((int(*)(gb_cpu*))opcode->func)(cpu);
 }
 
 /* CALL Z,a16 */
