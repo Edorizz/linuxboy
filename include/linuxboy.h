@@ -8,17 +8,31 @@
 #define SCREEN_WIDTH		160
 #define SCREEN_HEIGHT		144
 
-/* INTERRUPT REGISTERS */
+/* INTERRUPTS REGISTERS */
 #define IE			0xFFFF
 #define IF			0xFF0F
+
+/* TIMING */
+#define DIVIDER_REGISTER	0xFF04
+#define TIMA			0xFF05
+#define TMA			0xFF06
+#define TMC			0xFF07
+
+/* LCD */
+#define LCD_CONTROL		0xFF40
+#define LCD_STATUS		0xFF41
+#define CURR_SCANLINE		0xFF44
+#define TARGET_SCANLINE		0xFF45
 
 /* OTHER */
 #define SIGNED			4
 #define CLOCK_RATE		4194304
 
+/* BYTE MANIPULATION */
 #define LO(word)		((word) & 0x00FF)		/* *((BYTE*)&w) */
 #define HI(word)		(((word) & 0xFF00) >> 8)	/* *((BYTE*)&w + 1) */
 
+/* BIT MANIPULATION */
 #define FLAG(cpu)		((cpu)->regs[REG_AF].lo)
 #define FLAG_P(cpu)		(&(FLAG(cpu)))
 #define BIT(b)			(1 << (b))
@@ -38,9 +52,11 @@ typedef signed short	SIGNED_WORD;
 
 /* GRAPHICS */
 typedef struct {
+	/* OPENGL */
 	GLuint shader_program;
 	GLuint vao, vbo;
 	GLuint texture;
+	/* SCREEN DATA */
 	int screen_width, screen_height;
 	GLubyte *screen_data;
 } gb_gpu;
@@ -63,6 +79,7 @@ typedef union {
 
 /* CPU */
 typedef struct {
+	/* GAME MEMORY */
 	BYTE memory[0x10000]; /* 64KB */
 	BYTE rom[0x200000];   /* 2MB */
 	reg regs[REG_MAX];
@@ -70,6 +87,11 @@ typedef struct {
 	WORD pc;
 	reg *stack;
 	int rom_size;
+	/* TIMING */
+	int divider_counter;
+	int timer_counter;
+	/* GRAPHICS */
+	int scanline_counter;
 	gb_gpu gpu;
 } gb_cpu;
 
@@ -77,6 +99,12 @@ typedef struct {
 int load_rom(gb_cpu *cpu, const char *rom_path);
 int power(gb_cpu *cpu);
 int exec_op(gb_cpu *cpu);
+void set_frequency(gb_cpu *cpu);
+void divider_register(gb_cpu *cpu, int ops);
+void request_interrupt(gb_cpu *cpu, BYTE interrupt);
+void update_timers(gb_cpu *cpu, int ops);
+void set_lcd_status(gb_cpu *cpu);
+void update_graphics(gb_cpu *cpu, int ops);
 void handle_interrupts(gb_cpu *cpu);
 
 /* GPU FUNCTIONS */

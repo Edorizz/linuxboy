@@ -8,6 +8,10 @@
 #include "../include/linuxboy.h"
 #include "../include/glsl_shader.h"
 
+/* MAIN LOOP BIT FLAGS */
+#define FLAG_QUIT	0
+#define FLAG_DEBUG	1
+
 int
 init_window(SDL_Window **window)
 {
@@ -47,13 +51,63 @@ init_window(SDL_Window **window)
 	return 0;
 }
 
+void
+wait_input(BYTE *flags)
+{
+	SDL_Event event;
+
+	for (;;) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_QUIT:
+				*flags |= BIT(FLAG_QUIT);
+				return;
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+				case SDLK_q:
+					*flags |= BIT(FLAG_QUIT);
+					break;
+				case SDLK_d:
+					*flags ^= BIT(FLAG_DEBUG);
+					break;
+				}
+				return;
+			}
+		}
+	}
+}
+
+void
+handle_input(BYTE *flags)
+{
+	SDL_Event event;
+
+	while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+		case SDL_QUIT:
+			*flags |= BIT(FLAG_QUIT);
+			break;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym) {
+			case SDLK_q:
+				*flags |= BIT(FLAG_QUIT);
+				break;
+			case SDLK_d:
+				*flags ^= BIT(FLAG_DEBUG);
+				break;
+			}
+			break;
+		}
+	}
+}
+
 int
 main(int argc, char **argv)
 {
 	SDL_Window *window = NULL;
-	SDL_Event event;
 	gb_cpu cpu;
-	int quit, debug, max_pc, curr_cycles;
+	int max_pc, curr_cycles, cycles;
+	BYTE flags;
 
 	if (load_rom(&cpu, "tetris.gb") != 0)
 		return 1;
@@ -61,49 +115,39 @@ main(int argc, char **argv)
 	init_window(&window);
 	glClearColor(0.2f, 0.4f, 0.8f, 1.0f);
 
-	debug = max_pc = 0;
+	max_pc = 1;
+	flags = 0;
 	power(&cpu);
 
-	while (!quit) {
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_QUIT:
-				quit = 1;
+	while (!(flags & BIT(FLAG_QUIT))) {
+		if (flags & BIT(FLAG_DEBUG))
+			wait_input(&flags);
+		else
+			handle_input(&flags);
+
+		while (curr_cycles < CLOCK_RATE / 60) {
+			curr_cycles += cycles = exec_op(&cpu);
+
+			if (cpu.pc > max_pc)
+				max_pc = cpu.pc;
+
+			update_timers(&cpu, cycles);
+			update_graphics(&cpu, cycles);
+			handle_interrupts(&cpu);
+
+			if (flags & BIT(FLAG_DEBUG)) {
+				cpu_status(&cpu);
 				break;
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-				case SDLK_q:
-					quit = 1;
-					break;
-				case SDLK_d:
-					debug = !debug;
-					break;
-				}
 			}
 		}
 
-		curr_cycles = 0;
-		while (curr_cycles < CLOCK_RATE / 60)
-			curr_cycles += exec_op(&cpu);
+		if (curr_cycles >= CLOCK_RATE / 60) {
+			curr_cycles = 0;
 
-		if (cpu.pc > max_pc)
-			max_pc = cpu.pc;
-
-		if (cpu.pc == 0x297) {
-			cpu_status(&cpu);
-			getchar();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			draw(&cpu.gpu);
+			SDL_GL_SwapWindow(window);
 		}
-
-		if (debug) {
-			cpu_status(&cpu);
-			getchar();
-		}
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		draw(&cpu.gpu);
-		SDL_GL_SwapWindow(window);
-
-		handle_interrupts(&cpu);
 	}
 
 	SDL_DestroyWindow(window);
@@ -112,14 +156,5 @@ main(int argc, char **argv)
 	printf("max_pc: %x\n", max_pc);
 
 	return 0;
-
-	/*
-	for (;;) {
-		if (cpu.pc == 0x2817) {
-			cpu_status(&cpu);
-			debug = 1;
-		}
-	}
-	*/
 }
 

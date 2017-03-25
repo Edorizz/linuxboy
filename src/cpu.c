@@ -614,11 +614,13 @@ power(gb_cpu *cpu)
 	cpu->pc = 0x100;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
 
+	/* Initialize registers */
 	cpu->regs[REG_AF].reg = 0x01B0;
 	cpu->regs[REG_BC].reg = 0x0013;
 	cpu->regs[REG_DE].reg = 0x00D8;
 	cpu->regs[REG_HL].reg = 0x014D;
 
+	/* Initialize memory */
 	cpu->memory[0xFF05] = 0x00; 
 	cpu->memory[0xFF06] = 0x00; 
 	cpu->memory[0xFF07] = 0x00; 
@@ -650,6 +652,13 @@ power(gb_cpu *cpu)
 	cpu->memory[0xFF4A] = 0x00; 
 	cpu->memory[0xFF4B] = 0x00; 
 	cpu->memory[0xFFFF] = 0x00;
+
+	/* Enable interrupts */
+	cpu->ime = 1;
+
+	/* Initialize timers */
+	cpu->divider_counter = CLOCK_RATE / 16384;
+	cpu->timer_counter = CLOCK_RATE / 4096;
 
 	/* Initialize GPU */
 	init_gpu(&cpu->gpu, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -696,6 +705,129 @@ exec_op(gb_cpu *cpu)
 	}
 
 	return 0;
+}
+
+void
+set_frequency(gb_cpu *cpu)
+{
+	switch (read_byte(cpu, TMC) & 0x3) {
+	case 0:
+		cpu->timer_counter = CLOCK_RATE / 4096;
+		break;
+	case 1:
+		cpu->timer_counter = CLOCK_RATE / 262144;
+		break;
+	case 2:
+		cpu->timer_counter = CLOCK_RATE / 65536;
+		break;
+	case 3:
+		cpu->timer_counter = CLOCK_RATE / 16384;
+		break;
+	}
+}
+
+void
+divider_register(gb_cpu *cpu, int ops)
+{
+	if ((cpu->divider_counter += ops) > 255) {
+		cpu->divider_counter = 0;
+		++cpu->memory[DIVIDER_REGISTER];
+	}
+}
+
+void
+update_timers(gb_cpu *cpu, int ops)
+{
+	/* UPDATE DIVIDER REGISTER */
+	divider_register(cpu, ops);
+	
+	/* UPDATE TIMER */
+	if (read_byte(cpu, TMC) & BIT(2)) {
+		if ((cpu->timer_counter -= ops) <= 0) {
+			set_frequency(cpu);
+
+			if (read_byte(cpu, TIMA) == 255) {
+				write_byte(cpu, TIMA,
+					   read_byte(cpu, TMA));
+				request_interrupt(cpu, TIMER);
+			} else {
+				write_byte(cpu, TIMA,
+					   read_byte(cpu, TIMA) + 1);
+			}
+		}
+	}
+}
+
+void
+set_lcd_status(gb_cpu *cpu)
+{
+	BYTE status;
+	BYTE prev_mode;
+	BYTE scanline;
+
+	prev_mode = (status = read_byte(cpu, LCD_STATUS)) & 0x3;
+	scanline = read_byte(cpu, CURR_SCANLINE);
+	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
+		if (scanline > 144) {
+			/* MODE 1 */
+			status = ((status >> 2) << 2) | 0x1;
+			prev_mode |= BIT(3);
+		} else {
+			if (cpu->scanline_counter > 456 - 80) {
+				/* MODE 2 */
+				status = ((status >> 2) << 2) | 0x2;
+				prev_mode |= BIT(3);
+			} else if (cpu->scanline_counter > 456 - 252) {
+				/* MODE 3 */
+				status = ((status >> 2) << 2) | 0x3;
+			} else {
+				/* MODE 0 */
+				status = (status >> 2) << 2;
+				prev_mode |= BIT(3);
+			}
+		}
+
+		if (prev_mode & BIT(3) && ((prev_mode & 0x3) != (status & 0x3)))
+			request_interrupt(cpu, LCD_STAT);
+
+		if (read_byte(cpu, TARGET_SCANLINE) == scanline) {
+			status |= BIT(2);
+			if (status & BIT(6))
+				request_interrupt(cpu, LCD_STAT);
+		} else {
+			status &= ~BIT(2);
+		}
+	} else {
+		status = ((status >> 2) << 2) | 0x1;
+		cpu->scanline_counter = 456;
+		write_byte(cpu, CURR_SCANLINE, 0);
+	}
+
+	write_byte(cpu, LCD_STATUS, status);
+}
+
+void
+update_graphics(gb_cpu *cpu, int ops)
+{
+	BYTE scanline;
+
+	set_lcd_status(cpu);
+	
+	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
+		if ((cpu->scanline_counter -= ops) <= 0) {
+			++cpu->memory[CURR_SCANLINE];
+			scanline = read_byte(cpu, CURR_SCANLINE);
+			cpu->scanline_counter = 456;
+
+			if (scanline == 144) {
+				request_interrupt(cpu, VBLANK);
+			} else if (scanline == 153) {
+				cpu->memory[CURR_SCANLINE] = 0;
+			} else if (scanline < 144) {
+				/* TODO: DRAW SCANLINE */
+			}
+		}
+	}
 }
 
 void
@@ -1016,7 +1148,16 @@ read_word(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
-	cpu->memory[addr] = val;
+	if (addr >= 0xE000 && addr <= 0xFDFF) {
+		/* ECHO memory */
+		cpu->memory[addr] = val;
+		write_byte(cpu, addr - 0x2000, val);
+	} else if (addr == DIVIDER_REGISTER) {
+		/* Writing to the divider register resets it */
+		cpu->memory[addr] = 0;
+	} else {
+		cpu->memory[addr] = val;
+	}
 }
 
 void
