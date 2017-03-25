@@ -53,7 +53,7 @@ main(int argc, char **argv)
 	SDL_Window *window = NULL;
 	SDL_Event event;
 	gb_cpu cpu;
-	int quit, debug;
+	int quit, debug, max_pc, curr_cycles;
 
 	if (load_rom(&cpu, "tetris.gb") != 0)
 		return 1;
@@ -61,6 +61,7 @@ main(int argc, char **argv)
 	init_window(&window);
 	glClearColor(0.2f, 0.4f, 0.8f, 1.0f);
 
+	debug = max_pc = 0;
 	power(&cpu);
 
 	while (!quit) {
@@ -69,18 +70,46 @@ main(int argc, char **argv)
 			case SDL_QUIT:
 				quit = 1;
 				break;
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+				case SDLK_q:
+					quit = 1;
+					break;
+				case SDLK_d:
+					debug = !debug;
+					break;
+				}
 			}
 		}
 
+		curr_cycles = 0;
+		while (curr_cycles < CLOCK_RATE / 60)
+			curr_cycles += exec_op(&cpu);
+
+		if (cpu.pc > max_pc)
+			max_pc = cpu.pc;
+
+		if (cpu.pc == 0x297) {
+			cpu_status(&cpu);
+			getchar();
+		}
+
+		if (debug) {
+			cpu_status(&cpu);
+			getchar();
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		draw(&cpu.gpu);
-
 		SDL_GL_SwapWindow(window);
+
+		handle_interrupts(&cpu);
 	}
 
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+
+	printf("max_pc: %x\n", max_pc);
 
 	return 0;
 
@@ -90,14 +119,6 @@ main(int argc, char **argv)
 			cpu_status(&cpu);
 			debug = 1;
 		}
-
-		if (exec_op(&cpu) == -1)
-			getchar();
-
-		if (debug)
-			getchar();
-
-		handle_interrupts(&cpu);
 	}
 	*/
 }
