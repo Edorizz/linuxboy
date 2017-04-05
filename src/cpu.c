@@ -1,5 +1,6 @@
-#include "../include/linuxboy.h"
-
+/* Header file */
+#include <linuxboy.h>
+/* C library */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -191,7 +192,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "XOR L", 1, op_0xAD },
 			{ "XOR (HL)", 1, op_0xAE },
 			{ "XOR A", 1, op_0xAF },
-		
+			
 			{ "OR B", 1, op_0xB0 },
 			{ "OR C", 1, op_0xB1 },
 			{ "OR D", 1, op_0xB2 },
@@ -277,23 +278,23 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "CP %02x", 2, op_0xFE },
 			{ "RST 38H", 1, op_0xFF } };
 
-const op ext_ops[0x100] = { { "RLC B", 2, NULL },
-			    { "RLC C", 2, NULL },
-			    { "RLC D", 2, NULL },
-			    { "RLC E", 2, NULL },
-			    { "RLC H", 2, NULL },
-			    { "RLC L", 2, NULL },
-			    { "RLC (HL)", 2, NULL },
-			    { "RLC A", 2, NULL },
-			    { "RRC B", 2, NULL },
-			    { "RRC C", 2, NULL },
-			    { "RRC D", 2, NULL },
-			    { "RRC E", 2, NULL },
-			    { "RRC H", 2, NULL },
-			    { "RRC L", 2, NULL },
-			    { "RRC (HL)", 2, NULL },
-			    { "RRC A", 2, NULL },
-
+const op ext_ops[0x100] = { { "RLC B", 2, ext_op_0x00 },
+			    { "RLC C", 2, ext_op_0x01 },
+			    { "RLC D", 2, ext_op_0x02 },
+			    { "RLC E", 2, ext_op_0x03 },
+			    { "RLC H", 2, ext_op_0x04 },
+			    { "RLC L", 2, ext_op_0x05 },
+			    { "RLC (HL)", 2, ext_op_0x06 },
+			    { "RLC A", 2, ext_op_0x07 },
+			    { "RRC B", 2, ext_op_0x08 },
+			    { "RRC C", 2, ext_op_0x09 },
+			    { "RRC D", 2, ext_op_0x0A },
+			    { "RRC E", 2, ext_op_0x0B },
+			    { "RRC H", 2, ext_op_0x0C },
+			    { "RRC L", 2, ext_op_0x0D },
+			    { "RRC (HL)", 2, ext_op_0x0E },
+			    { "RRC A", 2, ext_op_0x0F },
+			    
 			    { "RL B", 2, NULL },
 			    { "RL C", 2, NULL },
 			    { "RL D", 2, NULL },
@@ -310,7 +311,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "RR L", 2, NULL },
 			    { "RR (HL)", 2, NULL },
 			    { "RR A", 2, NULL },
-
+			    
 			    { "SLA B", 2, NULL },
 			    { "SLA C", 2, NULL },
 			    { "SLA D", 2, NULL },
@@ -327,7 +328,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SRA L", 2, NULL },
 			    { "SRA (HL)", 2, NULL },
 			    { "SRA A", 2, NULL },
-
+			    
 			    { "SWAP B", 2, NULL },
 			    { "SWAP C", 2, NULL },
 			    { "SWAP D", 2, NULL },
@@ -335,7 +336,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SWAP H", 2, NULL },
 			    { "SWAP L", 2, NULL },
 			    { "SWAP (HL)", 2, NULL },
-			    { "SWAP A", 2, NULL },
+			    { "SWAP A", 2, ext_op_0x37 },
 			    { "SRL B", 2, NULL },
 			    { "SRL C", 2, NULL },
 			    { "SRL D", 2, NULL },
@@ -344,7 +345,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SRL L", 2, NULL },
 			    { "SRL (HL)", 2, NULL },
 			    { "SRL A", 2, NULL },
-
+			    
 			    { "BIT 0,B", 2, NULL },
 			    { "BIT 0,C", 2, NULL },
 			    { "BIT 0,D", 2, NULL },
@@ -361,7 +362,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "BIT 1,L", 2, NULL },
 			    { "BIT 1,(HL)", 2, NULL },
 			    { "BIT 1,A", 2, NULL },
-
+			    
 			    { "BIT 2,B", 2, NULL },
 			    { "BIT 2,C", 2, NULL },
 			    { "BIT 2,D", 2, NULL },
@@ -378,7 +379,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "BIT 3,L", 2, NULL },
 			    { "BIT 3,(HL)", 2, NULL },
 			    { "BIT 3,A", 2, NULL },
-
+			    
 			    { "BIT 4,B", 2, NULL },
 			    { "BIT 4,C", 2, NULL },
 			    { "BIT 4,D", 2, NULL },
@@ -395,7 +396,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "BIT 5,L", 2, NULL },
 			    { "BIT 5,(HL)", 2, NULL },
 			    { "BIT 5,A", 2, NULL },
-
+			    
 			    { "BIT 6,B", 2, NULL },
 			    { "BIT 6,C", 2, NULL },
 			    { "BIT 6,D", 2, NULL },
@@ -446,7 +447,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "RES 3,L", 2, NULL },
 			    { "RES 3,(HL)", 2, NULL },
 			    { "RES 3,A", 2, NULL },
-
+			    
 			    { "RES 4,B", 2, NULL },
 			    { "RES 4,C", 2, NULL },
 			    { "RES 4,D", 2, NULL },
@@ -463,7 +464,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "RES 5,L", 2, NULL },
 			    { "RES 5,(HL)", 2, NULL },
 			    { "RES 5,A", 2, NULL },
-
+			    
 			    { "RES 6,B", 2, NULL },
 			    { "RES 6,C", 2, NULL },
 			    { "RES 6,D", 2, NULL },
@@ -480,7 +481,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "RES 7,L", 2, NULL },
 			    { "RES 7,(HL)", 2, NULL },
 			    { "RES 7,A", 2, NULL },
-
+			    
 			    { "SET 0,B", 2, NULL },
 			    { "SET 0,C", 2, NULL },
 			    { "SET 0,D", 2, NULL },
@@ -514,7 +515,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SET 3,L", 2, NULL },
 			    { "SET 3,(HL)", 2, NULL },
 			    { "SET 3,A", 2, NULL },
-
+			    
 			    { "SET 4,B", 2, NULL },
 			    { "SET 4,C", 2, NULL },
 			    { "SET 4,D", 2, NULL },
@@ -531,7 +532,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SET 5,L", 2, NULL },
 			    { "SET 5,(HL)", 2, NULL },
 			    { "SET 5,A", 2, NULL },
-
+			    
 			    { "SET 6,B", 2, NULL },
 			    { "SET 6,C", 2, NULL },
 			    { "SET 6,D", 2, NULL },
@@ -550,52 +551,52 @@ const op ext_ops[0x100] = { { "RLC B", 2, NULL },
 			    { "SET 7,A", 2, NULL } };
 
 int
-load_rom(gb_cpu *cpu, const char *rom_path)
+load_rom(gb_cpu *cpu)
 {
 	FILE *fp;
 	int size;
-
-	if ((fp = fopen(rom_path, "rb")) == NULL) {
-		fprintf(stderr, "Failed to open file %s: %s\n", rom_path, strerror(errno));
-		return 1;
+	
+	if ((fp = fopen(cpu->rom_path, "rb")) == NULL) {
+		fprintf(stderr, "Failed to open file %s: %s\n", cpu->rom_path, strerror(errno));
+		return 0;
 	}
-
+	
 	fseek(fp, 0, SEEK_END);
 	size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
-
+	
 	if (fread(cpu->rom, 1, size, fp) != size) {
-		fprintf(stderr, "Failed reading file %s: %s\n", rom_path, strerror(errno));
+		fprintf(stderr, "Failed reading file %s: %s\n", cpu->rom_path, strerror(errno));
 		fclose(fp);
-		return 1;
+		return 0;
 	}
-
+	
 	fprintf(stderr, "Successfully read %d bytes\n", size);
 	cpu->rom_size = size; /* Can also read rom[0x148] to get rom size */
-
+	
 	fclose(fp);
-	return 0;
+	return 1;
 }
 
 void
 bootstrap(gb_cpu *cpu)
 {
 	FILE *fp;
-
+	
 	if ((fp = fopen("bootstrap.gb", "rb")) == NULL) {
 		fprintf(stderr, "Failed to open bootstrap.gb: %s\n", strerror(errno));
 		return;
 	}
-
+	
 	cpu->pc = 0x0;
 	fread(&cpu->memory[cpu->pc], 1, 0x100, fp);
-
+	
 	while (cpu->pc != 0x100) {
 		cpu_status(cpu);
-
+		
 		if (exec_op(cpu) == -1)
 			return;
-
+		
 		getchar();
 	}
 }
@@ -606,20 +607,20 @@ power(gb_cpu *cpu)
 	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
 	/* bootstrap(cpu); */
-
+	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->rom, 0x8000);
-
+	
 	/* Initialize Gameboy */
 	cpu->pc = 0x100;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
-
+	
 	/* Initialize registers */
 	cpu->regs[REG_AF].reg = 0x01B0;
 	cpu->regs[REG_BC].reg = 0x0013;
 	cpu->regs[REG_DE].reg = 0x00D8;
 	cpu->regs[REG_HL].reg = 0x014D;
-
+	
 	/* Initialize memory */
 	cpu->memory[0xFF05] = 0x00; 
 	cpu->memory[0xFF06] = 0x00; 
@@ -652,17 +653,17 @@ power(gb_cpu *cpu)
 	cpu->memory[0xFF4A] = 0x00; 
 	cpu->memory[0xFF4B] = 0x00; 
 	cpu->memory[0xFFFF] = 0x00;
-
+	
 	/* Enable interrupts */
 	cpu->ime = 1;
-
+	
 	/* Initialize timers */
 	cpu->divider_counter = CLOCK_RATE / 16384;
 	cpu->timer_counter = CLOCK_RATE / 4096;
-
+	
 	/* Initialize GPU */
 	init_gpu(&cpu->gpu, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+	
 	return 0;
 }
 
@@ -671,18 +672,18 @@ exec_op(gb_cpu *cpu)
 {
 	const op *opcode;
 	void *arg;
-
+	
 	opcode = &ops[cpu->memory[cpu->pc]];
 	arg = &cpu->memory[cpu->pc + 1];
-
+	
 	if (opcode->func == NULL) {
 		printf("Missing implementation %s at $%04x\n", opcode->assembly, cpu->pc);
 		exit(1);
 	}
-
+	
 	if (opcode->arg_size & SIGNED) {
 		cpu->pc += opcode->arg_size - SIGNED;
-
+		
 		switch (opcode->arg_size - SIGNED) {
 		case 1:
 			return ((int(*)(gb_cpu*))opcode->func)(cpu);
@@ -693,7 +694,7 @@ exec_op(gb_cpu *cpu)
 		}
 	} else {
 		cpu->pc += opcode->arg_size;
-
+		
 		switch (opcode->arg_size) {
 		case 1:
 			return ((int(*)(gb_cpu*))opcode->func)(cpu);
@@ -703,7 +704,7 @@ exec_op(gb_cpu *cpu)
 			return ((int(*)(gb_cpu*, WORD))opcode->func)(cpu, *(WORD*)arg);
 		}
 	}
-
+	
 	return 0;
 }
 
@@ -711,7 +712,7 @@ void
 dma_transfer(gb_cpu *cpu, BYTE val)
 {
 	WORD address = val * 100;
-
+	
 	for (int i = 0; i != 0xA0; ++i)
 		write_byte(cpu, 0xFE00 + i,
 			   read_byte(cpu, address));
@@ -755,7 +756,7 @@ update_timers(gb_cpu *cpu, int ops)
 	if (read_byte(cpu, TMC) & BIT(2)) {
 		if ((cpu->timer_counter -= ops) <= 0) {
 			set_frequency(cpu);
-
+			
 			if (read_byte(cpu, TIMA) == 255) {
 				write_byte(cpu, TIMA,
 					   read_byte(cpu, TMA));
@@ -774,7 +775,7 @@ set_lcd_status(gb_cpu *cpu)
 	BYTE status;
 	BYTE prev_mode;
 	BYTE scanline;
-
+	
 	prev_mode = (status = read_byte(cpu, LCD_STATUS)) & 0x3;
 	scanline = read_byte(cpu, CURR_SCANLINE);
 	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
@@ -796,10 +797,10 @@ set_lcd_status(gb_cpu *cpu)
 				prev_mode |= BIT(3);
 			}
 		}
-
+		
 		if (prev_mode & BIT(3) && ((prev_mode & 0x3) != (status & 0x3)))
 			request_interrupt(cpu, LCD_STAT);
-
+		
 		if (read_byte(cpu, TARGET_SCANLINE) == scanline) {
 			status |= BIT(2);
 			if (status & BIT(6))
@@ -812,7 +813,7 @@ set_lcd_status(gb_cpu *cpu)
 		cpu->scanline_counter = 456;
 		write_byte(cpu, CURR_SCANLINE, 0);
 	}
-
+	
 	write_byte(cpu, LCD_STATUS, status);
 }
 
@@ -820,7 +821,7 @@ void
 update_graphics(gb_cpu *cpu, int ops)
 {
 	BYTE scanline;
-
+	
 	set_lcd_status(cpu);
 	
 	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
@@ -828,7 +829,7 @@ update_graphics(gb_cpu *cpu, int ops)
 			++cpu->memory[CURR_SCANLINE];
 			scanline = read_byte(cpu, CURR_SCANLINE);
 			cpu->scanline_counter = 456;
-
+			
 			if (scanline == 144) {
 				request_interrupt(cpu, VBLANK);
 			} else if (scanline == 153) {
@@ -846,16 +847,16 @@ init_gpu(gb_gpu *gpu, int width, int height)
 	/* Quad vertices */
 	static const GLfloat vertex_data[] = { -1.0f,  1.0f, 1.0f, 0.0f, 1.0f,
 					       -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-					        1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
-					        1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
-					        1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
+					       1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
+					       1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
+					       1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
 					       -1.0f,  1.0f, 1.0f, 0.0f, 1.0f };
-
+	
 	/* Setup screen properties */
 	gpu->screen_width = width;
 	gpu->screen_height = height;
 	gpu->screen_data = (GLubyte*)malloc(width * height * 3);
-
+	
 	/* Testing */
 	float scale = 255.0f / width;
 	for (int i = 0; i != width * height; ++i) {
@@ -863,34 +864,34 @@ init_gpu(gb_gpu *gpu, int width, int height)
 		gpu->screen_data[i * 3 + 1] = i % width * scale;
 		gpu->screen_data[i * 3 + 2] = i % width * scale;
 	}
-
+	
 	/* Basic shaders */
 	gpu->shader_program = compile_program("res/vertex.glsl", "res/fragment.glsl");
-
+	
 	/* Screen quad */
 	glGenVertexArrays(1, &gpu->vao);
 	glGenBuffers(1, &gpu->vbo);
-
+	
 	glBindVertexArray(gpu->vao);
-
+	
 	glBindBuffer(GL_ARRAY_BUFFER, gpu->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
-
+	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLvoid*)(sizeof(GLfloat) * 3));
 	glEnableVertexAttribArray(1);
-
+	
 	glBindVertexArray(0);
-
+	
 	/* Display texture */
 	glGenTextures(1, &gpu->texture);
 	glBindTexture(GL_TEXTURE_2D, gpu->texture);
-
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, gpu->screen_data);
-
+	
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -904,13 +905,13 @@ void
 draw(gb_gpu *gpu)
 {
 	glUseProgram(gpu->shader_program);
-
+	
 	glBindTexture(GL_TEXTURE_2D, gpu->texture);
 	glBindVertexArray(gpu->vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+	
 	glUseProgram(0);
 }
 
@@ -919,19 +920,19 @@ disassemble(const gb_cpu *cpu)
 {
 	int pc;
 	BYTE op;
-
+	
 	pc = 0;
 	while (pc != cpu->rom_size) {
 		op = cpu->rom[pc];
-
+		
 		if (op == 0xCB) {
 			op = cpu->rom[pc + 1];
 			printf("%6x: %s\n", pc, ext_ops[op].assembly);
-
+			
 			pc += ext_ops[op].arg_size + 1;
 		} else {
 			printf("%6x: %s\n", pc, ops[op].assembly);
-
+			
 			pc += ops[op].arg_size;
 		}
 	}
@@ -941,15 +942,16 @@ void
 cpu_status(const gb_cpu *cpu)
 {
 	const op *opcode;
-
 	const SIGNED_BYTE *sb;
 	const SIGNED_WORD *sw;
-
+	
+	BYTE flag;
+	
 	opcode = &ops[cpu->memory[cpu->pc]];
-
+	
 	printf("\x1B[2J\x1B[;H");
 	printf("pc: %04x\tasm: (%02x) ", cpu->pc, cpu->memory[cpu->pc]);
-
+	
 	if (opcode->arg_size & SIGNED) {
 		switch (opcode->arg_size - SIGNED) {
 		case 1:
@@ -957,13 +959,13 @@ cpu_status(const gb_cpu *cpu)
 			break;
 		case 2:
 			sb = (SIGNED_BYTE*)&cpu->memory[cpu->pc + 1];
-
+			
 			printf(opcode->assembly,
 			       *sb < 0 ? "-" : "", *sb < 0 ? -*sb : *sb);
 			break;
 		case 3:
 			sw = (SIGNED_WORD*)&cpu->memory[cpu->pc + 1];
-
+			
 			printf(opcode->assembly,
 			       *sw < 0 ? "-" : "", *sw < 0 ? -*sw : *sw);
 			
@@ -982,7 +984,19 @@ cpu_status(const gb_cpu *cpu)
 			break;
 		}
 	}
-
+	
+	/* Stack pointer */
+	printf("\nsp(%04x): %04x\n", (WORD)((BYTE*)cpu->stack - cpu->memory), cpu->stack->reg);
+	
+	/* Pretty flag */
+	flag = cpu->regs[REG_AF].lo;
+	printf("\nflags: %c%c%c%c",
+	       flag & BIT(FLAG_Z) ? 'Z' : '.',
+	       flag & BIT(FLAG_N) ? 'N' : '.',
+	       flag & BIT(FLAG_H) ? 'H' : '.',
+	       flag & BIT(FLAG_C) ? 'C' : '.');
+	
+	/* Print registers */
 	printf("\nreg_af: %04x\n"
 	       "\ta: %02x\n"
 	       "\tf: %02x\n"
@@ -1005,39 +1019,58 @@ cpu_status(const gb_cpu *cpu)
  * ---=== OPCODE HELPER FUNCTIONS ===---
  */
 
-void
-inc_byte(BYTE *flag, BYTE *b)
+/* DOESN'T MODIFY GAME MEMORY */
+BYTE
+inc_byte(BYTE *flag, BYTE b)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H));
-
-	if ((BYTE)(*b + 1) == 0)
+	
+	if ((BYTE)(b + 1) == 0)
 		*flag |= BIT(FLAG_Z);
-
-	if (*b + 1 == BIT(4))
+	
+	/* Half-carry if bit 4 changed (not sure) */
+	if ((b ^ (BYTE)(b + 1)) & BIT(4))
 		*flag |= BIT(FLAG_H);
+	
+	return b + 1;
+}
 
-	++*b;
+/* DOESN'T MODIFY GAME MEMORY */
+BYTE
+dec_byte(BYTE *flag, BYTE b)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_H));
+	*flag |= BIT(FLAG_N);
+	
+	if ((BYTE)(b - 1) == 0)
+		*flag |= BIT(FLAG_Z);
+	
+	/* Half-carry if lower nibble is 0 */
+	if (!(b & 0x0F))
+		*flag |= BIT(FLAG_H);
+	
+	return b - 1;
 }
 
 void
-dec_byte(BYTE *flag, BYTE *b)
+swap_byte(BYTE *flag, BYTE *b)
 {
-	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H));
-
-	if ((BYTE)(*b - 1) == 0)
+	BYTE nibble;
+	
+	nibble = *b & 0x0F;
+	*b = (*b >> 4) | (nibble << 4);
+	
+	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
-
-	if (*b - 1 == -1)
-		*flag |= BIT(FLAG_H);
-
-	--*b;
 }
 
 void
 rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 {
 	BYTE bit;
-
+	
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z)); /* ? */
+	
 	if (rot_flags & LEFT) {
 		bit = *b >> 7;
 		
@@ -1048,14 +1081,17 @@ rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 			*b |= (*flag >> FLAG_C) & 1;
 	} else {
 		bit = *b & 1;
-
+		
 		*b >>= 1;
 		if (rot_flags & CIRCULAR)
 			*b |= bit << 7;
 		else
 			*b |= (*flag & BIT(FLAG_C)) << (8 - FLAG_C);
 	}
-
+	
+	if (rot_flags & BIT(FLAG_Z) && *b == 0)
+		*flag |= BIT(FLAG_Z);
+	
 	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
 }
 
@@ -1063,15 +1099,15 @@ void
 add_byte(BYTE *flag, BYTE *b, int val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
-
+	
 	if (*b + val > 0xFF)
 		*flag |= BIT(FLAG_C);
-
+	
 	if ((*b ^ (*b + val)) & (1 << 4))
 		*flag |= BIT(FLAG_H);
-
+	
 	*b += val;
-
+	
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
 }
@@ -1080,9 +1116,9 @@ void
 add_word(BYTE *flag, WORD *w, int val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_N));
-
+	
 	*flag ^= (-(*w + val > 0xFFFF) ^ *flag) & BIT(FLAG_C);
-
+	
 	*w += val;
 }
 
@@ -1091,15 +1127,15 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_N);
-
+	
 	if (*b - val >= 0)
 		*flag |= BIT(FLAG_C);
-
+	
 	if (!((*b ^ (*b - val)) & (1 << 3)))
 		*flag |= BIT(FLAG_H);
-
+	
 	*b -= val;
-
+	
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
 }
@@ -1109,9 +1145,9 @@ and_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_N));
 	*flag |= BIT(FLAG_H);
-
+	
 	*b &= val;
-
+	
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
 }
@@ -1120,9 +1156,9 @@ void
 xor_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
-
+	
 	*b ^= val;
-
+	
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
 }
@@ -1131,9 +1167,9 @@ void
 or_byte(BYTE *flag, BYTE *b, BYTE val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
-
+	
 	*b |= val;
-
+	
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
 }
@@ -1158,10 +1194,20 @@ read_word(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
-	if (addr >= 0xE000 && addr <= 0xFDFF) {
+	if (addr == 0x2817 || addr == 0x2816) {
+		printf("wefjwoiefjowief!\n");
+		getchar();
+		exit(1);
+	}
+	
+	if (addr < 0x8000) {
+		/* ROM */
+	} else if (addr >= 0xE000 && addr < 0xFE00) {
 		/* ECHO memory */
 		cpu->memory[addr] = val;
 		write_byte(cpu, addr - 0x2000, val);
+	} else if (addr >= 0xFEA0 && addr < 0xFF00) {
+		/* Not usable */
 	} else if (addr == DIVIDER_REGISTER) {
 		/* Writing to the divider register resets it */
 		cpu->memory[addr] = 0;
@@ -1175,6 +1221,12 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 void
 write_word(gb_cpu *cpu, WORD addr, WORD val)
 {
+	if (addr < 0x8000) {
+		printf("poop\n");
+		getchar();
+		exit(1);
+	}
+	
 	*(WORD*)&cpu->memory[addr] = val;
 }
 
@@ -1219,7 +1271,7 @@ int
 op_0x01(gb_cpu *cpu, WORD d16)
 {
 	cpu->regs[REG_BC].reg = d16;
-
+	
 	return 12;
 }
 
@@ -1228,16 +1280,16 @@ int
 op_0x02(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_BC].reg, cpu->regs[REG_AF].hi);
-
+	
 	return 8;
 }
-	
+
 /* INC BC */
 int
 op_0x03(gb_cpu *cpu)
 {
 	++cpu->regs[REG_BC].reg;
-
+	
 	return 8;
 }
 
@@ -1245,8 +1297,8 @@ op_0x03(gb_cpu *cpu)
 int
 op_0x04(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi);
-
+	cpu->regs[REG_BC].hi = inc_byte(FLAG_P(cpu), cpu->regs[REG_BC].hi);
+	
 	return 4;
 }
 
@@ -1254,8 +1306,8 @@ op_0x04(gb_cpu *cpu)
 int
 op_0x05(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi);
-
+	cpu->regs[REG_BC].hi = dec_byte(FLAG_P(cpu), cpu->regs[REG_BC].hi);
+	
 	return 4;
 }
 
@@ -1264,7 +1316,7 @@ int
 op_0x06(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_BC].hi = d8;
-
+	
 	return 8;
 }
 
@@ -1273,7 +1325,7 @@ int
 op_0x07(gb_cpu *cpu)
 {
 	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT | CIRCULAR);
-
+	
 	return 4;
 }
 
@@ -1281,8 +1333,9 @@ op_0x07(gb_cpu *cpu)
 int
 op_0x08(gb_cpu *cpu, WORD a16)
 {
-	write_word(cpu, cpu->memory[a16], cpu->stack->reg);
-
+	write_byte(cpu, a16, cpu->stack->lo);
+	write_byte(cpu, a16 + 1, cpu->stack->hi);
+	
 	return 20;
 }
 
@@ -1291,7 +1344,7 @@ int
 op_0x09(gb_cpu *cpu)
 {
 	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_BC].reg);
-
+	
 	return 8;
 }
 
@@ -1300,7 +1353,7 @@ int
 op_0x0A(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_BC].reg);
-
+	
 	return 8;
 }
 
@@ -1309,7 +1362,7 @@ int
 op_0x0B(gb_cpu *cpu)
 {
 	--cpu->regs[REG_BC].reg;
-
+	
 	return 8;
 }
 
@@ -1317,8 +1370,8 @@ op_0x0B(gb_cpu *cpu)
 int
 op_0x0C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo);
-
+	cpu->regs[REG_BC].lo = inc_byte(FLAG_P(cpu), cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -1326,8 +1379,8 @@ op_0x0C(gb_cpu *cpu)
 int
 op_0x0D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo);
-
+	cpu->regs[REG_BC].lo = dec_byte(FLAG_P(cpu), cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -1336,7 +1389,7 @@ int
 op_0x0E(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_BC].lo = d8;
-
+	
 	return 8;
 }
 
@@ -1345,7 +1398,7 @@ int
 op_0x0F(gb_cpu *cpu)
 {
 	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT | CIRCULAR);
-
+	
 	return 4;
 }
 
@@ -1354,7 +1407,7 @@ int
 op_0x10(gb_cpu *cpu, BYTE d8)
 {
 	IMPLEMENT("STOP 0");
-
+	
 	return 4;
 }
 
@@ -1363,7 +1416,7 @@ int
 op_0x11(gb_cpu *cpu, WORD d16)
 {
 	cpu->regs[REG_DE].reg = d16;
-
+	
 	return 12;
 }
 
@@ -1372,7 +1425,7 @@ int
 op_0x12(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_DE].reg, cpu->regs[REG_AF].hi);
-
+	
 	return 8;
 }
 
@@ -1381,7 +1434,7 @@ int
 op_0x13(gb_cpu *cpu)
 {
 	++cpu->regs[REG_DE].reg;
-
+	
 	return 8;
 }
 
@@ -1390,8 +1443,8 @@ int
 
 op_0x14(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi);
-
+	cpu->regs[REG_DE].hi = inc_byte(FLAG_P(cpu), cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -1399,8 +1452,8 @@ op_0x14(gb_cpu *cpu)
 int
 op_0x15(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi);
-
+	cpu->regs[REG_DE].hi = dec_byte(FLAG_P(cpu), cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -1409,7 +1462,7 @@ int
 op_0x16(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_DE].hi = d8;
-
+	
 	return 8;
 }
 
@@ -1418,7 +1471,7 @@ int
 op_0x17(gb_cpu *cpu)
 {
 	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT);
-
+	
 	return 4;
 }
 
@@ -1427,7 +1480,7 @@ int
 op_0x18(gb_cpu *cpu, SIGNED_BYTE r8)
 {
 	cpu->pc += r8;
-
+	
 	return 12;
 }
 
@@ -1436,7 +1489,7 @@ int
 op_0x19(gb_cpu *cpu)
 {
 	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_DE].reg);
-
+	
 	return 8;
 }
 
@@ -1445,7 +1498,7 @@ int
 op_0x1A(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_DE].reg);
-
+	
 	return 8;
 }
 
@@ -1454,7 +1507,7 @@ int
 op_0x1B(gb_cpu *cpu)
 {
 	--cpu->regs[REG_DE].reg;
-
+	
 	return 8;
 }
 
@@ -1462,8 +1515,8 @@ op_0x1B(gb_cpu *cpu)
 int
 op_0x1C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo);
-
+	cpu->regs[REG_DE].lo = inc_byte(FLAG_P(cpu), cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -1471,8 +1524,8 @@ op_0x1C(gb_cpu *cpu)
 int
 op_0x1D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo);
-
+	cpu->regs[REG_DE].lo = dec_byte(FLAG_P(cpu), cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -1481,7 +1534,7 @@ int
 op_0x1E(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_DE].lo = d8;
-
+	
 	return 8;
 }
 
@@ -1490,7 +1543,7 @@ int
 op_0x1F(gb_cpu *cpu)
 {
 	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT);
-
+	
 	return 4;
 }
 
@@ -1502,7 +1555,7 @@ op_0x20(gb_cpu *cpu, SIGNED_BYTE r8)
 		cpu->pc += r8;
 		return 12;
 	}
-
+	
 	return 8;
 }
 
@@ -1510,7 +1563,7 @@ op_0x20(gb_cpu *cpu, SIGNED_BYTE r8)
 int op_0x21(gb_cpu *cpu, WORD d16)
 {
 	cpu->regs[REG_HL].reg = d16;
-
+	
 	return 12;
 }
 
@@ -1518,7 +1571,7 @@ int op_0x21(gb_cpu *cpu, WORD d16)
 int op_0x22(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg++, cpu->regs[REG_AF].hi);
-
+	
 	return 8;
 }
 
@@ -1527,7 +1580,7 @@ int
 op_0x23(gb_cpu *cpu)
 {
 	++cpu->regs[REG_HL].reg;
-
+	
 	return 8;
 }
 
@@ -1535,8 +1588,8 @@ op_0x23(gb_cpu *cpu)
 int
 op_0x24(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi);
-
+	cpu->regs[REG_HL].hi = inc_byte(FLAG_P(cpu), cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -1544,8 +1597,8 @@ op_0x24(gb_cpu *cpu)
 int
 op_0x25(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi);
-
+	cpu->regs[REG_HL].lo = dec_byte(FLAG_P(cpu), cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -1554,7 +1607,7 @@ int
 op_0x26(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_HL].hi = d8;
-
+	
 	return 8;
 }
 
@@ -1563,7 +1616,7 @@ int
 op_0x27(gb_cpu *cpu)
 {
 	IMPLEMENT("DDA");
-
+	
 	return 4;
 }
 
@@ -1575,7 +1628,7 @@ op_0x28(gb_cpu *cpu, SIGNED_BYTE r8)
 		cpu->pc += r8;
 		return 12;
 	}
-
+	
 	return 8;
 }
 
@@ -1584,7 +1637,7 @@ int
 op_0x29(gb_cpu *cpu)
 {
 	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->regs[REG_HL].reg);
-
+	
 	return 8;
 }
 
@@ -1593,7 +1646,7 @@ int
 op_0x2A(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_HL].reg++);
-
+	
 	return 8;
 }
 
@@ -1602,7 +1655,7 @@ int
 op_0x2B(gb_cpu *cpu)
 {
 	--cpu->regs[REG_HL].reg;
-
+	
 	return 8;
 }
 
@@ -1610,8 +1663,8 @@ op_0x2B(gb_cpu *cpu)
 int
 op_0x2C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo);
-
+	cpu->regs[REG_HL].lo = inc_byte(FLAG_P(cpu), cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -1619,8 +1672,8 @@ op_0x2C(gb_cpu *cpu)
 int
 op_0x2D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo);
-
+	cpu->regs[REG_HL].lo = dec_byte(FLAG_P(cpu), cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -1629,7 +1682,7 @@ int
 op_0x2E(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_HL].lo = d8;
-
+	
 	return 8;
 }
 
@@ -1638,9 +1691,9 @@ int
 op_0x2F(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = ~cpu->regs[REG_AF].hi;
-
+	
 	FLAG(cpu) |= BIT(FLAG_N) | BIT(FLAG_H);
-
+	
 	return 4;
 }
 
@@ -1651,7 +1704,7 @@ int op_0x30(gb_cpu *cpu, SIGNED_BYTE r8)
 		cpu->pc += r8;
 		return 12;
 	}
-
+	
 	return 8;
 }
 
@@ -1660,7 +1713,7 @@ int
 op_0x31(gb_cpu *cpu, WORD d16)
 {
 	cpu->stack->reg = d16;
-
+	
 	return 12;
 }
 
@@ -1669,7 +1722,7 @@ int
 op_0x32(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg--, cpu->regs[REG_AF].hi);
-
+	
 	return 8;
 }
 
@@ -1678,7 +1731,7 @@ int
 op_0x33(gb_cpu *cpu)
 {
 	++cpu->stack->reg;
-
+	
 	return 8;
 }
 
@@ -1686,8 +1739,9 @@ op_0x33(gb_cpu *cpu)
 int
 op_0x34(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->memory[cpu->regs[REG_HL].reg]);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg,
+		   inc_byte(FLAG_P(cpu), read_byte(cpu, cpu->regs[REG_HL].reg)));
+	
 	return 4;
 }
 
@@ -1695,8 +1749,9 @@ op_0x34(gb_cpu *cpu)
 int
 op_0x35(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->memory[cpu->regs[REG_HL].reg]);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg,
+		   dec_byte(FLAG_P(cpu), read_byte(cpu, cpu->regs[REG_HL].reg)));
+	
 	return 4;
 }
 
@@ -1705,7 +1760,7 @@ int
 op_0x36(gb_cpu *cpu, BYTE d8)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg, d8);
-
+	
 	return 8;
 }
 
@@ -1714,9 +1769,9 @@ int
 op_0x37(gb_cpu *cpu)
 {
 	RESET_FLAGS(FLAG(cpu), BIT(FLAG_N) | BIT(FLAG_H));
-
+	
 	FLAG(cpu) |= BIT(FLAG_C);
-
+	
 	return 4;
 }
 
@@ -1728,7 +1783,7 @@ op_0x38(gb_cpu *cpu, SIGNED_BYTE r8)
 		cpu->pc += r8;
 		return 12;
 	}
-
+	
 	return 8;
 }
 
@@ -1737,7 +1792,7 @@ int
 op_0x39(gb_cpu *cpu)
 {
 	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->stack->reg);
-
+	
 	return 8;
 }
 
@@ -1746,7 +1801,7 @@ int
 op_0x3A(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_HL].reg--);
-
+	
 	return 8;
 }
 
@@ -1755,7 +1810,7 @@ int
 op_0x3B(gb_cpu *cpu)
 {
 	--cpu->stack->reg;
-
+	
 	return 8;
 }
 
@@ -1763,8 +1818,8 @@ op_0x3B(gb_cpu *cpu)
 int
 op_0x3C(gb_cpu *cpu)
 {
-	inc_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi);
-
+	cpu->regs[REG_AF].hi = inc_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -1772,8 +1827,8 @@ op_0x3C(gb_cpu *cpu)
 int
 op_0x3D(gb_cpu *cpu)
 {
-	dec_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi);
-
+	cpu->regs[REG_AF].hi = dec_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -1782,7 +1837,7 @@ int
 op_0x3E(gb_cpu *cpu, BYTE d8)
 {
 	cpu->regs[REG_AF].hi = d8;
-
+	
 	return 8;
 }
 
@@ -1791,9 +1846,9 @@ int
 op_0x3F(gb_cpu *cpu)
 {
 	RESET_FLAGS(FLAG(cpu), BIT(FLAG_N) | BIT(FLAG_H));
-
+	
 	FLAG(cpu) ^= BIT(FLAG_C);
-
+	
 	return 4;
 }
 
@@ -1802,7 +1857,7 @@ int
 op_0x40(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].hi = cpu->regs[REG_BC].hi;
-
+	
 	return 4;
 }
 
@@ -1811,7 +1866,7 @@ int
 op_0x41(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].hi = cpu->regs[REG_BC].lo;
-
+	
 	return 4;
 }
 
@@ -1819,8 +1874,8 @@ op_0x41(gb_cpu *cpu)
 int
 op_0x42(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].hi = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_BC].hi = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -1828,8 +1883,8 @@ op_0x42(gb_cpu *cpu)
 int
 op_0x43(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].hi = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_BC].hi = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -1838,7 +1893,7 @@ int
 op_0x44(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].hi = cpu->regs[REG_HL].hi;
-
+	
 	return 4;
 }
 
@@ -1846,7 +1901,7 @@ op_0x44(gb_cpu *cpu)
 int
 op_0x45(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].hi = cpu->regs[REG_HL].lo;
+	cpu->regs[REG_BC].hi = cpu->regs[REG_HL].lo;
 	
 	return 4;
 }
@@ -1856,7 +1911,7 @@ int
 op_0x46(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	
 	return 8;
 }
 
@@ -1864,8 +1919,8 @@ op_0x46(gb_cpu *cpu)
 int
 op_0x47(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].hi = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_BC].hi = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -1874,7 +1929,7 @@ int
 op_0x48(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].lo = cpu->regs[REG_BC].hi;
-
+	
 	return 4;
 }
 
@@ -1882,8 +1937,8 @@ op_0x48(gb_cpu *cpu)
 int
 op_0x49(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_BC].lo;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_BC].lo;
+	
 	return 4;
 }
 
@@ -1891,8 +1946,8 @@ op_0x49(gb_cpu *cpu)
 int
 op_0x4A(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -1900,8 +1955,8 @@ op_0x4A(gb_cpu *cpu)
 int
 op_0x4B(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -1909,8 +1964,8 @@ op_0x4B(gb_cpu *cpu)
 int
 op_0x4C(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -1918,8 +1973,8 @@ op_0x4C(gb_cpu *cpu)
 int
 op_0x4D(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -1927,8 +1982,8 @@ op_0x4D(gb_cpu *cpu)
 int
 op_0x4E(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_BC].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -1936,8 +1991,8 @@ op_0x4E(gb_cpu *cpu)
 int
 op_0x4F(gb_cpu *cpu)
 {
-        cpu->regs[REG_BC].lo = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_BC].lo = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -1945,8 +2000,8 @@ op_0x4F(gb_cpu *cpu)
 int
 op_0x50(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_BC].hi;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_BC].hi;
+	
 	return 4;
 }
 
@@ -1954,8 +2009,8 @@ op_0x50(gb_cpu *cpu)
 int
 op_0x51(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_BC].lo;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_BC].lo;
+	
 	return 4;
 }
 
@@ -1963,8 +2018,8 @@ op_0x51(gb_cpu *cpu)
 int
 op_0x52(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -1972,8 +2027,8 @@ op_0x52(gb_cpu *cpu)
 int
 op_0x53(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -1981,8 +2036,8 @@ op_0x53(gb_cpu *cpu)
 int
 op_0x54(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -1990,8 +2045,8 @@ op_0x54(gb_cpu *cpu)
 int
 op_0x55(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -1999,8 +2054,8 @@ op_0x55(gb_cpu *cpu)
 int
 op_0x56(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_DE].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -2008,8 +2063,8 @@ op_0x56(gb_cpu *cpu)
 int
 op_0x57(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].hi = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_DE].hi = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -2017,8 +2072,8 @@ op_0x57(gb_cpu *cpu)
 int
 op_0x58(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_BC].hi;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_BC].hi;
+	
 	return 4;
 }
 
@@ -2026,8 +2081,8 @@ op_0x58(gb_cpu *cpu)
 int
 op_0x59(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_BC].lo;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_BC].lo;
+	
 	return 4;
 }
 
@@ -2035,8 +2090,8 @@ op_0x59(gb_cpu *cpu)
 int
 op_0x5A(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -2044,8 +2099,8 @@ op_0x5A(gb_cpu *cpu)
 int
 op_0x5B(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -2053,8 +2108,8 @@ op_0x5B(gb_cpu *cpu)
 int
 op_0x5C(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -2062,8 +2117,8 @@ op_0x5C(gb_cpu *cpu)
 int
 op_0x5D(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -2071,8 +2126,8 @@ op_0x5D(gb_cpu *cpu)
 int
 op_0x5E(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_DE].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -2080,8 +2135,8 @@ op_0x5E(gb_cpu *cpu)
 int
 op_0x5F(gb_cpu *cpu)
 {
-        cpu->regs[REG_DE].lo = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_DE].lo = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -2089,8 +2144,8 @@ op_0x5F(gb_cpu *cpu)
 int
 op_0x60(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_BC].hi;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_BC].hi;
+	
 	return 4;
 }
 
@@ -2098,8 +2153,8 @@ op_0x60(gb_cpu *cpu)
 int
 op_0x61(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_BC].lo;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_BC].lo;
+	
 	return 4;
 }
 
@@ -2107,8 +2162,8 @@ op_0x61(gb_cpu *cpu)
 int
 op_0x62(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -2116,8 +2171,8 @@ op_0x62(gb_cpu *cpu)
 int
 op_0x63(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -2125,8 +2180,8 @@ op_0x63(gb_cpu *cpu)
 int
 op_0x64(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -2134,8 +2189,8 @@ op_0x64(gb_cpu *cpu)
 int
 op_0x65(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -2143,8 +2198,8 @@ op_0x65(gb_cpu *cpu)
 int
 op_0x66(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_HL].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -2152,8 +2207,8 @@ op_0x66(gb_cpu *cpu)
 int
 op_0x67(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].hi = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_HL].hi = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -2161,8 +2216,8 @@ op_0x67(gb_cpu *cpu)
 int
 op_0x68(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = cpu->regs[REG_BC].hi;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_BC].hi;
+	
 	return 4;
 }
 
@@ -2171,7 +2226,7 @@ int
 op_0x69(gb_cpu *cpu)
 {
 	cpu->regs[REG_HL].lo = cpu->regs[REG_BC].lo;
-
+	
 	return 4;
 }
 
@@ -2179,8 +2234,8 @@ op_0x69(gb_cpu *cpu)
 int
 op_0x6A(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -2188,8 +2243,8 @@ op_0x6A(gb_cpu *cpu)
 int
 op_0x6B(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -2197,8 +2252,8 @@ op_0x6B(gb_cpu *cpu)
 int
 op_0x6C(gb_cpu *cpu)
 {	
-        cpu->regs[REG_HL].lo = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -2206,8 +2261,8 @@ op_0x6C(gb_cpu *cpu)
 int
 op_0x6D(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -2215,8 +2270,8 @@ op_0x6D(gb_cpu *cpu)
 int
 op_0x6E(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_HL].lo = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -2224,8 +2279,8 @@ op_0x6E(gb_cpu *cpu)
 int
 op_0x6F(gb_cpu *cpu)
 {
-        cpu->regs[REG_HL].lo = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_HL].lo = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -2234,7 +2289,7 @@ int
 op_0x70(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_BC].hi);
-
+	
 	return 8;
 }
 
@@ -2242,8 +2297,8 @@ op_0x70(gb_cpu *cpu)
 int
 op_0x71(gb_cpu *cpu)
 {
-        write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_BC].lo);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_BC].lo);
+	
 	return 8;
 }
 
@@ -2252,7 +2307,7 @@ int
 op_0x72(gb_cpu *cpu)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_DE].hi);
-
+	
 	return 8;
 }
 
@@ -2260,8 +2315,8 @@ op_0x72(gb_cpu *cpu)
 int
 op_0x73(gb_cpu *cpu)
 {
-        write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_DE].lo);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_DE].lo);
+	
 	return 8;
 }
 
@@ -2269,8 +2324,8 @@ op_0x73(gb_cpu *cpu)
 int
 op_0x74(gb_cpu *cpu)
 {
-        write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_HL].hi);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_HL].hi);
+	
 	return 8;
 }
 
@@ -2278,8 +2333,8 @@ op_0x74(gb_cpu *cpu)
 int
 op_0x75(gb_cpu *cpu)
 {
-        write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_HL].lo);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_HL].lo);
+	
 	return 8;
 }
 
@@ -2288,7 +2343,7 @@ int
 op_0x76(gb_cpu *cpu)
 {
 	IMPLEMENT("HALT");
-
+	
 	return 4;
 }
 
@@ -2296,8 +2351,8 @@ op_0x76(gb_cpu *cpu)
 int
 op_0x77(gb_cpu *cpu)
 {
-        write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_AF].hi);
-
+	write_byte(cpu, cpu->regs[REG_HL].reg, cpu->regs[REG_AF].hi);
+	
 	return 8;
 }
 
@@ -2305,8 +2360,8 @@ op_0x77(gb_cpu *cpu)
 int
 op_0x78(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_BC].hi;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_BC].hi;
+	
 	return 4;
 }
 
@@ -2314,8 +2369,8 @@ op_0x78(gb_cpu *cpu)
 int
 op_0x79(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_BC].lo;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_BC].lo;
+	
 	return 4;
 }
 
@@ -2323,8 +2378,8 @@ op_0x79(gb_cpu *cpu)
 int
 op_0x7A(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_DE].hi;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_DE].hi;
+	
 	return 4;
 }
 
@@ -2332,8 +2387,8 @@ op_0x7A(gb_cpu *cpu)
 int
 op_0x7B(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_DE].lo;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_DE].lo;
+	
 	return 4;
 }
 
@@ -2341,8 +2396,8 @@ op_0x7B(gb_cpu *cpu)
 int
 op_0x7C(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_HL].hi;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_HL].hi;
+	
 	return 4;
 }
 
@@ -2350,8 +2405,8 @@ op_0x7C(gb_cpu *cpu)
 int
 op_0x7D(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_HL].lo;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_HL].lo;
+	
 	return 4;
 }
 
@@ -2359,8 +2414,8 @@ op_0x7D(gb_cpu *cpu)
 int
 op_0x7E(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
-
+	cpu->regs[REG_AF].hi = read_byte(cpu, cpu->regs[REG_HL].reg);
+	
 	return 8;
 }
 
@@ -2368,8 +2423,8 @@ op_0x7E(gb_cpu *cpu)
 int
 op_0x7F(gb_cpu *cpu)
 {
-        cpu->regs[REG_AF].hi = cpu->regs[REG_AF].hi;
-
+	cpu->regs[REG_AF].hi = cpu->regs[REG_AF].hi;
+	
 	return 4;
 }
 
@@ -2378,7 +2433,7 @@ int
 op_0x80(gb_cpu *cpu)
 {
 	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	
 	return 4;
 }
 
@@ -2387,7 +2442,7 @@ int
 op_0x81(gb_cpu *cpu)
 {
 	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	
 	return 4;
 }
 
@@ -2395,8 +2450,8 @@ op_0x81(gb_cpu *cpu)
 int
 op_0x82(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2404,8 +2459,8 @@ op_0x82(gb_cpu *cpu)
 int
 op_0x83(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2413,8 +2468,8 @@ op_0x83(gb_cpu *cpu)
 int
 op_0x84(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2422,8 +2477,8 @@ op_0x84(gb_cpu *cpu)
 int
 op_0x85(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2431,9 +2486,9 @@ op_0x85(gb_cpu *cpu)
 int
 op_0x86(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi,
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi,
 		 read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2441,8 +2496,8 @@ op_0x86(gb_cpu *cpu)
 int
 op_0x87(gb_cpu *cpu)
 {
-        add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	add_byte(&cpu->regs[REG_AF].hi, &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2450,9 +2505,9 @@ op_0x87(gb_cpu *cpu)
 int
 op_0x88(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	
 	return 4;
 }
 
@@ -2460,9 +2515,9 @@ op_0x88(gb_cpu *cpu)
 int
 op_0x89(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2470,9 +2525,9 @@ op_0x89(gb_cpu *cpu)
 int
 op_0x8A(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2480,9 +2535,9 @@ op_0x8A(gb_cpu *cpu)
 int
 op_0x8B(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2490,9 +2545,9 @@ op_0x8B(gb_cpu *cpu)
 int
 op_0x8C(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2500,9 +2555,9 @@ op_0x8C(gb_cpu *cpu)
 int
 op_0x8D(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2510,9 +2565,9 @@ op_0x8D(gb_cpu *cpu)
 int
 op_0x8E(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 8;
 }
 
@@ -2520,9 +2575,9 @@ op_0x8E(gb_cpu *cpu)
 int
 op_0x8F(gb_cpu *cpu)
 {
-        add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
+	
 	return 4;
 }
 
@@ -2531,7 +2586,7 @@ int
 op_0x90(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	
 	return 4;
 }
 
@@ -2539,8 +2594,8 @@ op_0x90(gb_cpu *cpu)
 int
 op_0x91(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -2548,8 +2603,8 @@ op_0x91(gb_cpu *cpu)
 int
 op_0x92(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2557,8 +2612,8 @@ op_0x92(gb_cpu *cpu)
 int
 op_0x93(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2566,8 +2621,8 @@ op_0x93(gb_cpu *cpu)
 int
 op_0x94(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2575,8 +2630,8 @@ op_0x94(gb_cpu *cpu)
 int
 op_0x95(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2586,7 +2641,7 @@ op_0x96(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2594,8 +2649,8 @@ op_0x96(gb_cpu *cpu)
 int
 op_0x97(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2603,9 +2658,9 @@ op_0x97(gb_cpu *cpu)
 int
 op_0x98(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	
 	return 4;
 }
 
@@ -2613,9 +2668,9 @@ op_0x98(gb_cpu *cpu)
 int
 op_0x99(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2623,9 +2678,9 @@ op_0x99(gb_cpu *cpu)
 int
 op_0x9A(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2633,9 +2688,9 @@ op_0x9A(gb_cpu *cpu)
 int
 op_0x9B(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2643,9 +2698,9 @@ op_0x9B(gb_cpu *cpu)
 int
 op_0x9C(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2653,9 +2708,9 @@ op_0x9C(gb_cpu *cpu)
 int
 op_0x9D(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2663,9 +2718,9 @@ op_0x9D(gb_cpu *cpu)
 int
 op_0x9E(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 8;
 }
 
@@ -2673,9 +2728,9 @@ op_0x9E(gb_cpu *cpu)
 int
 op_0x9F(gb_cpu *cpu)
 {
-        sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-                 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
-
+	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+		 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+	
 	return 4;
 }
 
@@ -2684,7 +2739,7 @@ int
 op_0xA0(gb_cpu *cpu)
 {
 	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	
 	return 4;
 }
 
@@ -2692,8 +2747,8 @@ op_0xA0(gb_cpu *cpu)
 int
 op_0xA1(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -2701,8 +2756,8 @@ op_0xA1(gb_cpu *cpu)
 int
 op_0xA2(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2710,8 +2765,8 @@ op_0xA2(gb_cpu *cpu)
 int
 op_0xA3(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2719,8 +2774,8 @@ op_0xA3(gb_cpu *cpu)
 int
 op_0xA4(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2728,8 +2783,8 @@ op_0xA4(gb_cpu *cpu)
 int
 op_0xA5(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2737,9 +2792,9 @@ op_0xA5(gb_cpu *cpu)
 int
 op_0xA6(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2747,8 +2802,8 @@ op_0xA6(gb_cpu *cpu)
 int
 op_0xA7(gb_cpu *cpu)
 {
-        and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2756,8 +2811,8 @@ op_0xA7(gb_cpu *cpu)
 int
 op_0xA8(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
+	
 	return 4;
 }
 
@@ -2765,8 +2820,8 @@ op_0xA8(gb_cpu *cpu)
 int
 op_0xA9(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -2774,8 +2829,8 @@ op_0xA9(gb_cpu *cpu)
 int
 op_0xAA(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2783,8 +2838,8 @@ op_0xAA(gb_cpu *cpu)
 int
 op_0xAB(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2792,8 +2847,8 @@ op_0xAB(gb_cpu *cpu)
 int
 op_0xAC(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2801,8 +2856,8 @@ op_0xAC(gb_cpu *cpu)
 int
 op_0xAD(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2810,9 +2865,9 @@ op_0xAD(gb_cpu *cpu)
 int
 op_0xAE(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2820,8 +2875,8 @@ op_0xAE(gb_cpu *cpu)
 int
 op_0xAF(gb_cpu *cpu)
 {
-        xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2829,8 +2884,8 @@ op_0xAF(gb_cpu *cpu)
 int
 op_0xB0(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
+	
 	return 4;
 }
 
@@ -2838,8 +2893,8 @@ op_0xB0(gb_cpu *cpu)
 int
 op_0xB1(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -2847,8 +2902,8 @@ op_0xB1(gb_cpu *cpu)
 int
 op_0xB2(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2856,8 +2911,8 @@ op_0xB2(gb_cpu *cpu)
 int
 op_0xB3(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2865,8 +2920,8 @@ op_0xB3(gb_cpu *cpu)
 int
 op_0xB4(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2874,8 +2929,8 @@ op_0xB4(gb_cpu *cpu)
 int
 op_0xB5(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2883,9 +2938,9 @@ op_0xB5(gb_cpu *cpu)
 int
 op_0xB6(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2893,8 +2948,8 @@ op_0xB6(gb_cpu *cpu)
 int
 op_0xB7(gb_cpu *cpu)
 {
-        or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2902,8 +2957,8 @@ op_0xB7(gb_cpu *cpu)
 int
 op_0xB8(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].hi);
+	
 	return 4;
 }
 
@@ -2911,8 +2966,8 @@ op_0xB8(gb_cpu *cpu)
 int
 op_0xB9(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_BC].lo);
+	
 	return 4;
 }
 
@@ -2920,8 +2975,8 @@ op_0xB9(gb_cpu *cpu)
 int
 op_0xBA(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].hi);
+	
 	return 4;
 }
 
@@ -2929,8 +2984,8 @@ op_0xBA(gb_cpu *cpu)
 int
 op_0xBB(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_DE].lo);
+	
 	return 4;
 }
 
@@ -2938,8 +2993,8 @@ op_0xBB(gb_cpu *cpu)
 int
 op_0xBC(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].hi);
+	
 	return 4;
 }
 
@@ -2947,8 +3002,8 @@ op_0xBC(gb_cpu *cpu)
 int
 op_0xBD(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_HL].lo);
+	
 	return 4;
 }
 
@@ -2956,9 +3011,9 @@ op_0xBD(gb_cpu *cpu)
 int
 op_0xBE(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi,
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi,
 		read_byte(cpu, cpu->regs[REG_HL].reg));
-
+	
 	return 8;
 }
 
@@ -2966,8 +3021,8 @@ op_0xBE(gb_cpu *cpu)
 int
 op_0xBF(gb_cpu *cpu)
 {
-        cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
-
+	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, cpu->regs[REG_AF].hi);
+	
 	return 4;
 }
 
@@ -2979,7 +3034,7 @@ op_0xC0(gb_cpu *cpu)
 		ret(cpu);
 		return 20;
 	}
-
+	
 	return 8;
 }
 
@@ -2988,7 +3043,7 @@ int
 op_0xC1(gb_cpu *cpu)
 {
 	cpu->regs[REG_BC].reg = pop(cpu);
-
+	
 	return 12;
 }
 
@@ -3000,7 +3055,7 @@ op_0xC2(gb_cpu *cpu, WORD a16)
 		cpu->pc = a16;
 		return 16;
 	}
-
+	
 	return 12;
 }
 
@@ -3009,7 +3064,7 @@ int
 op_0xC3(gb_cpu *cpu, WORD a16)
 {
 	cpu->pc = a16;
-
+	
 	return 16;
 }
 
@@ -3021,7 +3076,7 @@ op_0xC4(gb_cpu *cpu, WORD a16)
 		call(cpu, a16);
 		return 24;
 	}
-
+	
 	return 12;
 }
 
@@ -3030,7 +3085,7 @@ int
 op_0xC5(gb_cpu *cpu)
 {
 	push(cpu, cpu->regs[REG_BC].reg);
-
+	
 	return 16;
 }
 
@@ -3039,7 +3094,7 @@ int
 op_0xC6(gb_cpu *cpu, BYTE d8)
 {
 	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3048,7 +3103,7 @@ int
 op_0xC7(gb_cpu *cpu)
 {
 	call(cpu, 0x00);
-
+	
 	return 16;
 }
 
@@ -3060,7 +3115,7 @@ op_0xC8(gb_cpu *cpu)
 		cpu->pc = pop(cpu);
 		return 20;
 	}
-
+	
 	return 8;
 }
 
@@ -3069,7 +3124,7 @@ int
 op_0xC9(gb_cpu *cpu)
 {
 	cpu->pc = pop(cpu);
-
+	
 	return 16;
 }
 
@@ -3081,7 +3136,7 @@ op_0xCA(gb_cpu *cpu, WORD a16)
 		cpu->pc = a16;
 		return 16;
 	}
-
+	
 	return 12;
 }
 
@@ -3090,14 +3145,14 @@ int
 op_0xCB(gb_cpu *cpu)
 {
 	const op *opcode;
-
+	
 	opcode = &ext_ops[cpu->memory[cpu->pc]];
-
+	
 	if (opcode->func == NULL) {
 		printf("Missing implementation (CB)%s at $%04x\n", opcode->assembly, cpu->pc);
 		exit(1);
 	}
-
+	
 	return ((int(*)(gb_cpu*))opcode->func)(cpu);
 }
 
@@ -3109,7 +3164,7 @@ op_0xCC(gb_cpu *cpu, WORD a16)
 		call(cpu, a16);
 		return 24;
 	}
-
+	
 	return 12;
 }
 
@@ -3118,7 +3173,7 @@ int
 op_0xCD(gb_cpu *cpu, WORD a16)
 {
 	call(cpu, a16);
-
+	
 	return 24;
 }
 
@@ -3128,7 +3183,7 @@ op_0xCE(gb_cpu *cpu, BYTE d8)
 {
 	add_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 d8 + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	
 	return 8;
 }
 
@@ -3137,7 +3192,7 @@ int
 op_0xCF(gb_cpu *cpu)
 {
 	call(cpu, 0x08);
-
+	
 	return 16;
 }
 
@@ -3149,7 +3204,7 @@ op_0xD0(gb_cpu *cpu)
 		cpu->pc = pop(cpu);
 		return 20;
 	}
-
+	
 	return 8;
 }
 
@@ -3158,7 +3213,7 @@ int
 op_0xD1(gb_cpu *cpu)
 {
 	cpu->regs[REG_DE].reg = pop(cpu);
-
+	
 	return 12;
 }
 
@@ -3170,7 +3225,7 @@ op_0xD2(gb_cpu *cpu, WORD a16)
 		cpu->pc = a16;
 		return 16;
 	}
-
+	
 	return 12;
 }
 
@@ -3182,7 +3237,7 @@ op_0xD4(gb_cpu *cpu, WORD a16)
 		call(cpu, a16);
 		return 24;
 	}
-
+	
 	return 12;
 }
 
@@ -3191,7 +3246,7 @@ int
 op_0xD5(gb_cpu *cpu)
 {
 	push(cpu, cpu->regs[REG_DE].reg);
-
+	
 	return 16;
 }
 
@@ -3200,7 +3255,7 @@ int
 op_0xD6(gb_cpu *cpu, BYTE d8)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3209,7 +3264,7 @@ int
 op_0xD7(gb_cpu *cpu)
 {
 	call(cpu, 0x10);
-
+	
 	return 16;
 }
 
@@ -3221,7 +3276,7 @@ op_0xD8(gb_cpu *cpu)
 		ret(cpu);
 		return 20;
 	}
-
+	
 	return 8;
 }
 
@@ -3231,7 +3286,7 @@ op_0xD9(gb_cpu *cpu)
 {
 	cpu->ime = 1;
 	ret(cpu);
-
+	
 	return 16;
 }
 
@@ -3243,7 +3298,7 @@ op_0xDA(gb_cpu *cpu, WORD a16)
 		cpu->pc = a16;
 		return 16;
 	}
-
+	
 	return 12;
 }
 
@@ -3255,7 +3310,7 @@ op_0xDC(gb_cpu *cpu, WORD a16)
 		call(cpu, a16);
 		return 24;
 	}
-
+	
 	return 12;
 }
 
@@ -3265,7 +3320,7 @@ op_0xDE(gb_cpu *cpu, BYTE d8)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
 		 d8 + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
-
+	
 	return 8;
 }
 
@@ -3274,7 +3329,7 @@ int
 op_0xDF(gb_cpu *cpu)
 {
 	call(cpu, 0x18);
-
+	
 	return 16;
 }
 
@@ -3283,7 +3338,7 @@ int
 op_0xE0(gb_cpu *cpu, BYTE a8)
 {
 	write_byte(cpu, 0xFF00 + a8, cpu->regs[REG_AF].hi);
-
+	
 	return 12;
 }
 
@@ -3292,7 +3347,7 @@ int
 op_0xE1(gb_cpu *cpu)
 {
 	cpu->regs[REG_HL].reg = pop(cpu);
-
+	
 	return 12;
 }
 
@@ -3301,7 +3356,7 @@ int
 op_0xE2(gb_cpu *cpu)
 {
 	write_byte(cpu, 0xFF00 + cpu->regs[REG_BC].lo, cpu->regs[REG_AF].hi);
-
+	
 	return 8;
 }
 
@@ -3310,7 +3365,7 @@ int
 op_0xE5(gb_cpu *cpu)
 {
 	push(cpu, cpu->regs[REG_HL].reg);
-
+	
 	return 16;
 }
 
@@ -3319,7 +3374,7 @@ int
 op_0xE6(gb_cpu *cpu, BYTE d8)
 {
 	and_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3328,7 +3383,7 @@ int
 op_0xE7(gb_cpu *cpu)
 {
 	call(cpu, 0x20);
-
+	
 	return 16;
 }
 
@@ -3338,7 +3393,7 @@ int
 op_0xE8(gb_cpu *cpu, SIGNED_BYTE r8)
 {
 	add_word(FLAG_P(cpu), &cpu->stack->reg, r8);
-
+	
 	return 16;
 }
 
@@ -3347,7 +3402,7 @@ int
 op_0xE9(gb_cpu *cpu)
 {
 	cpu->pc = read_word(cpu, cpu->regs[REG_HL].reg);
-
+	
 	return 4;
 }
 
@@ -3356,7 +3411,7 @@ int
 op_0xEA(gb_cpu *cpu, WORD a16)
 {
 	write_byte(cpu, a16, cpu->regs[REG_AF].hi);
-
+	
 	return 16;
 }
 
@@ -3365,7 +3420,7 @@ int
 op_0xEE(gb_cpu *cpu, BYTE d8)
 {
 	xor_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3374,7 +3429,7 @@ int
 op_0xEF(gb_cpu *cpu)
 {
 	call(cpu, 0x28);
-
+	
 	return 16;
 }
 
@@ -3383,7 +3438,7 @@ int
 op_0xF0(gb_cpu *cpu, BYTE a8)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, 0xFF00 + a8);
-
+	
 	return 12;
 }
 
@@ -3392,7 +3447,7 @@ int
 op_0xF1(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].reg = pop(cpu);
-
+	
 	return 12;
 }
 
@@ -3401,7 +3456,7 @@ int
 op_0xF2(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, 0xFF00 + cpu->regs[REG_BC].lo);
-
+	
 	return 8;
 }
 
@@ -3410,7 +3465,7 @@ int
 op_0xF3(gb_cpu *cpu)
 {
 	cpu->ime = 0;
-
+	
 	return 4;
 }
 
@@ -3419,7 +3474,7 @@ int
 op_0xF5(gb_cpu *cpu)
 {
 	push(cpu, cpu->regs[REG_AF].reg);
-
+	
 	return 16;
 }
 
@@ -3428,7 +3483,7 @@ int
 op_0xF6(gb_cpu *cpu, BYTE d8)
 {
 	or_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3437,7 +3492,7 @@ int
 op_0xF7(gb_cpu *cpu)
 {
 	call(cpu, 0x30);
-
+	
 	return 16;
 }
 
@@ -3446,7 +3501,7 @@ int
 op_0xF8(gb_cpu *cpu, BYTE r8)
 {
 	IMPLEMENT("LD HL,SP+r8");
-
+	
 	return 12;
 }
 
@@ -3455,7 +3510,7 @@ int
 op_0xF9(gb_cpu *cpu)
 {
 	cpu->stack->reg = cpu->regs[REG_HL].reg;
-
+	
 	return 8;
 }
 
@@ -3464,7 +3519,7 @@ int
 op_0xFA(gb_cpu *cpu, WORD a16)
 {
 	cpu->regs[REG_AF].hi = read_byte(cpu, a16);
-
+	
 	return 16;
 }
 
@@ -3473,7 +3528,7 @@ int
 op_0xFB(gb_cpu *cpu)
 {
 	cpu->ime = 1;
-
+	
 	return 4;
 }
 
@@ -3482,7 +3537,7 @@ int
 op_0xFE(gb_cpu *cpu, BYTE d8)
 {
 	cp_byte(FLAG_P(cpu), cpu->regs[REG_AF].hi, d8);
-
+	
 	return 8;
 }
 
@@ -3491,7 +3546,548 @@ int
 op_0xFF(gb_cpu *cpu)
 {
 	call(cpu, 0x38);
-
+	
 	return 16;
 }
+
+/* ---=== EXTENDED OPCODES ===--- */
+
+/* RLC B */
+int
+ext_op_0x00(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC C */
+int
+ext_op_0x01(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC D */
+int
+ext_op_0x02(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC E */
+int
+ext_op_0x03(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC H */
+int
+ext_op_0x04(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC L */
+int
+ext_op_0x05(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RLC (HL) */
+int
+ext_op_0x06(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu),
+		 &cpu->memory[cpu->regs[REG_HL].reg], LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 16;
+}
+
+/* RLC A */
+int
+ext_op_0x07(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC B */
+int
+ext_op_0x08(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC C */
+int
+ext_op_0x09(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC D */
+int
+ext_op_0x0A(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC E */
+int
+ext_op_0x0B(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC H */
+int
+ext_op_0x0C(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC L */
+int
+ext_op_0x0D(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC (HL) */
+int
+ext_op_0x0E(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu),
+		 &cpu->memory[cpu->regs[REG_HL].reg], RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RRC A */
+int
+ext_op_0x0F(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT | CIRCULAR | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL B */
+int
+ext_op_0x10(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL C */
+int
+ext_op_0x11(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL D */
+int
+ext_op_0x12(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL E */
+int
+ext_op_0x13(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL H */
+int
+ext_op_0x14(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL L */
+int
+ext_op_0x15(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL (HL) */
+int
+ext_op_0x16(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu),
+		 &cpu->memory[cpu->regs[REG_HL].reg], LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RL A */
+int
+ext_op_0x17(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, LEFT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR B */
+int
+ext_op_0x18(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].hi, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR C */
+int
+ext_op_0x19(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_BC].lo, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR D */
+int
+ext_op_0x1A(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].hi, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR E */
+int
+ext_op_0x1B(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_DE].lo, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR H */
+int
+ext_op_0x1C(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].hi, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR L */
+int
+ext_op_0x1D(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_HL].lo, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR (HL) */
+int
+ext_op_0x1E(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu),
+		 &cpu->memory[cpu->regs[REG_HL].reg], RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+/* RR A */
+int
+ext_op_0x1F(gb_cpu *cpu)
+{
+	rot_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi, RIGHT | BIT(FLAG_Z));
+	
+	return 8;
+}
+
+int ext_op_0x20(gb_cpu *cpu);
+int ext_op_0x21(gb_cpu *cpu);
+int ext_op_0x22(gb_cpu *cpu);
+int ext_op_0x23(gb_cpu *cpu);
+int ext_op_0x24(gb_cpu *cpu);
+int ext_op_0x25(gb_cpu *cpu);
+int ext_op_0x26(gb_cpu *cpu);
+int ext_op_0x27(gb_cpu *cpu);
+int ext_op_0x28(gb_cpu *cpu);
+int ext_op_0x29(gb_cpu *cpu);
+int ext_op_0x2A(gb_cpu *cpu);
+int ext_op_0x2B(gb_cpu *cpu);
+int ext_op_0x2C(gb_cpu *cpu);
+int ext_op_0x2D(gb_cpu *cpu);
+int ext_op_0x2E(gb_cpu *cpu);
+int ext_op_0x2F(gb_cpu *cpu);
+
+int ext_op_0x30(gb_cpu *cpu);
+int ext_op_0x31(gb_cpu *cpu);
+int ext_op_0x32(gb_cpu *cpu);
+int ext_op_0x33(gb_cpu *cpu);
+int ext_op_0x34(gb_cpu *cpu);
+int ext_op_0x35(gb_cpu *cpu);
+int ext_op_0x36(gb_cpu *cpu);
+
+/* SWAP A */
+int
+ext_op_0x37(gb_cpu *cpu)
+{
+	swap_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi);
+	
+	return 8;
+}
+
+int ext_op_0x38(gb_cpu *cpu);
+int ext_op_0x39(gb_cpu *cpu);
+int ext_op_0x3A(gb_cpu *cpu);
+int ext_op_0x3B(gb_cpu *cpu);
+int ext_op_0x3C(gb_cpu *cpu);
+int ext_op_0x3D(gb_cpu *cpu);
+int ext_op_0x3E(gb_cpu *cpu);
+int ext_op_0x3F(gb_cpu *cpu);
+
+int ext_op_0x40(gb_cpu *cpu);
+int ext_op_0x41(gb_cpu *cpu);
+int ext_op_0x42(gb_cpu *cpu);
+int ext_op_0x43(gb_cpu *cpu);
+int ext_op_0x44(gb_cpu *cpu);
+int ext_op_0x45(gb_cpu *cpu);
+int ext_op_0x46(gb_cpu *cpu);
+int ext_op_0x47(gb_cpu *cpu);
+int ext_op_0x48(gb_cpu *cpu);
+int ext_op_0x49(gb_cpu *cpu);
+int ext_op_0x4A(gb_cpu *cpu);
+int ext_op_0x4B(gb_cpu *cpu);
+int ext_op_0x4C(gb_cpu *cpu);
+int ext_op_0x4D(gb_cpu *cpu);
+int ext_op_0x4E(gb_cpu *cpu);
+int ext_op_0x4F(gb_cpu *cpu);
+
+int ext_op_0x50(gb_cpu *cpu);
+int ext_op_0x51(gb_cpu *cpu);
+int ext_op_0x52(gb_cpu *cpu);
+int ext_op_0x53(gb_cpu *cpu);
+int ext_op_0x54(gb_cpu *cpu);
+int ext_op_0x55(gb_cpu *cpu);
+int ext_op_0x56(gb_cpu *cpu);
+int ext_op_0x57(gb_cpu *cpu);
+int ext_op_0x58(gb_cpu *cpu);
+int ext_op_0x59(gb_cpu *cpu);
+int ext_op_0x5A(gb_cpu *cpu);
+int ext_op_0x5B(gb_cpu *cpu);
+int ext_op_0x5C(gb_cpu *cpu);
+int ext_op_0x5D(gb_cpu *cpu);
+int ext_op_0x5E(gb_cpu *cpu);
+int ext_op_0x5F(gb_cpu *cpu);
+
+int ext_op_0x60(gb_cpu *cpu);
+int ext_op_0x61(gb_cpu *cpu);
+int ext_op_0x62(gb_cpu *cpu);
+int ext_op_0x63(gb_cpu *cpu);
+int ext_op_0x64(gb_cpu *cpu);
+int ext_op_0x65(gb_cpu *cpu);
+int ext_op_0x66(gb_cpu *cpu);
+int ext_op_0x67(gb_cpu *cpu);
+int ext_op_0x68(gb_cpu *cpu);
+int ext_op_0x69(gb_cpu *cpu);
+int ext_op_0x6A(gb_cpu *cpu);
+int ext_op_0x6B(gb_cpu *cpu);
+int ext_op_0x6C(gb_cpu *cpu);
+int ext_op_0x6D(gb_cpu *cpu);
+int ext_op_0x6E(gb_cpu *cpu);
+int ext_op_0x6F(gb_cpu *cpu);
+
+int ext_op_0x70(gb_cpu *cpu);
+int ext_op_0x71(gb_cpu *cpu);
+int ext_op_0x72(gb_cpu *cpu);
+int ext_op_0x73(gb_cpu *cpu);
+int ext_op_0x74(gb_cpu *cpu);
+int ext_op_0x75(gb_cpu *cpu);
+int ext_op_0x76(gb_cpu *cpu);
+int ext_op_0x77(gb_cpu *cpu);
+int ext_op_0x78(gb_cpu *cpu);
+int ext_op_0x79(gb_cpu *cpu);
+int ext_op_0x7A(gb_cpu *cpu);
+int ext_op_0x7B(gb_cpu *cpu);
+int ext_op_0x7C(gb_cpu *cpu);
+int ext_op_0x7D(gb_cpu *cpu);
+int ext_op_0x7E(gb_cpu *cpu);
+int ext_op_0x7F(gb_cpu *cpu);
+
+int ext_op_0x80(gb_cpu *cpu);
+int ext_op_0x81(gb_cpu *cpu);
+int ext_op_0x82(gb_cpu *cpu);
+int ext_op_0x83(gb_cpu *cpu);
+int ext_op_0x84(gb_cpu *cpu);
+int ext_op_0x85(gb_cpu *cpu);
+int ext_op_0x86(gb_cpu *cpu);
+int ext_op_0x87(gb_cpu *cpu);
+int ext_op_0x88(gb_cpu *cpu);
+int ext_op_0x89(gb_cpu *cpu);
+int ext_op_0x8A(gb_cpu *cpu);
+int ext_op_0x8B(gb_cpu *cpu);
+int ext_op_0x8C(gb_cpu *cpu);
+int ext_op_0x8D(gb_cpu *cpu);
+int ext_op_0x8E(gb_cpu *cpu);
+int ext_op_0x8F(gb_cpu *cpu);
+
+int ext_op_0x90(gb_cpu *cpu);
+int ext_op_0x91(gb_cpu *cpu);
+int ext_op_0x92(gb_cpu *cpu);
+int ext_op_0x93(gb_cpu *cpu);
+int ext_op_0x94(gb_cpu *cpu);
+int ext_op_0x95(gb_cpu *cpu);
+int ext_op_0x96(gb_cpu *cpu);
+int ext_op_0x97(gb_cpu *cpu);
+int ext_op_0x98(gb_cpu *cpu);
+int ext_op_0x99(gb_cpu *cpu);
+int ext_op_0x9A(gb_cpu *cpu);
+int ext_op_0x9B(gb_cpu *cpu);
+int ext_op_0x9C(gb_cpu *cpu);
+int ext_op_0x9D(gb_cpu *cpu);
+int ext_op_0x9E(gb_cpu *cpu);
+int ext_op_0x9F(gb_cpu *cpu);
+
+int ext_op_0xA0(gb_cpu *cpu);
+int ext_op_0xA1(gb_cpu *cpu);
+int ext_op_0xA2(gb_cpu *cpu);
+int ext_op_0xA3(gb_cpu *cpu);
+int ext_op_0xA4(gb_cpu *cpu);
+int ext_op_0xA5(gb_cpu *cpu);
+int ext_op_0xA6(gb_cpu *cpu);
+int ext_op_0xA7(gb_cpu *cpu);
+int ext_op_0xA8(gb_cpu *cpu);
+int ext_op_0xA9(gb_cpu *cpu);
+int ext_op_0xAA(gb_cpu *cpu);
+int ext_op_0xAB(gb_cpu *cpu);
+int ext_op_0xAC(gb_cpu *cpu);
+int ext_op_0xAD(gb_cpu *cpu);
+int ext_op_0xAE(gb_cpu *cpu);
+int ext_op_0xAF(gb_cpu *cpu);
+
+int ext_op_0xB0(gb_cpu *cpu);
+int ext_op_0xB1(gb_cpu *cpu);
+int ext_op_0xB2(gb_cpu *cpu);
+int ext_op_0xB3(gb_cpu *cpu);
+int ext_op_0xB4(gb_cpu *cpu);
+int ext_op_0xB5(gb_cpu *cpu);
+int ext_op_0xB6(gb_cpu *cpu);
+int ext_op_0xB7(gb_cpu *cpu);
+int ext_op_0xB8(gb_cpu *cpu);
+int ext_op_0xB9(gb_cpu *cpu);
+int ext_op_0xBA(gb_cpu *cpu);
+int ext_op_0xBB(gb_cpu *cpu);
+int ext_op_0xBC(gb_cpu *cpu);
+int ext_op_0xBD(gb_cpu *cpu);
+int ext_op_0xBE(gb_cpu *cpu);
+int ext_op_0xBF(gb_cpu *cpu);
+
+int ext_op_0xC0(gb_cpu *cpu);
+int ext_op_0xC1(gb_cpu *cpu);
+int ext_op_0xC2(gb_cpu *cpu);
+int ext_op_0xC3(gb_cpu *cpu);
+int ext_op_0xC4(gb_cpu *cpu);
+int ext_op_0xC5(gb_cpu *cpu);
+int ext_op_0xC6(gb_cpu *cpu);
+int ext_op_0xC7(gb_cpu *cpu);
+int ext_op_0xC8(gb_cpu *cpu);
+int ext_op_0xC9(gb_cpu *cpu);
+int ext_op_0xCA(gb_cpu *cpu);
+int ext_op_0xCB(gb_cpu *cpu);
+int ext_op_0xCC(gb_cpu *cpu);
+int ext_op_0xCD(gb_cpu *cpu);
+int ext_op_0xCE(gb_cpu *cpu);
+int ext_op_0xCF(gb_cpu *cpu);
+
+int ext_op_0xD0(gb_cpu *cpu);
+int ext_op_0xD1(gb_cpu *cpu);
+int ext_op_0xD2(gb_cpu *cpu);
+int ext_op_0xD3(gb_cpu *cpu);
+int ext_op_0xD4(gb_cpu *cpu);
+int ext_op_0xD5(gb_cpu *cpu);
+int ext_op_0xD6(gb_cpu *cpu);
+int ext_op_0xD7(gb_cpu *cpu);
+int ext_op_0xD8(gb_cpu *cpu);
+int ext_op_0xD9(gb_cpu *cpu);
+int ext_op_0xDA(gb_cpu *cpu);
+int ext_op_0xDB(gb_cpu *cpu);
+int ext_op_0xDC(gb_cpu *cpu);
+int ext_op_0xDD(gb_cpu *cpu);
+int ext_op_0xDE(gb_cpu *cpu);
+int ext_op_0xDF(gb_cpu *cpu);
+
+int ext_op_0xE0(gb_cpu *cpu);
+int ext_op_0xE1(gb_cpu *cpu);
+int ext_op_0xE2(gb_cpu *cpu);
+int ext_op_0xE3(gb_cpu *cpu);
+int ext_op_0xE4(gb_cpu *cpu);
+int ext_op_0xE5(gb_cpu *cpu);
+int ext_op_0xE6(gb_cpu *cpu);
+int ext_op_0xE7(gb_cpu *cpu);
+int ext_op_0xE8(gb_cpu *cpu);
+int ext_op_0xE9(gb_cpu *cpu);
+int ext_op_0xEA(gb_cpu *cpu);
+int ext_op_0xEB(gb_cpu *cpu);
+int ext_op_0xEC(gb_cpu *cpu);
+int ext_op_0xED(gb_cpu *cpu);
+int ext_op_0xEE(gb_cpu *cpu);
+int ext_op_0xEF(gb_cpu *cpu);
+
+int ext_op_0xF0(gb_cpu *cpu);
+int ext_op_0xF1(gb_cpu *cpu);
+int ext_op_0xF2(gb_cpu *cpu);
+int ext_op_0xF3(gb_cpu *cpu);
+int ext_op_0xF4(gb_cpu *cpu);
+int ext_op_0xF5(gb_cpu *cpu);
+int ext_op_0xF6(gb_cpu *cpu);
+int ext_op_0xF7(gb_cpu *cpu);
+int ext_op_0xF8(gb_cpu *cpu);
+int ext_op_0xF9(gb_cpu *cpu);
+int ext_op_0xFA(gb_cpu *cpu);
+int ext_op_0xFB(gb_cpu *cpu);
+int ext_op_0xFC(gb_cpu *cpu);
+int ext_op_0xFD(gb_cpu *cpu);
+int ext_op_0xFE(gb_cpu *cpu);
+int ext_op_0xFF(gb_cpu *cpu);
 

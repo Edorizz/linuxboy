@@ -1,4 +1,6 @@
-#include "../include/linuxboy.h"
+/* Header file */
+#include <linuxboy.h>
+/* C library */
 #include <stdio.h>
 
 /* Not really necessary, may remove */
