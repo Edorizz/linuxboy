@@ -9,6 +9,13 @@
 #define SCREEN_WIDTH		160
 #define SCREEN_HEIGHT		144
 
+/* PIXEL COLORS */
+#define BLACK			0
+#define DARK_GRAY		1
+#define LIGHT_GRAY		2
+#define WHITE			3
+#define MAX_COLORS		4
+
 /* INTERRUPTS REGISTERS */
 #define IE			0xFFFF
 #define IF			0xFF0F
@@ -62,6 +69,10 @@ typedef struct {
 	int screen_width, screen_height;
 	GLubyte *screen_data;
 } gb_gpu;
+
+typedef struct {
+	GLuint r, g, b;
+} color;
 
 /* OPCODE */
 typedef struct {

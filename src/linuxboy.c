@@ -58,6 +58,16 @@ main(int argc, char **argv)
 	power(&cpu);
 	ops = 0;
 
+	/*
+	for (int i = 0x8000; i != 0x97FF; ++i) {
+		if (cpu.memory[cpu.pc]) {
+			cpu_status(&cpu);
+			printf("OWAH WOAH WOH AOWHAOWH HAWO!\n");
+			return 0;
+		}
+	}
+	*/
+
 	while (!(cpu.flags & BIT(QUIT))) {
 		if (cpu.flags & BIT(BREAKPOINT) && cpu.pc == cpu.breakpoint)
 			cpu.flags |= BIT(DEBUG);
@@ -72,7 +82,7 @@ main(int argc, char **argv)
 		
 		curr_cycles += cycles = exec_op(&cpu);
 		++ops;
-		
+
 		update_timers(&cpu, cycles);
 		update_graphics(&cpu, cycles);
 		handle_interrupts(&cpu);

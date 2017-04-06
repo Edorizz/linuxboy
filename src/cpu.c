@@ -6,6 +6,11 @@
 #include <string.h>
 #include <errno.h>
 
+const color colors[MAX_COLORS] = { {   8,  24,  32 },	/* BLACK */
+				   {  52, 104,  86 },	/* DARK_GRAY */
+				   { 136, 192, 112 },	/* LIGHT_GRAY */
+				   { 224, 248, 208 } };	/* WHITE */
+
 const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD BC,%04x", 3, op_0x01 },
 			{ "LD (BC),A", 1, op_0x02 },
@@ -797,10 +802,10 @@ set_lcd_status(gb_cpu *cpu)
 				prev_mode |= BIT(3);
 			}
 		}
-		
+
 		if (prev_mode & BIT(3) && ((prev_mode & 0x3) != (status & 0x3)))
 			request_interrupt(cpu, LCD_STAT);
-		
+
 		if (read_byte(cpu, TARGET_SCANLINE) == scanline) {
 			status |= BIT(2);
 			if (status & BIT(6))
@@ -857,12 +862,18 @@ init_gpu(gb_gpu *gpu, int width, int height)
 	gpu->screen_height = height;
 	gpu->screen_data = (GLubyte*)malloc(width * height * 3);
 	
-	/* Testing */
-	float scale = 255.0f / width;
+	/* float scale = 255.0f / width; */
 	for (int i = 0; i != width * height; ++i) {
+		/*
+		  Testing
 		gpu->screen_data[i * 3] = i % width * scale;
 		gpu->screen_data[i * 3 + 1] = i % width * scale;
 		gpu->screen_data[i * 3 + 2] = i % width * scale;
+		*/
+
+		gpu->screen_data[i * 3] = colors[WHITE].r;
+		gpu->screen_data[i * 3 + 1] = colors[WHITE].g;
+		gpu->screen_data[i * 3 + 2] = colors[WHITE].b;
 	}
 	
 	/* Basic shaders */
@@ -1013,6 +1024,14 @@ cpu_status(const gb_cpu *cpu)
 	       cpu->regs[REG_BC].reg, cpu->regs[REG_BC].hi, cpu->regs[REG_BC].lo,
 	       cpu->regs[REG_DE].reg, cpu->regs[REG_DE].hi, cpu->regs[REG_DE].lo,
 	       cpu->regs[REG_HL].reg, cpu->regs[REG_HL].hi, cpu->regs[REG_HL].lo);
+
+	/* Print other stuff */
+	printf("\nie: %02x"
+	       "\nif: %02x"
+	       "\nime: %d\n\n",
+	       cpu->memory[IE],
+	       cpu->memory[IF],
+	       cpu->ime);
 }
 
 /*
@@ -1143,7 +1162,7 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 void
 and_byte(BYTE *flag, BYTE *b, BYTE val)
 {
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_N));
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_N) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_H);
 	
 	*b &= val;
@@ -1155,7 +1174,7 @@ and_byte(BYTE *flag, BYTE *b, BYTE val)
 void
 xor_byte(BYTE *flag, BYTE *b, BYTE val)
 {
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
 	
 	*b ^= val;
 	
@@ -1166,7 +1185,7 @@ xor_byte(BYTE *flag, BYTE *b, BYTE val)
 void
 or_byte(BYTE *flag, BYTE *b, BYTE val)
 {
-	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N));
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
 	
 	*b |= val;
 	
@@ -1194,12 +1213,6 @@ read_word(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
-	if (addr == 0x2817 || addr == 0x2816) {
-		printf("wefjwoiefjowief!\n");
-		getchar();
-		exit(1);
-	}
-	
 	if (addr < 0x8000) {
 		/* ROM */
 	} else if (addr >= 0xE000 && addr < 0xFE00) {
@@ -1233,13 +1246,13 @@ write_word(gb_cpu *cpu, WORD addr, WORD val)
 WORD
 pop(gb_cpu *cpu)
 {
-	return (++cpu->stack)->reg;
+	return (cpu->stack++)->reg;
 }
 
 void
 push(gb_cpu *cpu, WORD val)
 {
-	(cpu->stack--)->reg = val;
+	(--cpu->stack)->reg = val;
 }
 
 void
@@ -1712,7 +1725,7 @@ int op_0x30(gb_cpu *cpu, SIGNED_BYTE r8)
 int
 op_0x31(gb_cpu *cpu, WORD d16)
 {
-	cpu->stack->reg = d16;
+	cpu->stack = (reg*)&cpu->memory[d16];
 	
 	return 12;
 }
