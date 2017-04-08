@@ -5,13 +5,14 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 /* Linuxboy */
-#include <linuxboy.h>
+#include <linuxboy/linuxboy.h>
 
 /* Function prototypes */
 void usage(char **argv);
 int  init_window(SDL_Window **window);
-void wait_input(BYTE *flags);
-void handle_input(BYTE *flags);
+void wait_input(gb_cpu *cpu);
+void handle_input(gb_cpu *cpu);
+void process_input(gb_cpu *cpu, SDL_Event *event);
 
 int
 main(int argc, char **argv)
@@ -58,16 +59,6 @@ main(int argc, char **argv)
 	power(&cpu);
 	ops = 0;
 
-	/*
-	for (int i = 0x8000; i != 0x97FF; ++i) {
-		if (cpu.memory[cpu.pc]) {
-			cpu_status(&cpu);
-			printf("OWAH WOAH WOH AOWHAOWH HAWO!\n");
-			return 0;
-		}
-	}
-	*/
-
 	while (!(cpu.flags & BIT(QUIT))) {
 		if (cpu.flags & BIT(BREAKPOINT) && cpu.pc == cpu.breakpoint)
 			cpu.flags |= BIT(DEBUG);
@@ -75,9 +66,9 @@ main(int argc, char **argv)
 		if (cpu.flags & BIT(DEBUG)) {
 			cpu_status(&cpu);
 			printf("%d/%d cycles\nop #%d\n", curr_cycles, CLOCK_RATE / 60, ops);
-			wait_input(&cpu.flags);
+			wait_input(&cpu);
 		} else {
-			handle_input(&cpu.flags);
+			handle_input(&cpu);
 		}
 		
 		curr_cycles += cycles = exec_op(&cpu);
@@ -151,53 +142,121 @@ init_window(SDL_Window **window)
 }
 
 void
-wait_input(BYTE *flags)
+wait_input(gb_cpu *cpu)
 {
 	SDL_Event event;
 
-	while (!(*flags & BIT(QUIT)) && *flags & BIT(DEBUG)) {
+	while (!(cpu->flags & BIT(QUIT)) && cpu->flags & BIT(DEBUG)) {
 		while (SDL_PollEvent(&event)) {
+			process_input(cpu, &event);
+			
 			switch (event.type) {
 			case SDL_QUIT:
-				*flags |= BIT(QUIT);
+				cpu->flags |= BIT(QUIT);
 				return;
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 				case SDLK_q:
-					*flags |= BIT(QUIT);
+					cpu->flags |= BIT(QUIT);
 					break;
-				case SDLK_d:
-					*flags ^= BIT(DEBUG);
+				case SDLK_p:
+					cpu->flags ^= BIT(DEBUG);
 					break;
 				case SDLK_n:
 					return;
 				}
+				break;
 			}
 		}
 	}
 }
 
 void
-handle_input(BYTE *flags)
+handle_input(gb_cpu *cpu)
 {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
+		process_input(cpu, &event);
+		
 		switch (event.type) {
 		case SDL_QUIT:
-			*flags |= BIT(QUIT);
+			cpu->flags |= BIT(QUIT);
 			break;
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_q:
-				*flags |= BIT(QUIT);
+				cpu->flags |= BIT(QUIT);
 				break;
-			case SDLK_d:
-				*flags ^= BIT(DEBUG);
+			case SDLK_p:
+				cpu->flags ^= BIT(DEBUG);
 				break;
 			}
 			break;
 		}
+	}
+}
+
+void
+process_input(gb_cpu *cpu, SDL_Event *event)
+{
+	switch (event->type) {
+	case SDL_KEYDOWN:
+		switch (event->key.keysym.sym) {
+		case SDLK_a:
+			key_event(cpu, PAD_LEFT, PRESS);
+			break;
+		case SDLK_d:
+			key_event(cpu, PAD_RIGHT, PRESS);
+			break;
+		case SDLK_w:
+			key_event(cpu, PAD_UP, PRESS);
+			break;
+		case SDLK_s:
+			key_event(cpu, PAD_DOWN, PRESS);
+			break;
+		case SDLK_j:
+			key_event(cpu, A, PRESS);
+			break;
+		case SDLK_k:
+			key_event(cpu, B, PRESS);
+			break;
+		case SDLK_u:
+			key_event(cpu, START, PRESS);
+			break;
+		case SDLK_i:
+			key_event(cpu, SELECT, PRESS);
+			break;
+		}
+		break;
+	case SDL_KEYUP:
+		switch (event->key.keysym.sym) {
+		case SDLK_a:
+			key_event(cpu, PAD_LEFT, RELEASE);
+			break;
+		case SDLK_d:
+			key_event(cpu, PAD_RIGHT, RELEASE);
+			break;
+		case SDLK_w:
+			key_event(cpu, PAD_UP, RELEASE);
+			break;
+		case SDLK_s:
+			key_event(cpu, PAD_DOWN, RELEASE);
+			break;
+		case SDLK_j:
+			key_event(cpu, A, RELEASE);
+			break;
+		case SDLK_k:
+			key_event(cpu, B, RELEASE);
+			break;
+		case SDLK_u:
+			key_event(cpu, START, RELEASE);
+			break;
+		case SDLK_i:
+			key_event(cpu, SELECT, RELEASE);
+			break;
+		}
+		break;
 	}
 }
 

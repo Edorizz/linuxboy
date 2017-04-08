@@ -1,7 +1,10 @@
 /* Header file */
-#include <linuxboy.h>
+#include <linuxboy/interrupts.h>
 /* C library */
 #include <stdio.h>
+/* Linuxboy */
+#include <linuxboy/utils.h>
+#include <linuxboy/opcodes.h>
 
 /* Not really necessary, may remove */
 const WORD routines[INTERRUPT_MAX] = { 0x40, 0x48, 0x50, 0x58, 0x60 };

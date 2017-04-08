@@ -9,7 +9,7 @@ NAME := linuxboy
 $(NAME): $(OBJ_FILES)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-obj/%.o: src/%.c include/linuxboy.h
+obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
