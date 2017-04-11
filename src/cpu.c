@@ -11,34 +11,7 @@
 #include <linuxboy/timers.h>
 #include <linuxboy/interrupts.h>
 
-int
-load_rom(gb_cpu *cpu)
-{
-	FILE *fp;
-	int size;
-	
-	if ((fp = fopen(cpu->rom_path, "rb")) == NULL) {
-		fprintf(stderr, "Failed to open file %s: %s\n", cpu->rom_path, strerror(errno));
-		return 0;
-	}
-	
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	
-	if (fread(cpu->rom, 1, size, fp) != size) {
-		fprintf(stderr, "Failed reading file %s: %s\n", cpu->rom_path, strerror(errno));
-		fclose(fp);
-		return 0;
-	}
-	
-	fprintf(stderr, "Successfully read %d bytes\n", size);
-	cpu->rom_size = size; /* Can also read rom[0x148] to get rom size */
-	
-	fclose(fp);
-	return 1;
-}
-
+/* NOT USABLE */
 void
 bootstrap(gb_cpu *cpu)
 {
@@ -63,14 +36,14 @@ bootstrap(gb_cpu *cpu)
 }
 
 int
-power(gb_cpu *cpu)
+power_cpu(gb_cpu *cpu)
 {
 	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
 	/* bootstrap(cpu); */
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
-	memcpy(cpu->memory, cpu->rom, 0x8000);
+	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
 	
 	/* Initialize Gameboy */
 	cpu->pc = 0x100;
@@ -124,9 +97,6 @@ power(gb_cpu *cpu)
 	/* Initialize timers */
 	cpu->divider_counter = CLOCK_RATE / 16384;
 	cpu->timer_counter = CLOCK_RATE / 4096;
-	
-	/* Initialize GPU */
-	init_gpu(&cpu->gpu, SCREEN_WIDTH, SCREEN_HEIGHT);
 	
 	return 0;
 }
@@ -312,11 +282,11 @@ disassemble(const gb_cpu *cpu)
 	BYTE op;
 	
 	pc = 0;
-	while (pc != cpu->rom_size) {
-		op = cpu->rom[pc];
+	while (pc != cpu->cart->rom_size) {
+		op = cpu->cart->rom[pc];
 		
 		if (op == 0xCB) {
-			op = cpu->rom[pc + 1];
+			op = cpu->cart->rom[pc + 1];
 			printf("%6x: %s\n", pc, ext_ops[op].assembly);
 			
 			pc += ext_ops[op].arg_size + 1;

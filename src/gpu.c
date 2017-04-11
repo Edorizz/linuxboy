@@ -9,7 +9,7 @@ const color colors[MAX_COLORS] = { {   8,  24,  32 },	/* BLACK */
 				   { 224, 248, 208 } };	/* WHITE */
 
 void
-init_gpu(gb_gpu *gpu, int width, int height)
+power_gpu(gb_gpu *gpu, int width, int height)
 {
 	/* Quad vertices */
 	static const GLfloat vertex_data[] = { -1.0f,  1.0f, 1.0f, 0.0f, 1.0f,
@@ -77,6 +77,8 @@ free_gpu(gb_gpu *gpu)
 void
 draw(gb_gpu *gpu)
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	glUseProgram(gpu->shader_program);
 	
 	glBindTexture(GL_TEXTURE_2D, gpu->texture);
