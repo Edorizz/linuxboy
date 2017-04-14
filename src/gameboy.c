@@ -18,6 +18,7 @@ power_gb(gameboy *gb)
 
 	/* Link components */
 	gb->cpu.cart = &gb->cart;
+	gb->gpu.vram = &gb->cpu.memory[0x8000];
 
 	/* Power components */
 	power_cpu(&gb->cpu);
@@ -36,6 +37,14 @@ update_gb(gameboy *gb)
 	/* Toggle debug mode if hit target breakpoint */
 	if (gb->emu_flags & BIT(BREAKPOINT) && gb->cpu.pc == gb->breakpoint)
 		gb->emu_flags |= BIT(DEBUG);
+
+	/*
+	if (gb->cpu.pc == 0x282a) {
+		FILE *fp = fopen("gpu.log", "wb");
+		fwrite(gb->gpu.vram, 16, 1, fp);
+		fclose(fp);
+	}
+	*/
 
 	/* Print CPU status if on debug mode */
 	if (gb->emu_flags & BIT(DEBUG))
@@ -56,7 +65,10 @@ update_gb(gameboy *gb)
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {
 		gb->curr_cycles = 0;
 
-		draw(&gb->gpu);
+		draw_tiles(&gb->gpu);
+		flip_screen(&gb->gpu);
+		render(&gb->gpu);
+
 		swap_window(&gb->win);
 	}
 }

@@ -2,7 +2,8 @@
 obj/
 *.o
 *.gb
-#*#
 log
 linuxboy
 bootstrap.gb
+*.log
+
