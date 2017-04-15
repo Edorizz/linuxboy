@@ -4,6 +4,8 @@
 #include <stdlib.h>
 /* OpenGL */
 #include <GL/glew.h>
+/* Linuxboy */
+#include <linuxboy/glsl_shader.h>
 
 const key_pair joypad_input[8] = { { SDLK_j, BUTTON_A }, { SDLK_k, BUTTON_B },
 				   { SDLK_u, BUTTON_START }, { SDLK_i, BUTTON_START },
@@ -45,15 +47,24 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 	win->joypad = joypad;
 	win->emu_flags = emu_flags;
 
+	init_gl(win);
+
 	return 0;
 }
 
 void
 delete_window(gl_window *win)
 {
+	/* Terminate SDL */
 	SDL_DestroyWindow(win->sdl_win);
 	SDL_Quit();
 
+	/* Delete OpenGL buffers */
+	glDeleteVertexArrays(1, &win->vao);
+	glDeleteBuffers(1, &win->vbo);
+	glDeleteTextures(1, &win->texture);
+
+	/* Just being a good guy */
 	win->sdl_win = NULL;
 	win->joypad = win->emu_flags = NULL;
 }
@@ -62,6 +73,65 @@ void
 swap_window(gl_window *win)
 {
 	SDL_GL_SwapWindow(win->sdl_win);
+}
+
+void
+init_gl(gl_window *win)
+{
+	/* Quad vertices */
+	static const GLfloat vertex_data[] = { -1.0f,  1.0f, 1.0f, 0.0f, 1.0f,
+					       -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+					        1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
+					        1.0f, -1.0f, 1.0f, 1.0f, 0.0f,
+					        1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
+					       -1.0f,  1.0f, 1.0f, 0.0f, 1.0f };
+	
+	/* Basic shaders */
+	win->shader = compile_program("res/vertex.glsl", "res/fragment.glsl");
+	
+	/* Screen quad */
+	glGenVertexArrays(1, &win->vao);
+	glGenBuffers(1, &win->vbo);
+	
+	glBindVertexArray(win->vao);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, win->vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLvoid*)(sizeof(GLfloat) * 3));
+	glEnableVertexAttribArray(1);
+	
+	glBindVertexArray(0);
+	
+	/* Display texture */
+	glGenTextures(1, &win->texture);
+	glBindTexture(GL_TEXTURE_2D, win->texture);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_W, SCR_H, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void
+render(gl_window *win)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(win->shader);
+	
+	glBindTexture(GL_TEXTURE_2D, win->texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+		     SCR_W, SCR_H, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
+	glBindVertexArray(win->vao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	glUseProgram(0);
 }
 
 void

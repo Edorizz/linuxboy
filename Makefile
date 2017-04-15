@@ -4,7 +4,7 @@ OBJ_FILES := $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 CFLAGS := -c -std=c99 -Wall -Iinclude/
 LDFLAGS := -lSDL2 -lGLEW -lGLU -lGL
 RM := rm -f
-NAME := linuxboy
+NAME := lboy
 
 $(NAME): $(OBJ_FILES)
 	$(CC) $(LDFLAGS) -o $@ $^

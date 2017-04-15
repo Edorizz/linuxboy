@@ -11,6 +11,11 @@
 #include <linuxboy/timers.h>
 #include <linuxboy/interrupts.h>
 
+const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
+				   { 136, 192, 112 },	/* LIGHT_GRAY */
+				   {  52, 104,  86 },	/* DARK_GRAY */
+				   {   8,  24,  32 } };	/* BLACK */
+
 /* NOT USABLE */
 void
 bootstrap(gb_cpu *cpu)
@@ -95,8 +100,8 @@ power_cpu(gb_cpu *cpu)
 	cpu->ime = 1;
 	
 	/* Initialize timers */
-	cpu->divider_counter = CLOCK_RATE / 16384;
-	cpu->timer_counter = CLOCK_RATE / 4096;
+	cpu->divider_cnt = CLOCK_RATE / 16384;
+	cpu->timer_cnt = CLOCK_RATE / 4096;
 	
 	return 0;
 }
@@ -157,16 +162,16 @@ set_frequency(gb_cpu *cpu)
 {
 	switch (read_byte(cpu, TMC) & 0x3) {
 	case 0:
-		cpu->timer_counter = CLOCK_RATE / 4096;
+		cpu->timer_cnt = CLOCK_RATE / 4096;
 		break;
 	case 1:
-		cpu->timer_counter = CLOCK_RATE / 262144;
+		cpu->timer_cnt = CLOCK_RATE / 262144;
 		break;
 	case 2:
-		cpu->timer_counter = CLOCK_RATE / 65536;
+		cpu->timer_cnt = CLOCK_RATE / 65536;
 		break;
 	case 3:
-		cpu->timer_counter = CLOCK_RATE / 16384;
+		cpu->timer_cnt = CLOCK_RATE / 16384;
 		break;
 	}
 }
@@ -174,8 +179,8 @@ set_frequency(gb_cpu *cpu)
 void
 divider_register(gb_cpu *cpu, int ops)
 {
-	if ((cpu->divider_counter += ops) > 255) {
-		cpu->divider_counter = 0;
+	if ((cpu->divider_cnt += ops) > 255) {
+		cpu->divider_cnt = 0;
 		++cpu->memory[DIVIDER_REGISTER];
 	}
 }
@@ -188,7 +193,7 @@ update_timers(gb_cpu *cpu, int ops)
 	
 	/* UPDATE TIMER */
 	if (read_byte(cpu, TMC) & BIT(2)) {
-		if ((cpu->timer_counter -= ops) <= 0) {
+		if ((cpu->timer_cnt -= ops) <= 0) {
 			set_frequency(cpu);
 			
 			if (read_byte(cpu, TIMA) == 255) {
@@ -218,11 +223,11 @@ set_lcd_status(gb_cpu *cpu)
 			status = ((status >> 2) << 2) | 0x1;
 			prev_mode |= BIT(3);
 		} else {
-			if (cpu->scanline_counter > 456 - 80) {
+			if (cpu->scanline_cnt > 456 - 80) {
 				/* MODE 2 */
 				status = ((status >> 2) << 2) | 0x2;
 				prev_mode |= BIT(3);
-			} else if (cpu->scanline_counter > 456 - 252) {
+			} else if (cpu->scanline_cnt > 456 - 252) {
 				/* MODE 3 */
 				status = ((status >> 2) << 2) | 0x3;
 			} else {
@@ -244,7 +249,7 @@ set_lcd_status(gb_cpu *cpu)
 		}
 	} else {
 		status = ((status >> 2) << 2) | 0x1;
-		cpu->scanline_counter = 456;
+		cpu->scanline_cnt = 456;
 		write_byte(cpu, CURR_SCANLINE, 0);
 	}
 	
@@ -259,10 +264,10 @@ update_graphics(gb_cpu *cpu, int ops)
 	set_lcd_status(cpu);
 	
 	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
-		if ((cpu->scanline_counter -= ops) <= 0) {
+		if ((cpu->scanline_cnt -= ops) <= 0) {
 			++cpu->memory[CURR_SCANLINE];
 			scanline = read_byte(cpu, CURR_SCANLINE);
-			cpu->scanline_counter = 456;
+			cpu->scanline_cnt = 456;
 			
 			if (scanline == 144) {
 				request_interrupt(cpu, VBLANK);
@@ -273,6 +278,64 @@ update_graphics(gb_cpu *cpu, int ops)
 			}
 		}
 	}
+}
+
+void
+flip_screen(gb_cpu *cpu)
+{
+	BYTE *cpy, *top_row, *bot_row;
+
+	cpy = malloc(SCR_W * 3);
+	for (int i = 0; i != SCR_H / 2; ++i) {
+		top_row = &cpu->scr_buf[SCR_H - i - 1][0][0];
+		bot_row = &cpu->scr_buf[i][0][0];
+
+		memcpy(cpy, bot_row, SCR_W * 3);
+		memcpy(bot_row, top_row, SCR_W * 3);
+		memcpy(top_row, cpy, SCR_W * 3);
+	}
+
+	free(cpy);
+}
+
+void
+clear_screen(gb_cpu *cpu, int color)
+{
+	for (int i = 0; i != SCR_H; ++i)
+		for (int j = 0; j != SCR_W; ++j)
+			memcpy(cpu->scr_buf[i][j], &colors[color], 3);
+}
+
+void
+draw_tile_row(const BYTE *data, BYTE *scr_pos)
+{
+	BYTE data1, data2, color, tmp1, tmp2;
+
+	data1 = *data;
+	data2 = *(data + 1);
+
+	for (int i = 0; i != 8; ++i) {
+		tmp1 = (data1 >> (7 - i)) & 1;
+		tmp2 = ((data2 >> (7 - i)) << 1) & 0x2;
+		color = (tmp2 | tmp1) & 0x3;
+
+		memcpy(scr_pos + (i * 3), &colors[color], 3);
+	}
+}
+
+void
+draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos)
+{
+	for (int i = 0; i != 8; ++i)
+		draw_tile_row(data + (i * 2), scr_pos + (i * SCR_W * 3));
+}
+
+void
+draw_tiles(gb_cpu *cpu)
+{
+	for (int i = 0; i != 0x100; ++i)
+		draw_tile_at(cpu, &cpu->memory[i * 16 + 0x8000],
+			     cpu->scr_buf[i / 20 * 8][i % 20 * 8]);
 }
 
 void
