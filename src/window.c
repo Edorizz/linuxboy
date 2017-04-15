@@ -21,7 +21,8 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 	}
 
 	win->sdl_win = SDL_CreateWindow("Linuxboy Gameboy emulator",
-					SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 160, 144,
+					SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+					win->width, win->height,
 					SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
 	if (win->sdl_win == NULL) {

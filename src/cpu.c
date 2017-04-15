@@ -119,7 +119,7 @@ exec_op(gb_cpu *cpu)
 		printf("Missing implementation %s at $%04x\n", opcode->assembly, cpu->pc);
 		exit(1);
 	}
-	
+
 	if (opcode->arg_size & SIGNED) {
 		cpu->pc += opcode->arg_size - SIGNED;
 		

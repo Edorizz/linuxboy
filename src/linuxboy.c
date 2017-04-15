@@ -13,8 +13,9 @@ void usage(char **argv);
 int
 main(int argc, char **argv)
 {
-	gameboy gb = { 0 };
+	gameboy gb;
 
+	reset_gb(&gb);
 	for (int i = 1; i != argc; ++i) {
 		if (argv[i][0] == '-') {
 			if (i == argc - 1) {
@@ -30,6 +31,16 @@ main(int argc, char **argv)
 				gb.emu_flags |= BIT(BREAKPOINT);
 				gb.breakpoint = strtol(argv[i + 1], NULL, 16);
 				break;
+			case 'x':
+				gb.win.width = strtol(argv[i + 1], NULL, 10);
+				break;
+			case 'y':
+				gb.win.height = strtol(argv[i + 1], NULL, 10);
+				break;
+			case 's':
+				gb.win.width *= strtol(argv[i + 1], NULL, 10);
+				gb.win.height *= strtol(argv[i + 1], NULL, 10);
+				break;
 			case 'h':
 				usage(argv);
 				return 0;
@@ -43,6 +54,7 @@ main(int argc, char **argv)
 			gb.cart.rom_path = argv[i];
 		}
 	}
+
 
 	power_gb(&gb);
 	if (gb.cart.rom_size == 0) {
@@ -61,9 +73,12 @@ main(int argc, char **argv)
 void
 usage(char **argv)
 {
-	printf("usage: %s rom [-h] [-b addr]\n"
-	       "\t-b addr: set breakpoint at specified address (hex)\n"
-	       "\t-h: print this message and quit\n",
+	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]]\n"
+	       "\t-b addr: set breakpoint at 'addr' (hex)\n"
+	       "\t-h: print this message and quit\n"
+	       "\t-s: set screen width to 160 * 'scale' and screen height to 144 * 'scale'\n"
+	       "\t-x: set screen width to 'width'\n"
+	       "\t-y: set screen height to 'height'\n",
 		argv[0]);
 }
 

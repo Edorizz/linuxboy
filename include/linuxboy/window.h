@@ -18,6 +18,7 @@ typedef struct {
 typedef struct {
 	SDL_Window *sdl_win;
 	const BYTE *scr_buf;
+	int width, height;
 	BYTE *joypad;
 	BYTE *emu_flags;
 	/* OPENGL */

@@ -66,8 +66,6 @@ void draw_scanline(gb_cpu *cpu, int ops);
 
 /* GRAPHICS */
 void flip_screen(gb_cpu *cpu);
-
-/* RENDERING */
 void clear_screen(gb_cpu *cpu, int color);
 void draw_tile_row(const BYTE *data, BYTE *scr_pos);
 void draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos);

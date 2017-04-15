@@ -363,192 +363,192 @@ const op ext_ops[0x100] = { { "RLC B", 2, ext_op_0x00 },
 			    { "BIT 1,(HL)", 2, ext_op_0x4E },
 			    { "BIT 1,A", 2, ext_op_0x4F },
 			    
-			    { "BIT 2,B", 2, NULL },
-			    { "BIT 2,C", 2, NULL },
-			    { "BIT 2,D", 2, NULL },
-			    { "BIT 2,E", 2, NULL },
-			    { "BIT 2,H", 2, NULL },
-			    { "BIT 2,L", 2, NULL },
-			    { "BIT 2,(HL)", 2, NULL },
-			    { "BIT 2,A", 2, NULL },
-			    { "BIT 3,B", 2, NULL },
-			    { "BIT 3,C", 2, NULL },
-			    { "BIT 3,D", 2, NULL },
-			    { "BIT 3,E", 2, NULL },
-			    { "BIT 3,H", 2, NULL },
-			    { "BIT 3,L", 2, NULL },
-			    { "BIT 3,(HL)", 2, NULL },
-			    { "BIT 3,A", 2, NULL },
+			    { "BIT 2,B", 2, ext_op_0x50 },
+			    { "BIT 2,C", 2, ext_op_0x51 },
+			    { "BIT 2,D", 2, ext_op_0x52 },
+			    { "BIT 2,E", 2, ext_op_0x53 },
+			    { "BIT 2,H", 2, ext_op_0x54 },
+			    { "BIT 2,L", 2, ext_op_0x55 },
+			    { "BIT 2,(HL)", 2, ext_op_0x56 },
+			    { "BIT 2,A", 2, ext_op_0x57 },
+			    { "BIT 3,B", 2, ext_op_0x58 },
+			    { "BIT 3,C", 2, ext_op_0x59 },
+			    { "BIT 3,D", 2, ext_op_0x5A },
+			    { "BIT 3,E", 2, ext_op_0x5B },
+			    { "BIT 3,H", 2, ext_op_0x5C },
+			    { "BIT 3,L", 2, ext_op_0x5D },
+			    { "BIT 3,(HL)", 2, ext_op_0x5E },
+			    { "BIT 3,A", 2, ext_op_0x5F },
 			    
-			    { "BIT 4,B", 2, NULL },
-			    { "BIT 4,C", 2, NULL },
-			    { "BIT 4,D", 2, NULL },
-			    { "BIT 4,E", 2, NULL },
-			    { "BIT 4,H", 2, NULL },
-			    { "BIT 4,L", 2, NULL },
-			    { "BIT 4,(HL)", 2, NULL },
-			    { "BIT 4,A", 2, NULL },
-			    { "BIT 5,B", 2, NULL },
-			    { "BIT 5,C", 2, NULL },
-			    { "BIT 5,D", 2, NULL },
-			    { "BIT 5,E", 2, NULL },
-			    { "BIT 5,H", 2, NULL },
-			    { "BIT 5,L", 2, NULL },
-			    { "BIT 5,(HL)", 2, NULL },
-			    { "BIT 5,A", 2, NULL },
+			    { "BIT 4,B", 2, ext_op_0x60 },
+			    { "BIT 4,C", 2, ext_op_0x61 },
+			    { "BIT 4,D", 2, ext_op_0x62 },
+			    { "BIT 4,E", 2, ext_op_0x63 },
+			    { "BIT 4,H", 2, ext_op_0x64 },
+			    { "BIT 4,L", 2, ext_op_0x65 },
+			    { "BIT 4,(HL)", 2, ext_op_0x66 },
+			    { "BIT 4,A", 2, ext_op_0x67 },
+			    { "BIT 5,B", 2, ext_op_0x68 },
+			    { "BIT 5,C", 2, ext_op_0x69 },
+			    { "BIT 5,D", 2, ext_op_0x6A },
+			    { "BIT 5,E", 2, ext_op_0x6B },
+			    { "BIT 5,H", 2, ext_op_0x6C },
+			    { "BIT 5,L", 2, ext_op_0x6D },
+			    { "BIT 5,(HL)", 2, ext_op_0x6E },
+			    { "BIT 5,A", 2, ext_op_0x6F },
 			    
-			    { "BIT 6,B", 2, NULL },
-			    { "BIT 6,C", 2, NULL },
-			    { "BIT 6,D", 2, NULL },
-			    { "BIT 6,E", 2, NULL },
-			    { "BIT 6,H", 2, NULL },
-			    { "BIT 6,L", 2, NULL },
-			    { "BIT 6,(HL)", 2, NULL },
-			    { "BIT 6,A", 2, NULL },
-			    { "BIT 7,B", 2, NULL },
-			    { "BIT 7,C", 2, NULL },
-			    { "BIT 7,D", 2, NULL },
-			    { "BIT 7,E", 2, NULL },
-			    { "BIT 7,H", 2, NULL },
-			    { "BIT 7,L", 2, NULL },
-			    { "BIT 7,(HL)", 2, NULL },
-			    { "BIT 7,A", 2, NULL },
+			    { "BIT 6,B", 2, ext_op_0x70 },
+			    { "BIT 6,C", 2, ext_op_0x71 },
+			    { "BIT 6,D", 2, ext_op_0x72 },
+			    { "BIT 6,E", 2, ext_op_0x73 },
+			    { "BIT 6,H", 2, ext_op_0x74 },
+			    { "BIT 6,L", 2, ext_op_0x75 },
+			    { "BIT 6,(HL)", 2, ext_op_0x76 },
+			    { "BIT 6,A", 2, ext_op_0x77 },
+			    { "BIT 7,B", 2, ext_op_0x78 },
+			    { "BIT 7,C", 2, ext_op_0x79 },
+			    { "BIT 7,D", 2, ext_op_0x7A },
+			    { "BIT 7,E", 2, ext_op_0x7B },
+			    { "BIT 7,H", 2, ext_op_0x7C },
+			    { "BIT 7,L", 2, ext_op_0x7D },
+			    { "BIT 7,(HL)", 2, ext_op_0x7E },
+			    { "BIT 7,A", 2, ext_op_0x7F },
 			    
-			    { "RES 0,B", 2, NULL },
-			    { "RES 0,C", 2, NULL },
-			    { "RES 0,D", 2, NULL },
-			    { "RES 0,E", 2, NULL },
-			    { "RES 0,H", 2, NULL },
-			    { "RES 0,L", 2, NULL },
-			    { "RES 0,(HL)", 2, NULL },
+			    { "RES 0,B", 2, ext_op_0x80 },
+			    { "RES 0,C", 2, ext_op_0x81 },
+			    { "RES 0,D", 2, ext_op_0x82 },
+			    { "RES 0,E", 2, ext_op_0x83 },
+			    { "RES 0,H", 2, ext_op_0x84 },
+			    { "RES 0,L", 2, ext_op_0x85 },
+			    { "RES 0,(HL)", 2, ext_op_0x86 },
 			    { "RES 0,A", 2, ext_op_0x87 },
-			    { "RES 1,B", 2, NULL },
-			    { "RES 1,C", 2, NULL },
-			    { "RES 1,D", 2, NULL },
-			    { "RES 1,E", 2, NULL },
-			    { "RES 1,H", 2, NULL },
-			    { "RES 1,L", 2, NULL },
-			    { "RES 1,(HL)", 2, NULL },
-			    { "RES 1,A", 2, NULL },
+			    { "RES 1,B", 2, ext_op_0x88 },
+			    { "RES 1,C", 2, ext_op_0x89 },
+			    { "RES 1,D", 2, ext_op_0x8A },
+			    { "RES 1,E", 2, ext_op_0x8B },
+			    { "RES 1,H", 2, ext_op_0x8C },
+			    { "RES 1,L", 2, ext_op_0x8D },
+			    { "RES 1,(HL)", 2, ext_op_0x8E },
+			    { "RES 1,A", 2, ext_op_0x8F },
 			    
-			    { "RES 2,B", 2, NULL },
-			    { "RES 2,C", 2, NULL },
-			    { "RES 2,D", 2, NULL },
-			    { "RES 2,E", 2, NULL },
-			    { "RES 2,H", 2, NULL },
-			    { "RES 2,L", 2, NULL },
-			    { "RES 2,(HL)", 2, NULL },
-			    { "RES 2,A", 2, NULL },
-			    { "RES 3,B", 2, NULL },
-			    { "RES 3,C", 2, NULL },
-			    { "RES 3,D", 2, NULL },
-			    { "RES 3,E", 2, NULL },
-			    { "RES 3,H", 2, NULL },
-			    { "RES 3,L", 2, NULL },
-			    { "RES 3,(HL)", 2, NULL },
-			    { "RES 3,A", 2, NULL },
+			    { "RES 2,B", 2, ext_op_0x90 },
+			    { "RES 2,C", 2, ext_op_0x91 },
+			    { "RES 2,D", 2, ext_op_0x92 },
+			    { "RES 2,E", 2, ext_op_0x93 },
+			    { "RES 2,H", 2, ext_op_0x94 },
+			    { "RES 2,L", 2, ext_op_0x95 },
+			    { "RES 2,(HL)", 2, ext_op_0x96 },
+			    { "RES 2,A", 2, ext_op_0x97 },
+			    { "RES 3,B", 2, ext_op_0x98 },
+			    { "RES 3,C", 2, ext_op_0x99 },
+			    { "RES 3,D", 2, ext_op_0x9A },
+			    { "RES 3,E", 2, ext_op_0x9B },
+			    { "RES 3,H", 2, ext_op_0x9C },
+			    { "RES 3,L", 2, ext_op_0x9D },
+			    { "RES 3,(HL)", 2, ext_op_0x9E },
+			    { "RES 3,A", 2, ext_op_0x9F },
 			    
-			    { "RES 4,B", 2, NULL },
-			    { "RES 4,C", 2, NULL },
-			    { "RES 4,D", 2, NULL },
-			    { "RES 4,E", 2, NULL },
-			    { "RES 4,H", 2, NULL },
-			    { "RES 4,L", 2, NULL },
-			    { "RES 4,(HL)", 2, NULL },
-			    { "RES 4,A", 2, NULL },
-			    { "RES 5,B", 2, NULL },
-			    { "RES 5,C", 2, NULL },
-			    { "RES 5,D", 2, NULL },
-			    { "RES 5,E", 2, NULL },
-			    { "RES 5,H", 2, NULL },
-			    { "RES 5,L", 2, NULL },
-			    { "RES 5,(HL)", 2, NULL },
-			    { "RES 5,A", 2, NULL },
+			    { "RES 4,B", 2, ext_op_0xA0 },
+			    { "RES 4,C", 2, ext_op_0xA1 },
+			    { "RES 4,D", 2, ext_op_0xA2 },
+			    { "RES 4,E", 2, ext_op_0xA3 },
+			    { "RES 4,H", 2, ext_op_0xA4 },
+			    { "RES 4,L", 2, ext_op_0xA5 },
+			    { "RES 4,(HL)", 2, ext_op_0xA6 },
+			    { "RES 4,A", 2, ext_op_0xA7 },
+			    { "RES 5,B", 2, ext_op_0xA8 },
+			    { "RES 5,C", 2, ext_op_0xA9 },
+			    { "RES 5,D", 2, ext_op_0xAA },
+			    { "RES 5,E", 2, ext_op_0xAB },
+			    { "RES 5,H", 2, ext_op_0xAC },
+			    { "RES 5,L", 2, ext_op_0xAD },
+			    { "RES 5,(HL)", 2, ext_op_0xAE },
+			    { "RES 5,A", 2, ext_op_0xAF },
 			    
-			    { "RES 6,B", 2, NULL },
-			    { "RES 6,C", 2, NULL },
-			    { "RES 6,D", 2, NULL },
-			    { "RES 6,E", 2, NULL },
-			    { "RES 6,H", 2, NULL },
-			    { "RES 6,L", 2, NULL },
-			    { "RES 6,(HL)", 2, NULL },
-			    { "RES 6,A", 2, NULL },
-			    { "RES 7,B", 2, NULL },
-			    { "RES 7,C", 2, NULL },
-			    { "RES 7,D", 2, NULL },
-			    { "RES 7,E", 2, NULL },
-			    { "RES 7,H", 2, NULL },
-			    { "RES 7,L", 2, NULL },
-			    { "RES 7,(HL)", 2, NULL },
-			    { "RES 7,A", 2, NULL },
+			    { "RES 6,B", 2, ext_op_0xB0 },
+			    { "RES 6,C", 2, ext_op_0xB1 },
+			    { "RES 6,D", 2, ext_op_0xB2 },
+			    { "RES 6,E", 2, ext_op_0xB3 },
+			    { "RES 6,H", 2, ext_op_0xB4 },
+			    { "RES 6,L", 2, ext_op_0xB5 },
+			    { "RES 6,(HL)", 2, ext_op_0xB6 },
+			    { "RES 6,A", 2, ext_op_0xB7 },
+			    { "RES 7,B", 2, ext_op_0xB8 },
+			    { "RES 7,C", 2, ext_op_0xB9 },
+			    { "RES 7,D", 2, ext_op_0xBA },
+			    { "RES 7,E", 2, ext_op_0xBB },
+			    { "RES 7,H", 2, ext_op_0xBC },
+			    { "RES 7,L", 2, ext_op_0xBD },
+			    { "RES 7,(HL)", 2, ext_op_0xBE },
+			    { "RES 7,A", 2, ext_op_0xBF },
 			    
-			    { "SET 0,B", 2, NULL },
-			    { "SET 0,C", 2, NULL },
-			    { "SET 0,D", 2, NULL },
-			    { "SET 0,E", 2, NULL },
-			    { "SET 0,H", 2, NULL },
-			    { "SET 0,L", 2, NULL },
-			    { "SET 0,(HL)", 2, NULL },
-			    { "SET 0,A", 2, NULL },
-			    { "SET 1,B", 2, NULL },
-			    { "SET 1,C", 2, NULL },
-			    { "SET 1,D", 2, NULL },
-			    { "SET 1,E", 2, NULL },
-			    { "SET 1,H", 2, NULL },
-			    { "SET 1,L", 2, NULL },
-			    { "SET 1,(HL)", 2, NULL },
-			    { "SET 1,A", 2, NULL },
+			    { "SET 0,B", 2, ext_op_0xC0 },
+			    { "SET 0,C", 2, ext_op_0xC1 },
+			    { "SET 0,D", 2, ext_op_0xC2 },
+			    { "SET 0,E", 2, ext_op_0xC3 },
+			    { "SET 0,H", 2, ext_op_0xC4 },
+			    { "SET 0,L", 2, ext_op_0xC5 },
+			    { "SET 0,(HL)", 2, ext_op_0xC6 },
+			    { "SET 0,A", 2, ext_op_0xC7 },
+			    { "SET 1,B", 2, ext_op_0xC8 },
+			    { "SET 1,C", 2, ext_op_0xC9 },
+			    { "SET 1,D", 2, ext_op_0xCA },
+			    { "SET 1,E", 2, ext_op_0xCB },
+			    { "SET 1,H", 2, ext_op_0xCC },
+			    { "SET 1,L", 2, ext_op_0xCD },
+			    { "SET 1,(HL)", 2, ext_op_0xCE },
+			    { "SET 1,A", 2, ext_op_0xCF },
 			    
-			    { "SET 2,B", 2, NULL },
-			    { "SET 2,C", 2, NULL },
-			    { "SET 2,D", 2, NULL },
-			    { "SET 2,E", 2, NULL },
-			    { "SET 2,H", 2, NULL },
-			    { "SET 2,L", 2, NULL },
-			    { "SET 2,(HL)", 2, NULL },
-			    { "SET 2,A", 2, NULL },
-			    { "SET 3,B", 2, NULL },
-			    { "SET 3,C", 2, NULL },
-			    { "SET 3,D", 2, NULL },
-			    { "SET 3,E", 2, NULL },
-			    { "SET 3,H", 2, NULL },
-			    { "SET 3,L", 2, NULL },
-			    { "SET 3,(HL)", 2, NULL },
-			    { "SET 3,A", 2, NULL },
+			    { "SET 2,B", 2, ext_op_0xD0 },
+			    { "SET 2,C", 2, ext_op_0xD1 },
+			    { "SET 2,D", 2, ext_op_0xD2 },
+			    { "SET 2,E", 2, ext_op_0xD3 },
+			    { "SET 2,H", 2, ext_op_0xD4 },
+			    { "SET 2,L", 2, ext_op_0xD5 },
+			    { "SET 2,(HL)", 2, ext_op_0xD6 },
+			    { "SET 2,A", 2, ext_op_0xD7 },
+			    { "SET 3,B", 2, ext_op_0xD8 },
+			    { "SET 3,C", 2, ext_op_0xD9 },
+			    { "SET 3,D", 2, ext_op_0xDA },
+			    { "SET 3,E", 2, ext_op_0xDB },
+			    { "SET 3,H", 2, ext_op_0xDC },
+			    { "SET 3,L", 2, ext_op_0xDD },
+			    { "SET 3,(HL)", 2, ext_op_0xDE },
+			    { "SET 3,A", 2, ext_op_0xDF },
 			    
-			    { "SET 4,B", 2, NULL },
-			    { "SET 4,C", 2, NULL },
-			    { "SET 4,D", 2, NULL },
-			    { "SET 4,E", 2, NULL },
-			    { "SET 4,H", 2, NULL },
-			    { "SET 4,L", 2, NULL },
-			    { "SET 4,(HL)", 2, NULL },
-			    { "SET 4,A", 2, NULL },
-			    { "SET 5,B", 2, NULL },
-			    { "SET 5,C", 2, NULL },
-			    { "SET 5,D", 2, NULL },
-			    { "SET 5,E", 2, NULL },
-			    { "SET 5,H", 2, NULL },
-			    { "SET 5,L", 2, NULL },
-			    { "SET 5,(HL)", 2, NULL },
-			    { "SET 5,A", 2, NULL },
+			    { "SET 4,B", 2, ext_op_0xE0 },
+			    { "SET 4,C", 2, ext_op_0xE1 },
+			    { "SET 4,D", 2, ext_op_0xE2 },
+			    { "SET 4,E", 2, ext_op_0xE3 },
+			    { "SET 4,H", 2, ext_op_0xE4 },
+			    { "SET 4,L", 2, ext_op_0xE5 },
+			    { "SET 4,(HL)", 2, ext_op_0xE6 },
+			    { "SET 4,A", 2, ext_op_0xE7 },
+			    { "SET 5,B", 2, ext_op_0xE8 },
+			    { "SET 5,C", 2, ext_op_0xE9 },
+			    { "SET 5,D", 2, ext_op_0xEA },
+			    { "SET 5,E", 2, ext_op_0xEB },
+			    { "SET 5,H", 2, ext_op_0xEC },
+			    { "SET 5,L", 2, ext_op_0xED },
+			    { "SET 5,(HL)", 2, ext_op_0xEE },
+			    { "SET 5,A", 2, ext_op_0xEF },
 			    
-			    { "SET 6,B", 2, NULL },
-			    { "SET 6,C", 2, NULL },
-			    { "SET 6,D", 2, NULL },
-			    { "SET 6,E", 2, NULL },
-			    { "SET 6,H", 2, NULL },
-			    { "SET 6,L", 2, NULL },
-			    { "SET 6,(HL)", 2, NULL },
-			    { "SET 6,A", 2, NULL },
-			    { "SET 7,B", 2, NULL },
-			    { "SET 7,C", 2, NULL },
-			    { "SET 7,D", 2, NULL },
-			    { "SET 7,E", 2, NULL },
-			    { "SET 7,H", 2, NULL },
-			    { "SET 7,L", 2, NULL },
-			    { "SET 7,(HL)", 2, NULL },
-			    { "SET 7,A", 2, NULL } };
+			    { "SET 6,B", 2, ext_op_0xF0 },
+			    { "SET 6,C", 2, ext_op_0xF1 },
+			    { "SET 6,D", 2, ext_op_0xF2 },
+			    { "SET 6,E", 2, ext_op_0xF3 },
+			    { "SET 6,H", 2, ext_op_0xF4 },
+			    { "SET 6,L", 2, ext_op_0xF5 },
+			    { "SET 6,(HL)", 2, ext_op_0xF6 },
+			    { "SET 6,A", 2, ext_op_0xF7 },
+			    { "SET 7,B", 2, ext_op_0xF8 },
+			    { "SET 7,C", 2, ext_op_0xF9 },
+			    { "SET 7,D", 2, ext_op_0xFA },
+			    { "SET 7,E", 2, ext_op_0xFB },
+			    { "SET 7,H", 2, ext_op_0xFC },
+			    { "SET 7,L", 2, ext_op_0xFD },
+			    { "SET 7,(HL)", 2, ext_op_0xFE },
+			    { "SET 7,A", 2, ext_op_0xFF } };
 
 
 /*
@@ -3854,64 +3854,506 @@ ext_op_0x4F(gb_cpu *cpu)
 	return 8;
 }
 
-int ext_op_0x50(gb_cpu *cpu);
-int ext_op_0x51(gb_cpu *cpu);
-int ext_op_0x52(gb_cpu *cpu);
-int ext_op_0x53(gb_cpu *cpu);
-int ext_op_0x54(gb_cpu *cpu);
-int ext_op_0x55(gb_cpu *cpu);
-int ext_op_0x56(gb_cpu *cpu);
-int ext_op_0x57(gb_cpu *cpu);
-int ext_op_0x58(gb_cpu *cpu);
-int ext_op_0x59(gb_cpu *cpu);
-int ext_op_0x5A(gb_cpu *cpu);
-int ext_op_0x5B(gb_cpu *cpu);
-int ext_op_0x5C(gb_cpu *cpu);
-int ext_op_0x5D(gb_cpu *cpu);
-int ext_op_0x5E(gb_cpu *cpu);
-int ext_op_0x5F(gb_cpu *cpu);
+/* BIT 2,B */
+int
+ext_op_0x50(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 2);
 
-int ext_op_0x60(gb_cpu *cpu);
-int ext_op_0x61(gb_cpu *cpu);
-int ext_op_0x62(gb_cpu *cpu);
-int ext_op_0x63(gb_cpu *cpu);
-int ext_op_0x64(gb_cpu *cpu);
-int ext_op_0x65(gb_cpu *cpu);
-int ext_op_0x66(gb_cpu *cpu);
-int ext_op_0x67(gb_cpu *cpu);
-int ext_op_0x68(gb_cpu *cpu);
-int ext_op_0x69(gb_cpu *cpu);
-int ext_op_0x6A(gb_cpu *cpu);
-int ext_op_0x6B(gb_cpu *cpu);
-int ext_op_0x6C(gb_cpu *cpu);
-int ext_op_0x6D(gb_cpu *cpu);
-int ext_op_0x6E(gb_cpu *cpu);
-int ext_op_0x6F(gb_cpu *cpu);
+	return 8;
+}
 
-int ext_op_0x70(gb_cpu *cpu);
-int ext_op_0x71(gb_cpu *cpu);
-int ext_op_0x72(gb_cpu *cpu);
-int ext_op_0x73(gb_cpu *cpu);
-int ext_op_0x74(gb_cpu *cpu);
-int ext_op_0x75(gb_cpu *cpu);
-int ext_op_0x76(gb_cpu *cpu);
-int ext_op_0x77(gb_cpu *cpu);
-int ext_op_0x78(gb_cpu *cpu);
-int ext_op_0x79(gb_cpu *cpu);
-int ext_op_0x7A(gb_cpu *cpu);
-int ext_op_0x7B(gb_cpu *cpu);
-int ext_op_0x7C(gb_cpu *cpu);
-int ext_op_0x7D(gb_cpu *cpu);
-int ext_op_0x7E(gb_cpu *cpu);
-int ext_op_0x7F(gb_cpu *cpu);
+/* BIT 2,C */
+int
+ext_op_0x51(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 2);
 
-int ext_op_0x80(gb_cpu *cpu);
-int ext_op_0x81(gb_cpu *cpu);
-int ext_op_0x82(gb_cpu *cpu);
-int ext_op_0x83(gb_cpu *cpu);
-int ext_op_0x84(gb_cpu *cpu);
-int ext_op_0x85(gb_cpu *cpu);
-int ext_op_0x86(gb_cpu *cpu);
+	return 8;
+}
+
+/* BIT 2,D */
+int
+ext_op_0x52(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 2);
+
+	return 8;
+}
+
+/* BIT 2,E */
+int
+ext_op_0x53(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 2);
+
+	return 8;
+}
+
+/* BIT 2,H */
+int
+ext_op_0x54(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 2);
+
+	return 8;
+}
+
+/* BIT 2,L */
+int
+ext_op_0x55(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 2);
+
+	return 8;
+}
+
+/* BIT 2,(HL) */
+int
+ext_op_0x56(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 2);
+
+	return 16;
+}
+
+/* BIT 2,A */
+int
+ext_op_0x57(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 2);
+
+	return 8;
+}
+
+/* BIT 3,B */
+int
+ext_op_0x58(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 3);
+
+	return 8;
+}
+
+/* BIT 3,C */
+int
+ext_op_0x59(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 3);
+
+	return 8;
+}
+
+/* BIT 3,D */
+int
+ext_op_0x5A(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 3);
+
+	return 8;
+}
+
+/* BIT 3,E */
+int
+ext_op_0x5B(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 3);
+
+	return 8;
+}
+
+/* BIT 3,H */
+int
+ext_op_0x5C(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 3);
+
+	return 8;
+}
+
+/* BIT 3,L */
+int
+ext_op_0x5D(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 3);
+
+	return 8;
+}
+
+/* BIT 3,(HL) */
+int
+ext_op_0x5E(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 3);
+
+	return 16;
+}
+
+/* BIT 3,A */
+int
+ext_op_0x5F(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 3);
+
+	return 8;
+}
+
+/* BIT 4,B */
+int
+ext_op_0x60(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 4);
+
+	return 8;
+}
+
+/* BIT 4,C */
+int
+ext_op_0x61(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 4);
+
+	return 8;
+}
+
+/* BIT 4,D */
+int
+ext_op_0x62(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 4);
+
+	return 8;
+}
+
+/* BIT 4,E */
+int
+ext_op_0x63(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 4);
+
+	return 8;
+}
+
+/* BIT 4,H */
+int
+ext_op_0x64(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 4);
+
+	return 8;
+}
+
+/* BIT 4,L */
+int
+ext_op_0x65(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 4);
+
+	return 8;
+}
+
+/* BIT 4,(HL) */
+int
+ext_op_0x66(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 4);
+
+	return 16;
+}
+
+/* BIT 4,A */
+int
+ext_op_0x67(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 4);
+
+	return 8;
+}
+
+/* BIT 5,B */
+int
+ext_op_0x68(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 5);
+
+	return 8;
+}
+
+/* BIT 5,C */
+int
+ext_op_0x69(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 5);
+
+	return 8;
+}
+
+/* BIT 5,D */
+int
+ext_op_0x6A(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 5);
+
+	return 8;
+}
+
+/* BIT 5,E */
+int
+ext_op_0x6B(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 5);
+
+	return 8;
+}
+
+/* BIT 5,H */
+int
+ext_op_0x6C(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 5);
+
+	return 8;
+}
+
+/* BIT 5,L */
+int
+ext_op_0x6D(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 5);
+
+	return 8;
+}
+
+/* BIT 5,(HL) */
+int
+ext_op_0x6E(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 5);
+
+	return 16;
+}
+
+/* BIT 5,A */
+int
+ext_op_0x6F(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 5);
+
+	return 8;
+}
+
+/* BIT 6,B */
+int
+ext_op_0x70(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 6);
+
+	return 8;
+}
+
+/* BIT 6,C */
+int
+ext_op_0x71(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 6);
+
+	return 8;
+}
+
+/* BIT 6,D */
+int
+ext_op_0x72(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 6);
+
+	return 8;
+}
+
+/* BIT 6,E */
+int
+ext_op_0x73(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 6);
+
+	return 8;
+}
+
+/* BIT 6,H */
+int
+ext_op_0x74(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 6);
+
+	return 8;
+}
+
+/* BIT 6,L */
+int
+ext_op_0x75(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 6);
+
+	return 8;
+}
+
+/* BIT 6,(HL) */
+int
+ext_op_0x76(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 6);
+
+	return 16;
+}
+
+/* BIT 6,A */
+int
+ext_op_0x77(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 6);
+
+	return 8;
+}
+
+/* BIT 7,B */
+int
+ext_op_0x78(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].hi, 7);
+
+	return 8;
+}
+
+/* BIT 7,C */
+int
+ext_op_0x79(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_BC].lo, 7);
+
+	return 8;
+}
+
+/* BIT 7,D */
+int
+ext_op_0x7A(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].hi, 7);
+
+	return 8;
+}
+
+/* BIT 7,E */
+int
+ext_op_0x7B(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_DE].lo, 7);
+
+	return 8;
+}
+
+/* BIT 7,H */
+int
+ext_op_0x7C(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].hi, 7);
+
+	return 8;
+}
+
+/* BIT 7,L */
+int
+ext_op_0x7D(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_HL].lo, 7);
+
+	return 8;
+}
+
+/* BIT 7,(HL) */
+int
+ext_op_0x7E(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu),
+		 cpu->memory[cpu->regs[REG_HL].reg], 7);
+
+	return 16;
+}
+
+/* BIT 7,A */
+int
+ext_op_0x7F(gb_cpu *cpu)
+{
+	test_bit(FLAG_P(cpu), cpu->regs[REG_AF].hi, 7);
+
+	return 8;
+}
+
+/* RES 0,B */
+int
+ext_op_0x80(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,C */
+int
+ext_op_0x81(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,D */
+int
+ext_op_0x82(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,E */
+int
+ext_op_0x83(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,H */
+int
+ext_op_0x84(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,L */
+int
+ext_op_0x85(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(0);
+
+	return 8;
+}
+
+/* RES 0,(HL) */
+int
+ext_op_0x86(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(0);
+
+	return 16;
+}
 
 /* RES 0,A */
 int
@@ -3922,131 +4364,1083 @@ ext_op_0x87(gb_cpu *cpu)
 	return 8;
 }
 
-int ext_op_0x88(gb_cpu *cpu);
-int ext_op_0x89(gb_cpu *cpu);
-int ext_op_0x8A(gb_cpu *cpu);
-int ext_op_0x8B(gb_cpu *cpu);
-int ext_op_0x8C(gb_cpu *cpu);
-int ext_op_0x8D(gb_cpu *cpu);
-int ext_op_0x8E(gb_cpu *cpu);
-int ext_op_0x8F(gb_cpu *cpu);
+/* RES 1,B */
+int
+ext_op_0x88(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(1);
 
-int ext_op_0x90(gb_cpu *cpu);
-int ext_op_0x91(gb_cpu *cpu);
-int ext_op_0x92(gb_cpu *cpu);
-int ext_op_0x93(gb_cpu *cpu);
-int ext_op_0x94(gb_cpu *cpu);
-int ext_op_0x95(gb_cpu *cpu);
-int ext_op_0x96(gb_cpu *cpu);
-int ext_op_0x97(gb_cpu *cpu);
-int ext_op_0x98(gb_cpu *cpu);
-int ext_op_0x99(gb_cpu *cpu);
-int ext_op_0x9A(gb_cpu *cpu);
-int ext_op_0x9B(gb_cpu *cpu);
-int ext_op_0x9C(gb_cpu *cpu);
-int ext_op_0x9D(gb_cpu *cpu);
-int ext_op_0x9E(gb_cpu *cpu);
-int ext_op_0x9F(gb_cpu *cpu);
+	return 8;
+}
 
-int ext_op_0xA0(gb_cpu *cpu);
-int ext_op_0xA1(gb_cpu *cpu);
-int ext_op_0xA2(gb_cpu *cpu);
-int ext_op_0xA3(gb_cpu *cpu);
-int ext_op_0xA4(gb_cpu *cpu);
-int ext_op_0xA5(gb_cpu *cpu);
-int ext_op_0xA6(gb_cpu *cpu);
-int ext_op_0xA7(gb_cpu *cpu);
-int ext_op_0xA8(gb_cpu *cpu);
-int ext_op_0xA9(gb_cpu *cpu);
-int ext_op_0xAA(gb_cpu *cpu);
-int ext_op_0xAB(gb_cpu *cpu);
-int ext_op_0xAC(gb_cpu *cpu);
-int ext_op_0xAD(gb_cpu *cpu);
-int ext_op_0xAE(gb_cpu *cpu);
-int ext_op_0xAF(gb_cpu *cpu);
+/* RES 1,C */
+int
+ext_op_0x89(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(1);
 
-int ext_op_0xB0(gb_cpu *cpu);
-int ext_op_0xB1(gb_cpu *cpu);
-int ext_op_0xB2(gb_cpu *cpu);
-int ext_op_0xB3(gb_cpu *cpu);
-int ext_op_0xB4(gb_cpu *cpu);
-int ext_op_0xB5(gb_cpu *cpu);
-int ext_op_0xB6(gb_cpu *cpu);
-int ext_op_0xB7(gb_cpu *cpu);
-int ext_op_0xB8(gb_cpu *cpu);
-int ext_op_0xB9(gb_cpu *cpu);
-int ext_op_0xBA(gb_cpu *cpu);
-int ext_op_0xBB(gb_cpu *cpu);
-int ext_op_0xBC(gb_cpu *cpu);
-int ext_op_0xBD(gb_cpu *cpu);
-int ext_op_0xBE(gb_cpu *cpu);
-int ext_op_0xBF(gb_cpu *cpu);
+	return 8;
+}
 
-int ext_op_0xC0(gb_cpu *cpu);
-int ext_op_0xC1(gb_cpu *cpu);
-int ext_op_0xC2(gb_cpu *cpu);
-int ext_op_0xC3(gb_cpu *cpu);
-int ext_op_0xC4(gb_cpu *cpu);
-int ext_op_0xC5(gb_cpu *cpu);
-int ext_op_0xC6(gb_cpu *cpu);
-int ext_op_0xC7(gb_cpu *cpu);
-int ext_op_0xC8(gb_cpu *cpu);
-int ext_op_0xC9(gb_cpu *cpu);
-int ext_op_0xCA(gb_cpu *cpu);
-int ext_op_0xCB(gb_cpu *cpu);
-int ext_op_0xCC(gb_cpu *cpu);
-int ext_op_0xCD(gb_cpu *cpu);
-int ext_op_0xCE(gb_cpu *cpu);
-int ext_op_0xCF(gb_cpu *cpu);
+/* RES 1,D */
+int
+ext_op_0x8A(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(1);
 
-int ext_op_0xD0(gb_cpu *cpu);
-int ext_op_0xD1(gb_cpu *cpu);
-int ext_op_0xD2(gb_cpu *cpu);
-int ext_op_0xD3(gb_cpu *cpu);
-int ext_op_0xD4(gb_cpu *cpu);
-int ext_op_0xD5(gb_cpu *cpu);
-int ext_op_0xD6(gb_cpu *cpu);
-int ext_op_0xD7(gb_cpu *cpu);
-int ext_op_0xD8(gb_cpu *cpu);
-int ext_op_0xD9(gb_cpu *cpu);
-int ext_op_0xDA(gb_cpu *cpu);
-int ext_op_0xDB(gb_cpu *cpu);
-int ext_op_0xDC(gb_cpu *cpu);
-int ext_op_0xDD(gb_cpu *cpu);
-int ext_op_0xDE(gb_cpu *cpu);
-int ext_op_0xDF(gb_cpu *cpu);
+	return 8;
+}
 
-int ext_op_0xE0(gb_cpu *cpu);
-int ext_op_0xE1(gb_cpu *cpu);
-int ext_op_0xE2(gb_cpu *cpu);
-int ext_op_0xE3(gb_cpu *cpu);
-int ext_op_0xE4(gb_cpu *cpu);
-int ext_op_0xE5(gb_cpu *cpu);
-int ext_op_0xE6(gb_cpu *cpu);
-int ext_op_0xE7(gb_cpu *cpu);
-int ext_op_0xE8(gb_cpu *cpu);
-int ext_op_0xE9(gb_cpu *cpu);
-int ext_op_0xEA(gb_cpu *cpu);
-int ext_op_0xEB(gb_cpu *cpu);
-int ext_op_0xEC(gb_cpu *cpu);
-int ext_op_0xED(gb_cpu *cpu);
-int ext_op_0xEE(gb_cpu *cpu);
-int ext_op_0xEF(gb_cpu *cpu);
+/* RES 1,E */
+int
+ext_op_0x8B(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(1);
 
-int ext_op_0xF0(gb_cpu *cpu);
-int ext_op_0xF1(gb_cpu *cpu);
-int ext_op_0xF2(gb_cpu *cpu);
-int ext_op_0xF3(gb_cpu *cpu);
-int ext_op_0xF4(gb_cpu *cpu);
-int ext_op_0xF5(gb_cpu *cpu);
-int ext_op_0xF6(gb_cpu *cpu);
-int ext_op_0xF7(gb_cpu *cpu);
-int ext_op_0xF8(gb_cpu *cpu);
-int ext_op_0xF9(gb_cpu *cpu);
-int ext_op_0xFA(gb_cpu *cpu);
-int ext_op_0xFB(gb_cpu *cpu);
-int ext_op_0xFC(gb_cpu *cpu);
-int ext_op_0xFD(gb_cpu *cpu);
-int ext_op_0xFE(gb_cpu *cpu);
-int ext_op_0xFF(gb_cpu *cpu);
+	return 8;
+}
+
+/* RES 1,H */
+int
+ext_op_0x8C(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(1);
+
+	return 8;
+}
+
+/* RES 1,L */
+int
+ext_op_0x8D(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(1);
+
+	return 8;
+}
+
+/* RES 1,(HL) */
+int
+ext_op_0x8E(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(1);
+
+	return 16;
+}
+
+/* RES 1,A */
+int
+ext_op_0x8F(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(1);
+
+	return 8;
+}
+
+/* RES 2,B */
+int
+ext_op_0x90(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,C */
+int
+ext_op_0x91(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,D */
+int
+ext_op_0x92(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,E */
+int
+ext_op_0x93(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,H */
+int
+ext_op_0x94(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,L */
+int
+ext_op_0x95(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 2,(HL) */
+int
+ext_op_0x96(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(2);
+
+	return 16;
+}
+
+/* RES 2,A */
+int
+ext_op_0x97(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(2);
+
+	return 8;
+}
+
+/* RES 3,B */
+int
+ext_op_0x98(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,C */
+int
+ext_op_0x99(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,D */
+int
+ext_op_0x9A(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,E */
+int
+ext_op_0x9B(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,H */
+int
+ext_op_0x9C(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,L */
+int
+ext_op_0x9D(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 3,(HL) */
+int
+ext_op_0x9E(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(3);
+
+	return 16;
+}
+
+/* RES 3,A */
+int
+ext_op_0x9F(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(3);
+
+	return 8;
+}
+
+/* RES 4,B */
+int
+ext_op_0xA0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,C */
+int
+ext_op_0xA1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,D */
+int
+ext_op_0xA2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,E */
+int
+ext_op_0xA3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,H */
+int
+ext_op_0xA4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,L */
+int
+ext_op_0xA5(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 4,(HL) */
+int
+ext_op_0xA6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(4);
+
+	return 16;
+}
+
+/* RES 4,A */
+int
+ext_op_0xA7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(4);
+
+	return 8;
+}
+
+/* RES 5,B */
+int
+ext_op_0xA8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,C */
+int
+ext_op_0xA9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,D */
+int
+ext_op_0xAA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,E */
+int
+ext_op_0xAB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,H */
+int
+ext_op_0xAC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,L */
+int
+ext_op_0xAD(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 5,(HL) */
+int
+ext_op_0xAE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(5);
+
+	return 16;
+}
+
+/* RES 5,A */
+int
+ext_op_0xAF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(5);
+
+	return 8;
+}
+
+/* RES 6,B */
+int
+ext_op_0xB0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,C */
+int
+ext_op_0xB1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,D */
+int
+ext_op_0xB2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,E */
+int
+ext_op_0xB3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,H */
+int
+ext_op_0xB4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,L */
+int
+ext_op_0xB5(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 6,(HL) */
+int
+ext_op_0xB6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(6);
+
+	return 16;
+}
+
+/* RES 6,A */
+int
+ext_op_0xB7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(6);
+
+	return 8;
+}
+
+/* RES 7,B */
+int
+ext_op_0xB8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,C */
+int
+ext_op_0xB9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,D */
+int
+ext_op_0xBA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,E */
+int
+ext_op_0xBB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,H */
+int
+ext_op_0xBC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,L */
+int
+ext_op_0xBD(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].lo &= ~BIT(7);
+
+	return 8;
+}
+
+/* RES 7,(HL) */
+int
+ext_op_0xBE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_HL].reg] &= ~BIT(7);
+
+	return 16;
+}
+
+/* RES 7,A */
+int
+ext_op_0xBF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi &= ~BIT(7);
+
+	return 8;
+}
+
+/* SET 0,B */
+int
+ext_op_0xC0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,C */
+int
+ext_op_0xC1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,D */
+int
+ext_op_0xC2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,E */
+int
+ext_op_0xC3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,H */
+int
+ext_op_0xC4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,L */
+int
+ext_op_0xC5(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(0);
+
+	return 8;
+}
+
+/* SET 0,(HL) */
+int
+ext_op_0xC6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(0);
+
+	return 16;
+}
+
+/* SET 0,A */
+int
+ext_op_0xC7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(0);
+
+	return 8;
+}
+
+/* SET 1,B */
+int
+ext_op_0xC8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,C */
+int
+ext_op_0xC9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,D */
+int
+ext_op_0xCA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,E */
+int
+ext_op_0xCB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,H */
+int
+ext_op_0xCC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,L */
+int
+ext_op_0xCD(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(1);
+
+	return 8;
+}
+
+/* SET 1,(HL) */
+int
+ext_op_0xCE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(1);
+
+	return 16;
+}
+
+/* SET 1,A */
+int
+ext_op_0xCF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(1);
+
+	return 8;
+}
+
+/* SET 2,B */
+int
+ext_op_0xD0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,C */
+int
+ext_op_0xD1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,D */
+int
+ext_op_0xD2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,E */
+int
+ext_op_0xD3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,H */
+int
+ext_op_0xD4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,L */
+int
+ext_op_0xD5(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(2);
+
+	return 8;
+}
+
+/* SET 2,(HL) */
+int
+ext_op_0xD6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(2);
+
+	return 16;
+}
+
+/* SET 2,A */
+int
+ext_op_0xD7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(2);
+
+	return 8;
+}
+
+/* SET 3,B */
+int
+ext_op_0xD8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,C */
+int
+ext_op_0xD9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,D */
+int
+ext_op_0xDA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,E */
+int
+ext_op_0xDB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,H */
+int
+ext_op_0xDC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,L */
+int
+ext_op_0xDD(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(3);
+
+	return 8;
+}
+
+/* SET 3,(HL) */
+int
+ext_op_0xDE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(3);
+
+	return 16;
+}
+
+/* SET 3,A */
+int
+ext_op_0xDF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(3);
+
+	return 8;
+}
+
+/* SET 4,B */
+int
+ext_op_0xE0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,C */
+int
+ext_op_0xE1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,D */
+int
+ext_op_0xE2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,E */
+int
+ext_op_0xE3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,H */
+int
+ext_op_0xE4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,L */
+int
+ext_op_0xE5(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(4);
+
+	return 8;
+}
+
+/* SET 4,(HL) */
+int
+ext_op_0xE6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(4);
+
+	return 16;
+}
+
+/* SET 4,A */
+int
+ext_op_0xE7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(4);
+
+	return 8;
+}
+
+/* SET 5,B */
+int
+ext_op_0xE8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,C */
+int
+ext_op_0xE9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,D */
+int
+ext_op_0xEA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,E */
+int
+ext_op_0xEB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,H */
+int
+ext_op_0xEC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,L */
+int
+ext_op_0xED(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(5);
+
+	return 8;
+}
+
+/* SET 5,(HL) */
+int
+ext_op_0xEE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(5);
+
+	return 16;
+}
+
+/* SET 5,A */
+int
+ext_op_0xEF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(5);
+
+	return 8;
+}
+
+/* SET 6,B */
+int
+ext_op_0xF0(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,C */
+int
+ext_op_0xF1(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,D */
+int
+ext_op_0xF2(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,E */
+int
+ext_op_0xF3(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,H */
+int
+ext_op_0xF4(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,L */
+int
+ext_op_0xF5(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(6);
+
+	return 8;
+}
+
+/* SET 6,(HL) */
+int
+ext_op_0xF6(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(6);
+
+	return 16;
+}
+
+/* SET 6,A */
+int
+ext_op_0xF7(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(6);
+
+	return 8;
+}
+
+/* SET 7,B */
+int
+ext_op_0xF8(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].hi |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,C */
+int
+ext_op_0xF9(gb_cpu *cpu)
+{
+	cpu->regs[REG_BC].lo |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,D */
+int
+ext_op_0xFA(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].hi |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,E */
+int
+ext_op_0xFB(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,H */
+int
+ext_op_0xFC(gb_cpu *cpu)
+{
+	cpu->regs[REG_HL].hi |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,L */
+int
+ext_op_0xFD(gb_cpu *cpu)
+{
+	cpu->regs[REG_DE].lo |= BIT(7);
+
+	return 8;
+}
+
+/* SET 7,(HL) */
+int
+ext_op_0xFE(gb_cpu *cpu)
+{
+	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(7);
+
+	return 16;
+}
+
+/* SET 7,A */
+int
+ext_op_0xFF(gb_cpu *cpu)
+{
+	cpu->regs[REG_AF].hi |= BIT(7);
+
+	return 8;
+}
 

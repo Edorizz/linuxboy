@@ -18,8 +18,11 @@ typedef struct {
 } gameboy;
 
 void power_gb(gameboy *gb);
+void reset_gb(gameboy *gb);
 void shutdown_gb(gameboy *gb);
 void update_gb(gameboy *gb);
+
+void resize_gb(gameboy *gb, int width, int height);
 
 #endif /* LINUXBOY_GAMEBOY_H */
 

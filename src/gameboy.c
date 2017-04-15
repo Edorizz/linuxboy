@@ -18,10 +18,19 @@ power_gb(gameboy *gb)
 
 	/* Link components */
 	gb->cpu.cart = &gb->cart;
-	gb->win.scr_buf = gb->cpu.scr_buf[0][0][0];
+	gb->win.scr_buf = &gb->cpu.scr_buf[0][0][0];
 
 	/* Power components */
 	power_cpu(&gb->cpu);
+}
+
+void
+reset_gb(gameboy *gb)
+{
+	memset(gb, 0, sizeof(*gb));
+
+	gb->win.width = SCR_W;
+	gb->win.height = SCR_H;
 }
 
 void
@@ -59,6 +68,7 @@ update_gb(gameboy *gb)
 		draw_tiles(&gb->cpu);
 		flip_screen(&gb->cpu);
 		render(&gb->win);
+		clear_screen(&gb->cpu, WHITE);
 
 		swap_window(&gb->win);
 	}
