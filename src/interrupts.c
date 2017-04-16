@@ -2,6 +2,7 @@
 #include <linuxboy/interrupts.h>
 /* C library */
 #include <stdio.h>
+#include <stdlib.h>
 /* Linuxboy */
 #include <linuxboy/utils.h>
 #include <linuxboy/opcodes.h>

@@ -47,8 +47,15 @@ update_gb(gameboy *gb)
 		gb->emu_flags |= BIT(DEBUG);
 
 	/* Print CPU status if on debug mode */
-	if (gb->emu_flags & BIT(DEBUG))
+	if (gb->emu_flags & BIT(DEBUG)) {
 		cpu_status(&gb->cpu);
+		if (gb->watch_size) {
+			printf("\n--+ WATCH LIST +--\n");
+			for (int i = 0; i != gb->watch_size; ++i)
+				printf("%04x: %02x\n",
+				       gb->watch_list[i], gb->cpu.memory[gb->watch_list[i]]);
+		}
+	}
 
 	/* Proccess input */
 	handle_input(&gb->win);

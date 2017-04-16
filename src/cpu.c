@@ -54,11 +54,17 @@ power_cpu(gb_cpu *cpu)
 	cpu->pc = 0x100;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
 	
-	/* Initialize registers */
+	/* Initialize CPU registers */
 	cpu->regs[REG_AF].reg = 0x01B0;
 	cpu->regs[REG_BC].reg = 0x0013;
 	cpu->regs[REG_DE].reg = 0x00D8;
 	cpu->regs[REG_HL].reg = 0x014D;
+
+	/* Initialize special registers */
+	cpu->memory[LCD_CONTROL] = 0x91;
+	cpu->memory[LCD_STATUS] = 0x85;
+	cpu->memory[IE] = 0x00;
+	cpu->memory[IF] = 0xE1;
 
 	/* Reset joypad */
 	cpu->joypad = 0xFF;
@@ -446,6 +452,8 @@ cpu_status(const gb_cpu *cpu)
 			break;
 		}
 	}
+
+	/* THIS CAN ALL GO IN ONE BIG PRINTF() BUT THIS WAY LOOKS CLEANER */
 	
 	/* Stack pointer */
 	printf("\nsp(%04x): %04x\n", (WORD)((BYTE*)cpu->stack - cpu->memory), cpu->stack->reg);
@@ -460,28 +468,22 @@ cpu_status(const gb_cpu *cpu)
 	
 	/* Print registers */
 	printf("\nreg_af: %04x\n"
-	       "\ta: %02x\n"
-	       "\tf: %02x\n"
 	       "reg_bc: %04x\n"
-	       "\tb: %02x\n"
-	       "\tc: %02x\n"
 	       "reg_de: %04x\n"
-	       "\td: %02x\n"
-	       "\te: %02x\n"
-	       "reg_hl: %04x\n"
-	       "\th: %02x\n"
-	       "\tl: %02x\n",
-	       cpu->regs[REG_AF].reg, cpu->regs[REG_AF].hi, FLAG(cpu),
-	       cpu->regs[REG_BC].reg, cpu->regs[REG_BC].hi, cpu->regs[REG_BC].lo,
-	       cpu->regs[REG_DE].reg, cpu->regs[REG_DE].hi, cpu->regs[REG_DE].lo,
-	       cpu->regs[REG_HL].reg, cpu->regs[REG_HL].hi, cpu->regs[REG_HL].lo);
+	       "reg_hl: %04x\n",
+	       cpu->regs[REG_AF].reg,
+	       cpu->regs[REG_BC].reg,
+	       cpu->regs[REG_DE].reg,
+	       cpu->regs[REG_HL].reg);
 
 	/* Print other stuff */
-	printf("\nie: %02x"
-	       "\nif: %02x"
-	       "\nime: %d\n\n",
+	printf("\nie: %02x\tif: %02x\time: %d",
 	       cpu->memory[IE],
 	       cpu->memory[IF],
 	       cpu->ime);
+
+	printf("\nlcd: %02x\tstat: %02x\n",
+	       cpu->memory[LCD_CONTROL],
+	       cpu->memory[LCD_STATUS]);
 }
 
