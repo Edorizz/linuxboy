@@ -6,9 +6,6 @@
 #include <linuxboy/utils.h>
 #include <linuxboy/opcodes.h>
 
-/* Not really necessary, may remove */
-const WORD routines[INTERRUPT_MAX] = { 0x40, 0x48, 0x50, 0x58, 0x60 };
-
 void
 request_interrupt(gb_cpu *cpu, BYTE interrupt)
 {
@@ -26,8 +23,7 @@ handle_interrupts(gb_cpu *cpu)
 		for (int i = 0; i != INTERRUPT_MAX; ++i) {
 			if (interrupts & BIT(i)) {
 				cpu->memory[IF] ^= BIT(i);
-				call(cpu, routines[i]);
-				/* call(cpu, 0x40 + i * 8); */
+				call(cpu, 0x40 + i * 8);
 				break;
 			}
 		}

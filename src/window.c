@@ -178,6 +178,8 @@ handle_input(gl_window *win)
 				case SDLK_p:
 					*win->emu_flags ^= BIT(DEBUG);
 					break;
+				case SDLK_m:
+					*win->emu_flags |= BIT(MAP_DUMP);
 				case SDLK_n:
 					return;
 				}

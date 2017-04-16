@@ -10,6 +10,25 @@
 /* Function prototypes */
 void usage(char **argv);
 
+void
+map_dump(gameboy *gb)
+{
+	FILE *fp = fopen("map.log", "wb");
+	int id;
+
+	for (int i = 0; i != 32; ++i) {
+		for (int j = 0; j != 32; ++j) {
+			if ((id = gb->cpu.memory[0x9800 + (i * 32) + j]) == 0x2F)
+				fprintf(fp, "   ");
+			else
+				fprintf(fp, "%02x ", id);
+		}
+		fprintf(fp, "\n");
+	}
+
+	fclose(fp);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -62,8 +81,14 @@ main(int argc, char **argv)
 		return 0;
 	}
 
-	while (!(gb.emu_flags & BIT(QUIT)))
+	while (!(gb.emu_flags & BIT(QUIT))) {
+		if (gb.emu_flags & BIT(MAP_DUMP)) {
+			map_dump(&gb);
+			return 0;
+		}
+
 		update_gb(&gb);
+	}
 
 	shutdown_gb(&gb);
 

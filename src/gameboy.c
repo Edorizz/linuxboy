@@ -65,7 +65,6 @@ update_gb(gameboy *gb)
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {
 		gb->curr_cycles = 0;
 
-		draw_tiles(&gb->cpu);
 		flip_screen(&gb->cpu);
 		render(&gb->win);
 		clear_screen(&gb->cpu, WHITE);

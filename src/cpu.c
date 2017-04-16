@@ -162,16 +162,16 @@ set_frequency(gb_cpu *cpu)
 {
 	switch (read_byte(cpu, TMC) & 0x3) {
 	case 0:
-		cpu->timer_cnt = CLOCK_RATE / 4096;
+		cpu->timer_cnt += CLOCK_RATE / 4096;
 		break;
 	case 1:
-		cpu->timer_cnt = CLOCK_RATE / 262144;
+		cpu->timer_cnt += CLOCK_RATE / 262144;
 		break;
 	case 2:
-		cpu->timer_cnt = CLOCK_RATE / 65536;
+		cpu->timer_cnt += CLOCK_RATE / 65536;
 		break;
 	case 3:
-		cpu->timer_cnt = CLOCK_RATE / 16384;
+		cpu->timer_cnt += CLOCK_RATE / 16384;
 		break;
 	}
 }
@@ -179,8 +179,8 @@ set_frequency(gb_cpu *cpu)
 void
 divider_register(gb_cpu *cpu, int ops)
 {
-	if ((cpu->divider_cnt += ops) > 255) {
-		cpu->divider_cnt = 0;
+	if ((cpu->divider_cnt -= ops) < 0) {
+		cpu->divider_cnt += 256;
 		++cpu->memory[DIVIDER_REGISTER];
 	}
 }
@@ -267,19 +267,52 @@ update_graphics(gb_cpu *cpu, int ops)
 		if ((cpu->scanline_cnt -= ops) <= 0) {
 			++cpu->memory[CURR_SCANLINE];
 			scanline = read_byte(cpu, CURR_SCANLINE);
-			cpu->scanline_cnt = 456;
+			cpu->scanline_cnt += 456;
 			
-			if (scanline == 144) {
+			if (scanline == 144)
 				request_interrupt(cpu, VBLANK);
-			} else if (scanline == 153) {
+			else if (scanline == 153)
 				cpu->memory[CURR_SCANLINE] = 0;
-			} else if (scanline < 144) {
-				/* TODO: DRAW SCANLINE */
-			}
+			else if (scanline < 144)
+				draw_scanline(cpu);
 		}
 	}
 }
 
+void
+draw_scanline(gb_cpu *cpu)
+{
+	BYTE lcd, scanline, scroll_x, scroll_y, id, *tile;
+
+	lcd = read_byte(cpu, LCD_CONTROL);
+
+	if (lcd & BIT(0)) {
+		scanline = read_byte(cpu, CURR_SCANLINE);
+		scroll_x = read_byte(cpu, SCROLL_X);
+		scroll_y = read_byte(cpu, SCROLL_Y);
+
+		if (lcd & BIT(4)) {
+			if (lcd & BIT(3)) {
+				/* NOT SUPPORTED */
+				exit(1);
+			} else {
+				for (int i = 0; i != 20; ++i) {
+					id = cpu->memory[0x9800 + ((scroll_y + scanline) / 8 * 32) + (scroll_x + i) % 32];
+
+					tile = get_tile(cpu, id);
+
+					draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
+						      &cpu->scr_buf[scanline][i * 8][0]);
+				}
+			}
+		} else {
+			/* NOT SUPPORTED */
+			exit(1);
+		}
+	}
+}
+
+/* TODO: Too much malloc! */
 void
 flip_screen(gb_cpu *cpu)
 {
@@ -304,6 +337,12 @@ clear_screen(gb_cpu *cpu, int color)
 	for (int i = 0; i != SCR_H; ++i)
 		for (int j = 0; j != SCR_W; ++j)
 			memcpy(cpu->scr_buf[i][j], &colors[color], 3);
+}
+
+BYTE *
+get_tile(gb_cpu *cpu, BYTE id)
+{
+	return &cpu->memory[0x8000 + id * 16];
 }
 
 void

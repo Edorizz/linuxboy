@@ -12,3 +12,4 @@ void divider_register(gb_cpu *cpu, int ops);
 void update_timers(gb_cpu *cpu, int ops);
 
 #endif /* LINUXBOY_TIMERS_H */
+
