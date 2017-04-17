@@ -2,7 +2,7 @@
 #define LINUXBOY_H
 
 #include <linuxboy/utils.h>
-
+#include <linuxboy/cmd.h>
 #include <linuxboy/gameboy.h>
 #include <linuxboy/cpu.h>
 #include <linuxboy/timers.h>

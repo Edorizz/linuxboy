@@ -108,6 +108,7 @@ power_cpu(gb_cpu *cpu)
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
+	cpu->scanline_cnt = CLOCK_RATE / 9198;
 	
 	return 0;
 }

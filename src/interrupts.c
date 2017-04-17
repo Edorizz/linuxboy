@@ -10,7 +10,7 @@
 void
 request_interrupt(gb_cpu *cpu, BYTE interrupt)
 {
-	write_byte(cpu, IE, read_byte(cpu, IE) | BIT(interrupt));
+	write_byte(cpu, IF, read_byte(cpu, IF) | BIT(interrupt));
 }
 
 void

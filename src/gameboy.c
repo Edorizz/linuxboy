@@ -80,3 +80,17 @@ update_gb(gameboy *gb)
 	}
 }
 
+void
+map_dump(gameboy *gb)
+{
+	FILE *fp = fopen("map.log", "wb");
+
+	for (int i = 0; i != 32; ++i) {
+		for (int j = 0; j != 32; ++j)
+			fprintf(fp, "%02x ", gb->cpu.memory[0x9800 + (i * 32) + j]);
+		fprintf(fp, "\n");
+	}
+
+	fclose(fp);
+}
+

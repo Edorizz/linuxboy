@@ -6,7 +6,7 @@
 #define CARTRIDGE_SIZE	0x200000
 
 typedef struct {
-	char *rom_path;
+	const char *rom_path;
 	BYTE rom[CARTRIDGE_SIZE];
 	int rom_size;
 } gb_cartridge;
