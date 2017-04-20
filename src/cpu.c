@@ -298,23 +298,12 @@ draw_scanline(gb_cpu *cpu)
 		scroll_x = read_byte(cpu, SCROLL_X);
 		scroll_y = read_byte(cpu, SCROLL_Y);
 
-		if (lcd & BIT(4)) {
-			if (lcd & BIT(3)) {
-				/* NOT SUPPORTED */
-				exit(1);
-			} else {
-				for (int i = 0; i != 20; ++i) {
-					id = cpu->memory[0x9800 + ((scroll_y + scanline) / 8 * 32) + (scroll_x + i) % 32];
-
-					tile = get_tile(cpu, id);
-
-					draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
-						      &cpu->scr_buf[scanline][i * 8][0]);
-				}
-			}
-		} else {
-			/* NOT SUPPORTED */
-			exit(1);
+		for (int i = 0; i != 20; ++i) {
+			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) + ((scroll_y + scanline) / 8 * 32) + ((scroll_x + i) % 32)];
+			tile = get_tile(cpu, id);
+			
+			draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
+				      &cpu->scr_buf[scanline][i * 8][0]);
 		}
 	}
 }
@@ -349,7 +338,10 @@ clear_screen(gb_cpu *cpu, int color)
 BYTE *
 get_tile(gb_cpu *cpu, BYTE id)
 {
-	return &cpu->memory[0x8000 + id * 16];
+	if (cpu->memory[LCD_CONTROL] & BIT(4))
+		return &cpu->memory[0x8000 + id * 16];
+	else
+		return &cpu->memory[0x8800 + (127 + *(SIGNED_BYTE*)&id) * 16];
 }
 
 void
