@@ -309,7 +309,9 @@ draw_scanline(gb_cpu *cpu)
 		scroll_y = read_byte(cpu, SCROLL_Y);
 
 		for (int i = 0; i != 20; ++i) {
-			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) + ((scroll_y + scanline) / 8 * 32) + ((scroll_x + i) % 32)];
+			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) +
+					 ((scroll_y + scanline) / 8 * 32) +
+					 ((scroll_x + i) % 32)];
 			tile = get_tile(cpu, id);
 			
 			draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
@@ -351,7 +353,7 @@ get_tile(gb_cpu *cpu, BYTE id)
 	if (cpu->memory[LCD_CONTROL] & BIT(4))
 		return &cpu->memory[0x8000 + id * 16];
 	else
-		return &cpu->memory[0x8800 + (127 + *(SIGNED_BYTE*)&id) * 16];
+		return &cpu->memory[0x8800 + (128 + *(SIGNED_BYTE*)&id) * 16];
 }
 
 void

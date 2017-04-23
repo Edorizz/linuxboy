@@ -694,10 +694,10 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_N);
 	
-	if (*b - val >= 0)
+	if (*b < val)
 		*flag |= BIT(FLAG_C);
 	
-	if (!((*b ^ (*b - val)) & (1 << 3)))
+	if (!((*b ^ (*b - val)) & BIT(4)))
 		*flag |= BIT(FLAG_H);
 	
 	*b -= val;
@@ -752,7 +752,7 @@ test_bit(BYTE *flag, BYTE b, BYTE bit)
 	RESET_FLAGS(*flag, BIT(FLAG_N) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_H);
 
-	if (!(*flag & BIT(bit)))
+	if (!(b & BIT(bit)))
 		*flag |= BIT(FLAG_Z);
 }
 

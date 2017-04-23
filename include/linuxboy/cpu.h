@@ -14,8 +14,8 @@
 /* SPECIAL REGISTERS */
 #define LCD_CONTROL		0xFF40
 #define LCD_STATUS		0xFF41
-#define SCROLL_X		0xFF42
-#define SCROLL_Y		0xFF43
+#define SCROLL_Y		0xFF42
+#define SCROLL_X		0xFF43
 #define CURR_SCANLINE		0xFF44
 #define TARGET_SCANLINE		0xFF45
 #define WINDOW_X		0xFF4A
