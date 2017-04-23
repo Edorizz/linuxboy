@@ -57,16 +57,31 @@ update_gb(gameboy *gb)
 		}
 	}
 
-	/* Proccess input */
-	handle_input(&gb->win);
+	if (!(gb->cpu.status & HALT)) {
+		/* Proccess input */
+		handle_input(&gb->win);
+		
+		/* Execute opcode */
+		gb->curr_cycles += gb->cycles = exec_op(&gb->cpu);
+		
+		/* Update internals */
+		update_timers(&gb->cpu, gb->cycles);
+		update_graphics(&gb->cpu, gb->cycles);
+	}
 
-	/* Execute opcode */
-	gb->curr_cycles += gb->cycles = exec_op(&gb->cpu);
-
-	/* Update internals */
-	update_timers(&gb->cpu, gb->cycles);
-	update_graphics(&gb->cpu, gb->cycles);
 	handle_interrupts(&gb->cpu);
+
+	/*
+	printf("%c%c%c%c%c%c%c%c\n",
+	       gb->cpu.joypad & BIT(BUTTON_A) ? '.': 'A',
+	       gb->cpu.joypad & BIT(BUTTON_B) ? '.': 'B',
+	       gb->cpu.joypad & BIT(BUTTON_START) ? '.': 'S',
+	       gb->cpu.joypad & BIT(BUTTON_SELECT) ? '.': 's',
+	       gb->cpu.joypad & BIT(PAD_RIGHT) ? '.': '>',
+	       gb->cpu.joypad & BIT(PAD_LEFT) ? '.': '<',
+	       gb->cpu.joypad & BIT(PAD_UP) ? '.': '^',
+	       gb->cpu.joypad & BIT(PAD_DOWN) ? '.': 'v');
+	*/
 
 	/* Draw only if neccessary */
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {

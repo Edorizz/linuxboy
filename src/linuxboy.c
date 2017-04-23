@@ -25,7 +25,6 @@ main(int argc, const char **argv)
 		}
 	}
 
-
 	power_gb(&gb);
 	if (gb.cart.rom_size == 0) {
 		usage(argv);

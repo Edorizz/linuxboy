@@ -131,7 +131,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD (HL),E", 1, op_0x73 },
 			{ "LD (HL),H", 1, op_0x74 },
 			{ "LD (HL),L", 1, op_0x75 },
-			{ "HALT", 1, NULL },
+			{ "HALT", 1, op_0x76 },
 			{ "LD (HL),A", 1, op_0x77 },
 			{ "LD A,B", 1, op_0x78 },
 			{ "LD A,C", 1, op_0x79 },
@@ -771,8 +771,33 @@ read_word(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
-	if (addr < 0x8000) {
-		/* ROM */
+	if (addr < 0x2000) {
+		if ((cpu->cart->flags & BIT(MBC_2) && addr & BIT(4)) ||
+		    (val & 0x0F) == 0)
+			cpu->cart->flags &= ~BIT(RAM_ENABLE);
+		else if (cpu->cart->flags & BIT(MBC_1))
+			cpu->cart->flags |= BIT(RAM_ENABLE);
+	} else if (addr < 0x4000) {
+		if (cpu->cart->flags & BIT(MBC_1))
+			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
+		else if (cpu->cart->flags & BIT(MBC_2))
+			cpu->cart->rom_bank = val & 0x0F;
+
+		load_rom_bank(cpu);
+	} else if (addr < 0x6000) {
+		if (cpu->cart->flags & BIT(MBC_1)) {
+			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
+				cpu->cart->ram_bank = val & 0x3;
+			} else {
+				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | (val & 0xE0);
+				load_rom_bank(cpu);
+			}
+		}
+	} else if (addr < 0x8000) {
+		if (val & BIT(0))
+			cpu->cart->flags &= ~BIT(RAM_CHANGE);
+		else
+			cpu->cart->flags |= BIT(RAM_CHANGE);
 	} else if (addr >= 0xE000 && addr < 0xFE00) {
 		/* ECHO memory */
 		cpu->memory[addr] = val;
@@ -785,10 +810,12 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == 0xFF46) {
 		dma_transfer(cpu, val);
 	} else if (addr == 0xFF00) {
-		if (val == 0x10)
-			cpu->memory[addr] = ~(0x20 & 0xF0) | (cpu->joypad & 0x0F);
-		else if (val == 0x20)
-			cpu->memory[addr] = ~(0x10 & 0xF0) | ((cpu->joypad & 0xF0) >> 4);
+		if (val & BIT(6) && val & BIT(5))
+			cpu->memory[addr] = 0xFF;
+		else if (val & BIT(5))
+			cpu->memory[addr] = (0x20 ^ 0xF0) | (cpu->joypad & 0x0F);
+		else if (val & BIT(6))
+			cpu->memory[addr] = (0x10 ^ 0xF0) | (cpu->joypad >> 4);
 	} else {
 		cpu->memory[addr] = val;
 	}
@@ -1912,7 +1939,7 @@ op_0x75(gb_cpu *cpu)
 int
 op_0x76(gb_cpu *cpu)
 {
-	IMPLEMENT("HALT");
+	cpu->status = BIT(HALT);
 	
 	return 4;
 }

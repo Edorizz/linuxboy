@@ -8,7 +8,7 @@
 #include <linuxboy/glsl_shader.h>
 
 const key_pair joypad_input[8] = { { SDLK_j, BUTTON_A }, { SDLK_k, BUTTON_B },
-				   { SDLK_u, BUTTON_START }, { SDLK_i, BUTTON_START },
+				   { SDLK_u, BUTTON_START }, { SDLK_i, BUTTON_SELECT },
 				   { SDLK_d, PAD_RIGHT }, { SDLK_a, PAD_LEFT },
 				   { SDLK_w, PAD_UP }, { SDLK_s, PAD_DOWN } };
 
@@ -139,9 +139,9 @@ void
 joypad_event(gl_window *win, int event)
 {
 	if (event & BIT(EVENT_PRESS))
-		*win->joypad &= ~BIT(event & 0xFF);
+		*win->joypad &= ~(event & 0xFF);
 	else if (event & BIT(EVENT_RELEASE))
-		*win->joypad |= BIT(event & 0xFF);
+		*win->joypad |= event & 0xFF;
 }
 
 void
@@ -149,9 +149,8 @@ handle_joypad(gl_window *win, SDL_Event *event)
 {
 	for (int i = 0; i != 8; ++i) {
 		if (joypad_input[i].scancode == event->key.keysym.sym) {
-			joypad_event(win, BIT(joypad_input[i].scancode) |
+			joypad_event(win, BIT(joypad_input[i].joypad_bit) |
 				     (event->type == SDL_KEYDOWN ? BIT(EVENT_PRESS) : BIT(EVENT_RELEASE)));
-
 			return;
 		}
 	}

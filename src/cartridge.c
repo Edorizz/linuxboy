@@ -31,6 +31,18 @@ load_cartridge(gb_cartridge *cart)
 			return -1;
 		}
 
+		switch (cart->rom[CARTRIDGE_TYPE]) {
+		case 1:
+		case 2:
+		case 3:
+			cart->flags |= BIT(MBC_1);
+			break;
+		case 4:
+		case 5:
+			cart->flags |= BIT(MBC_2);
+			break;
+		}
+
 		fclose(fp);
 	}
 

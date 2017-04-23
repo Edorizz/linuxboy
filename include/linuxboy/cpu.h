@@ -26,6 +26,7 @@
 
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum cpu_flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
+enum cpu_status { HALT, STOP };
 
 /* RGB PIXEL */
 typedef struct {
@@ -58,6 +59,7 @@ typedef struct {
 	/* SPECIAL REGISTERS */
 	BYTE ime; /* Interrupt master switch */
 	BYTE joypad;
+	BYTE status;
 } gb_cpu;
 
 /* CPU FUNCTIONS */
@@ -65,6 +67,8 @@ int  power_cpu(gb_cpu *cpu);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
 void set_lcd_status(gb_cpu *cpu);
+void load_rom_bank(gb_cpu *cpu);
+void load_ram_bank(gb_cpu *cpu);
 
 /* GRAPHICS */
 void update_graphics(gb_cpu *cpu, int ops);
@@ -72,7 +76,7 @@ void draw_scanline(gb_cpu *cpu);
 void flip_screen(gb_cpu *cpu);
 void clear_screen(gb_cpu *cpu, int color);
 BYTE *get_tile(gb_cpu *cpu, BYTE id);
-void draw_tile_row(const BYTE *data, BYTE *scr_pos);
+void draw_tile_row(const BYTE *data, BYTE *scr_pos, BYTE palette);
 void draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos);
 void draw_tiles(gb_cpu *cpu);
 

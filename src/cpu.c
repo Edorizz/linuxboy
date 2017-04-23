@@ -264,6 +264,15 @@ set_lcd_status(gb_cpu *cpu)
 }
 
 void
+load_rom_bank(gb_cpu *cpu)
+{
+	if (cpu->cart->rom_bank == 0)
+		++cpu->cart->rom_bank;
+
+	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
+}
+
+void
 update_graphics(gb_cpu *cpu, int ops)
 {
 	BYTE scanline;
@@ -276,9 +285,10 @@ update_graphics(gb_cpu *cpu, int ops)
 			scanline = read_byte(cpu, CURR_SCANLINE);
 			cpu->scanline_cnt += 456;
 			
-			if (scanline == 144)
+			if (scanline == 144) {
+				draw_scanline(cpu);
 				request_interrupt(cpu, VBLANK);
-			else if (scanline == 153)
+			} else if (scanline == 153)
 				cpu->memory[CURR_SCANLINE] = 0;
 			else if (scanline < 144)
 				draw_scanline(cpu);
@@ -294,7 +304,7 @@ draw_scanline(gb_cpu *cpu)
 	lcd = read_byte(cpu, LCD_CONTROL);
 
 	if (lcd & BIT(0)) {
-		scanline = read_byte(cpu, CURR_SCANLINE);
+		scanline = read_byte(cpu, CURR_SCANLINE) - 1;
 		scroll_x = read_byte(cpu, SCROLL_X);
 		scroll_y = read_byte(cpu, SCROLL_Y);
 
@@ -303,7 +313,7 @@ draw_scanline(gb_cpu *cpu)
 			tile = get_tile(cpu, id);
 			
 			draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
-				      &cpu->scr_buf[scanline][i * 8][0]);
+				      &cpu->scr_buf[scanline][i * 8][0], cpu->memory[0xFF47]);
 		}
 	}
 }
@@ -345,7 +355,7 @@ get_tile(gb_cpu *cpu, BYTE id)
 }
 
 void
-draw_tile_row(const BYTE *data, BYTE *scr_pos)
+draw_tile_row(const BYTE *data, BYTE *scr_pos, BYTE palette)
 {
 	BYTE data1, data2, color, tmp1, tmp2;
 
@@ -357,7 +367,7 @@ draw_tile_row(const BYTE *data, BYTE *scr_pos)
 		tmp2 = ((data2 >> (7 - i)) << 1) & 0x2;
 		color = (tmp2 | tmp1) & 0x3;
 
-		memcpy(scr_pos + (i * 3), &colors[color], 3);
+		memcpy(scr_pos + (i * 3), &colors[(palette >> (color * 2)) & 0x3], 3);
 	}
 }
 
@@ -365,7 +375,7 @@ void
 draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos)
 {
 	for (int i = 0; i != 8; ++i)
-		draw_tile_row(data + (i * 2), scr_pos + (i * SCR_W * 3));
+		draw_tile_row(data + (i * 2), scr_pos + (i * SCR_W * 3), cpu->memory[0xFF47]);
 }
 
 void

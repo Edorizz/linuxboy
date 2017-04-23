@@ -11,10 +11,9 @@ enum mbc { MBC_1, MBC_2, RAM_ENABLE, RAM_CHANGE };
 typedef struct {
 	const char *rom_path;
 	BYTE rom[CARTRIDGE_SIZE];
-	BYTE flags;
+	BYTE cart_flags;
 	int rom_size;
-	BYTE rom_bank;
-	BYTE ram_bank;
+	int rom_bank;
 } gb_cartridge;
 
 int load_cartridge(gb_cartridge *cart);
