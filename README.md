@@ -17,7 +17,9 @@ It was at that point I started looking for open source Gameboy emulators to try 
 Here is when the amazing idea of writing a beginner-friendly emulator came to mind, an emulator where everyone could see what's going on
 behind the hood so that they can apply it to their own projects.
 
-![Tetris is a good game :)](https://github.com/Edorizz/linuxboy/img/tetris.png)
+<p align="center">
+  <img src="https://github.com/Edorizz/linuxboy/blob/master/img/tetris.png">
+</p>
 
 ## THIS IS A WORK IN PROGRESS
 
