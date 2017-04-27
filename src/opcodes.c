@@ -810,12 +810,12 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == 0xFF46) {
 		dma_transfer(cpu, val);
 	} else if (addr == 0xFF00) {
-		if (val & BIT(6) && val & BIT(5))
-			cpu->memory[addr] = 0xFF;
+		if (val & BIT(4) && val & BIT(5))
+			cpu->memory[addr] = ~(3 << 4);
+		else if (val & BIT(4))
+			cpu->memory[addr] = (cpu->joypad & 0x0F);
 		else if (val & BIT(5))
-			cpu->memory[addr] = (0x20 ^ 0xF0) | (cpu->joypad & 0x0F);
-		else if (val & BIT(6))
-			cpu->memory[addr] = (0x10 ^ 0xF0) | (cpu->joypad >> 4);
+			cpu->memory[addr] = (cpu->joypad >> 4);
 	} else {
 		cpu->memory[addr] = val;
 	}

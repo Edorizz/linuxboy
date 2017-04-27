@@ -8,7 +8,7 @@
 #include <linuxboy/glsl_shader.h>
 
 const key_pair joypad_input[8] = { { SDLK_j, BUTTON_A }, { SDLK_k, BUTTON_B },
-				   { SDLK_u, BUTTON_START }, { SDLK_i, BUTTON_SELECT },
+				   { SDLK_i, BUTTON_SELECT }, { SDLK_u, BUTTON_START },
 				   { SDLK_d, PAD_RIGHT }, { SDLK_a, PAD_LEFT },
 				   { SDLK_w, PAD_UP }, { SDLK_s, PAD_DOWN } };
 

@@ -161,7 +161,7 @@ dma_transfer(gb_cpu *cpu, BYTE val)
 	
 	for (int i = 0; i != 0xA0; ++i)
 		write_byte(cpu, 0xFE00 + i,
-			   read_byte(cpu, address));
+			   read_byte(cpu, address + i));
 }
 
 void

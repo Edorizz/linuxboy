@@ -6,7 +6,7 @@
 #include <linuxboy/utils.h>
 
 enum emu_flags	{ BREAKPOINT, QUIT, DEBUG, MAP_DUMP, TMP };
-enum joypad	{ BUTTON_A, BUTTON_B, BUTTON_START, BUTTON_SELECT,
+enum joypad	{ BUTTON_A, BUTTON_B, BUTTON_SELECT, BUTTON_START,
 		  PAD_RIGHT, PAD_LEFT, PAD_UP, PAD_DOWN,
 		  EVENT, EVENT_PRESS, EVENT_RELEASE };
 
