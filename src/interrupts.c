@@ -25,6 +25,7 @@ handle_interrupts(gb_cpu *cpu)
 			if (interrupts & BIT(i)) {
 				cpu->memory[IF] ^= BIT(i);
 				cpu->status = 0;
+
 				call(cpu, 0x40 + i * 8);
 				break;
 			}

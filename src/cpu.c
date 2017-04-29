@@ -299,24 +299,34 @@ update_graphics(gb_cpu *cpu, int ops)
 void
 draw_scanline(gb_cpu *cpu)
 {
-	BYTE lcd, scanline, scroll_x, scroll_y, id, *tile;
+	BYTE lcd, scanline, scroll_x, scroll_y, id, *data;
 
 	lcd = read_byte(cpu, LCD_CONTROL);
+	scanline = read_byte(cpu, CURR_SCANLINE) - 1;
+	scroll_x = read_byte(cpu, SCROLL_X);
+	scroll_y = read_byte(cpu, SCROLL_Y);
 
+	/* Draw tiles */
 	if (lcd & BIT(0)) {
-		scanline = read_byte(cpu, CURR_SCANLINE) - 1;
-		scroll_x = read_byte(cpu, SCROLL_X);
-		scroll_y = read_byte(cpu, SCROLL_Y);
-
-		for (int i = 0; i != 20; ++i) {
+		for (int i = 0; i * 8 - scroll_x < SCR_W; ++i) {
 			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) +
-					 ((scroll_y + scanline) / 8 * 32) +
-					 ((scroll_x + i) % 32)];
-			tile = get_tile(cpu, id);
+					 ((scroll_y + scanline) / 8 % 32 * 32) +
+					 ((scroll_x / 8 + i) % 32)];
+			data = get_tile(cpu, id);
 			
-			draw_tile_row(tile + (scroll_y + scanline) % 8 * 2,
-				      &cpu->scr_buf[scanline][i * 8][0], cpu->memory[0xFF47]);
+			draw_tile_row(cpu, data + (scroll_y + scanline) % 8 * 2,
+				      i == 0 ? scroll_x % 8 : 0, scanline, MAX(i * 8 - scroll_x % 8, 0), cpu->memory[0xFF47]);
 		}
+	}
+
+	/* Draw window */
+	if (lcd & BIT(5)) {
+		/* TODO */
+	}
+
+	/* Draw sprites */
+	if (lcd & BIT(1)) {
+		/* TODO */
 	}
 }
 
@@ -357,35 +367,19 @@ get_tile(gb_cpu *cpu, BYTE id)
 }
 
 void
-draw_tile_row(const BYTE *data, BYTE *scr_pos, BYTE palette)
+draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette)
 {
-	BYTE data1, data2, color, tmp1, tmp2;
+	BYTE b1, b2, color;
 
-	data1 = *data;
-	data2 = *(data + 1);
+	b1 = *data;
+	b2 = *(data + 1);
 
-	for (int i = 0; i != 8; ++i) {
-		tmp1 = (data1 >> (7 - i)) & 1;
-		tmp2 = ((data2 >> (7 - i)) << 1) & 0x2;
-		color = (tmp2 | tmp1) & 0x3;
+	for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
+		color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
+		color = (palette >> (color * 2)) & 0x3;
 
-		memcpy(scr_pos + (i * 3), &colors[(palette >> (color * 2)) & 0x3], 3);
+		memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 	}
-}
-
-void
-draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos)
-{
-	for (int i = 0; i != 8; ++i)
-		draw_tile_row(data + (i * 2), scr_pos + (i * SCR_W * 3), cpu->memory[0xFF47]);
-}
-
-void
-draw_tiles(gb_cpu *cpu)
-{
-	for (int i = 0; i != 0x100; ++i)
-		draw_tile_at(cpu, &cpu->memory[i * 16 + 0x8000],
-			     cpu->scr_buf[i / 20 * 8][i % 20 * 8]);
 }
 
 void

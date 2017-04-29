@@ -23,7 +23,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "LD C,%02x", 2, op_0x0E },
 			{ "RRCA", 1, op_0x0F },
 			
-			{ "STOP 0", 2, NULL },
+			{ "STOP 0", 2, op_0x10 },
 			{ "LD DE,%04x", 3, op_0x11 },
 			{ "LD (DE),A", 1, op_0x12 },
 			{ "INC DE", 1, op_0x13 },
@@ -47,7 +47,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "INC H", 1, op_0x24 },
 			{ "DEC H", 1, op_0x25 },
 			{ "LD H,%02x", 2, op_0x26 },
-			{ "DAA", 1, NULL },
+			{ "DAA", 1, op_0x27 },
 			{ "JR Z,%s%02x", 2 | SIGNED, op_0x28 },
 			{ "ADD HL,HL", 1, op_0x29 },
 			{ "LD A,(HL+)", 1, op_0x2A },
@@ -221,7 +221,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "RET Z", 1, op_0xC8 },
 			{ "RET", 1, op_0xC9 },
 			{ "JP Z,$%04x", 3, op_0xCA },
-			{ "PREFIX CB", 1, op_0xCB },
+			{ "PREFIX CB", 2, op_0xCB },
 			{ "CALL Z,$%04x", 3, op_0xCC },
 			{ "CALL $%04x", 3, op_0xCD },
 			{ "ADC A,%02x", 2, op_0xCE },
@@ -269,7 +269,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "PUSH AF", 1, op_0xF5 },
 			{ "OR %02x", 2, op_0xF6 },
 			{ "RST 30H", 1, op_0xF7 },
-			{ "LD HL,SP+%02x", 2, NULL },
+			{ "LD HL,SP+%02x", 2, op_0xF8 },
 			{ "LD SP,HL", 1, op_0xF9 },
 			{ "LD A,($%04x)", 3, op_0xFA },
 			{ "EI", 1, op_0xFB },
@@ -1003,7 +1003,7 @@ op_0x0F(gb_cpu *cpu)
 int
 op_0x10(gb_cpu *cpu, BYTE d8)
 {
-	IMPLEMENT("STOP 0");
+	cpu->status = BIT(STOP);
 	
 	return 4;
 }
@@ -1208,11 +1208,33 @@ op_0x26(gb_cpu *cpu, BYTE d8)
 	return 8;
 }
 
-/* DDA */
+/* DAA */
 int
 op_0x27(gb_cpu *cpu)
 {
-	IMPLEMENT("DDA");
+	WORD a = cpu->regs[REG_AF].hi;
+
+	if (FLAG(cpu) & BIT(FLAG_N)) {
+		if (FLAG(cpu) & BIT(FLAG_H))
+			a = (a - 0x06) & 0xFF;
+
+		if (FLAG(cpu) & BIT(FLAG_C))
+			a -= 0x60;
+	} else {
+		if (FLAG(cpu) & BIT(FLAG_H) || (a & 0x0F) > 9)
+			a += 0x06;
+		if (FLAG(cpu) & BIT(FLAG_C) || a > 0x9F)
+			a += 0x60;
+	}
+
+	cpu->regs[REG_AF].hi = a;
+	RESET_FLAGS(FLAG(cpu), BIT(FLAG_H) | BIT(FLAG_Z));
+
+	if (cpu->regs[REG_AF].hi == 0)
+		FLAG(cpu) |= BIT(FLAG_Z);
+
+	if (a > 0xFF)
+		FLAG(cpu) |= BIT(FLAG_C);
 	
 	return 4;
 }
@@ -1939,7 +1961,10 @@ op_0x75(gb_cpu *cpu)
 int
 op_0x76(gb_cpu *cpu)
 {
-	cpu->status = BIT(HALT);
+	if (cpu->ime)
+		cpu->status = BIT(HALT);
+	else
+		cpu->pc += ops[cpu->memory[cpu->pc]].arg_size;
 	
 	return 4;
 }
@@ -2743,8 +2768,7 @@ op_0xCB(gb_cpu *cpu)
 {
 	const op *opcode;
 
-	opcode = &ext_ops[cpu->memory[cpu->pc]];
-	++cpu->pc;
+	opcode = &ext_ops[cpu->memory[cpu->pc - 1]];
 	
 	if (opcode->func == NULL) {
 		printf("Missing implementation (CB)%s at $%04x\n", opcode->assembly, cpu->pc);
@@ -3098,7 +3122,7 @@ op_0xF7(gb_cpu *cpu)
 int
 op_0xF8(gb_cpu *cpu, BYTE r8)
 {
-	IMPLEMENT("LD HL,SP+r8");
+	cpu->regs[REG_HL].reg = (BYTE*)cpu->stack - cpu->memory + r8;
 	
 	return 12;
 }

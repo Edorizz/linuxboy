@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 
+#define MAX(a, b)		((a) > (b) ? (a) : (b))
+#define MIN(a, b)		((a) < (b) ? (a) : (b))
+
 /* BYTE MANIPULATION */
 #define LO(word)		((word) & 0x00FF)		/* *((BYTE*)&w) */
 #define HI(word)		(((word) & 0xFF00) >> 8)	/* *((BYTE*)&w + 1) */

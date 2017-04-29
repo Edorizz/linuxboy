@@ -50,16 +50,16 @@ typedef struct {
 	reg regs[REG_MAX];
 	WORD pc;
 	reg *stack;
+	/* SPECIAL REGISTERS */
+	BYTE ime; /* Interrupt master switch */
+	BYTE joypad;
+	BYTE status;
 	/* TIMING */
 	int divider_cnt;
 	int timer_cnt;
 	int scanline_cnt;
 	/* GRAPHICS */
 	BYTE scr_buf[SCR_H][SCR_W][3];
-	/* SPECIAL REGISTERS */
-	BYTE ime; /* Interrupt master switch */
-	BYTE joypad;
-	BYTE status;
 } gb_cpu;
 
 /* CPU FUNCTIONS */
@@ -67,17 +67,16 @@ int  power_cpu(gb_cpu *cpu);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
 void set_lcd_status(gb_cpu *cpu);
+void update_graphics(gb_cpu *cpu, int ops);
+void draw_scanline(gb_cpu *cpu);
 void load_rom_bank(gb_cpu *cpu);
 void load_ram_bank(gb_cpu *cpu);
 
 /* GRAPHICS */
-void update_graphics(gb_cpu *cpu, int ops);
-void draw_scanline(gb_cpu *cpu);
 void flip_screen(gb_cpu *cpu);
 void clear_screen(gb_cpu *cpu, int color);
 BYTE *get_tile(gb_cpu *cpu, BYTE id);
-void draw_tile_row(const BYTE *data, BYTE *scr_pos, BYTE palette);
-void draw_tile_at(gb_cpu *cpu, const BYTE *data, BYTE *scr_pos);
+void draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette);
 void draw_tiles(gb_cpu *cpu);
 
 /* DEBUGGING */
