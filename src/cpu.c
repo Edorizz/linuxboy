@@ -157,7 +157,7 @@ exec_op(gb_cpu *cpu)
 void
 dma_transfer(gb_cpu *cpu, BYTE val)
 {
-	WORD address = val * 100;
+	WORD address = val << 8;
 	
 	for (int i = 0; i != 0xA0; ++i)
 		write_byte(cpu, 0xFE00 + i,
@@ -299,7 +299,7 @@ update_graphics(gb_cpu *cpu, int ops)
 void
 draw_scanline(gb_cpu *cpu)
 {
-	BYTE lcd, scanline, scroll_x, scroll_y, id, *data;
+	BYTE lcd, scanline, scroll_x, scroll_y, id, *data, *attr;
 
 	lcd = read_byte(cpu, LCD_CONTROL);
 	scanline = read_byte(cpu, CURR_SCANLINE) - 1;
@@ -326,7 +326,14 @@ draw_scanline(gb_cpu *cpu)
 
 	/* Draw sprites */
 	if (lcd & BIT(1)) {
-		/* TODO */
+		for (int i = 0; i != 40; ++i) {
+			attr = &cpu->memory[0xFE00 + i * 4];
+
+			if (attr[0] - 16 <= scanline && scanline < attr[0] - 8) {
+				draw_tile_row(cpu, &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)],
+					      0, scanline, MAX(attr[1] - 8, 0), cpu->memory[attr[3] & BIT(4) ? 0xFF49 : 0xFF48]);
+			}
+		}
 	}
 }
 
@@ -334,19 +341,16 @@ draw_scanline(gb_cpu *cpu)
 void
 flip_screen(gb_cpu *cpu)
 {
-	BYTE *cpy, *top_row, *bot_row;
+	BYTE *top_row, *bot_row;
 
-	cpy = malloc(SCR_W * 3);
 	for (int i = 0; i != SCR_H / 2; ++i) {
 		top_row = &cpu->scr_buf[SCR_H - i - 1][0][0];
 		bot_row = &cpu->scr_buf[i][0][0];
 
-		memcpy(cpy, bot_row, SCR_W * 3);
+		memcpy(&cpu->scr_buf[SCR_H][0][0], bot_row, SCR_W * 3);
 		memcpy(bot_row, top_row, SCR_W * 3);
-		memcpy(top_row, cpy, SCR_W * 3);
+		memcpy(top_row, &cpu->scr_buf[SCR_H][0][0], SCR_W * 3);
 	}
-
-	free(cpy);
 }
 
 void

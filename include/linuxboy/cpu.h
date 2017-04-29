@@ -59,7 +59,7 @@ typedef struct {
 	int timer_cnt;
 	int scanline_cnt;
 	/* GRAPHICS */
-	BYTE scr_buf[SCR_H][SCR_W][3];
+	BYTE scr_buf[SCR_H + 1][SCR_W][3]; /* Extra screen row is used as a temporary buffer when flipping the screen */
 } gb_cpu;
 
 /* CPU FUNCTIONS */

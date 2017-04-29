@@ -20,7 +20,7 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 		return -1;
 	}
 
-	win->sdl_win = SDL_CreateWindow("Linuxboy Gameboy emulator",
+	win->sdl_win = SDL_CreateWindow("Linuxboy",
 					SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 					win->width, win->height,
 					SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
@@ -44,7 +44,8 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 		return -1;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetSwapInterval(1);
+	
 	win->joypad = joypad;
 	win->emu_flags = emu_flags;
 
