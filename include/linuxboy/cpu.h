@@ -26,7 +26,8 @@
 
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum cpu_flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
-enum cpu_status { HALT, STOP };
+enum cpu_status	{ HALT, STOP };
+enum draw_flags	{ FLIP_X, FLIP_Y, BG_PRIORITY };
 
 /* RGB PIXEL */
 typedef struct {
@@ -77,6 +78,7 @@ void flip_screen(gb_cpu *cpu);
 void clear_screen(gb_cpu *cpu, int color);
 BYTE *get_tile(gb_cpu *cpu, BYTE id);
 void draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette);
+void draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE sprite_attr);
 void draw_tiles(gb_cpu *cpu);
 
 /* DEBUGGING */

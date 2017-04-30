@@ -180,6 +180,7 @@ handle_input(gl_window *win)
 					break;
 				case SDLK_m:
 					*win->emu_flags |= BIT(MAP_DUMP);
+					return;
 				case SDLK_n:
 					return;
 				case SDLK_v:

@@ -56,6 +56,13 @@ update_gb(gameboy *gb)
 				printf("%04x: %02x\n",
 				       gb->watch_list[i], gb->cpu.memory[gb->watch_list[i]]);
 		}
+
+		handle_input(&gb->win);
+	}
+
+	if (gb->emu_flags & BIT(MAP_DUMP)) {
+		map_dump(gb);
+		gb->emu_flags ^= BIT(MAP_DUMP);
 	}
 
 	if (!(gb->cpu.status & BIT(STOP))) {
