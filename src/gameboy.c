@@ -2,6 +2,7 @@
 #include <linuxboy/gameboy.h>
 /* C Library */
 #include <stdio.h>
+#include <time.h>
 /* Linuxboy */
 #include <linuxboy/timers.h>
 #include <linuxboy/interrupts.h>
@@ -68,11 +69,11 @@ update_gb(gameboy *gb)
 		update_graphics(&gb->cpu, gb->cycles);
 	}
 
-	handle_input(&gb->win);
 	handle_interrupts(&gb->cpu);
 
 	/* Draw only if neccessary */
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {
+		handle_input(&gb->win);
 		gb->curr_cycles = 0;
 
 		flip_screen(&gb->cpu);

@@ -7,7 +7,7 @@ RM := rm -f
 NAME := lboy
 
 $(NAME): $(OBJ_FILES)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) -O3 -fomit-frame-pointer -o $@ $^
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -o $@ $<

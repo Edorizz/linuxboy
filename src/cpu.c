@@ -288,10 +288,11 @@ update_graphics(gb_cpu *cpu, int ops)
 			if (scanline == 144) {
 				draw_scanline(cpu);
 				request_interrupt(cpu, VBLANK);
-			} else if (scanline == 153)
+			} else if (scanline == 153) {
 				cpu->memory[CURR_SCANLINE] = 0;
-			else if (scanline < 144)
+			} else if (scanline < 144 && scanline) {
 				draw_scanline(cpu);
+			}
 		}
 	}
 }
@@ -379,8 +380,7 @@ draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scree
 	b2 = *(data + 1);
 
 	for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
-		color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
-		color = (palette >> (color * 2)) & 0x3;
+		color = (palette >> ((((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1)) * 2)) & 0x3;
 
 		memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 	}

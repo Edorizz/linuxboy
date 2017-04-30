@@ -18,7 +18,7 @@ handle_interrupts(gb_cpu *cpu)
 {
 	BYTE interrupts;
 
-	if (cpu->ime && cpu->memory[IE] && cpu->memory[IF]) {
+	if (cpu->ime && (cpu->memory[IE] & cpu->memory[IF])) {
 		interrupts = cpu->memory[IE] & cpu->memory[IF];
 
 		for (int i = 0; i != INTERRUPT_MAX; ++i) {
@@ -27,7 +27,7 @@ handle_interrupts(gb_cpu *cpu)
 				cpu->status = 0;
 
 				call(cpu, 0x40 + i * 8);
-				break;
+				return;
 			}
 		}
 	}

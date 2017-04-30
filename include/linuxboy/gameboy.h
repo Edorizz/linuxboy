@@ -17,6 +17,7 @@ typedef struct {
 	WORD watch_list[MAX_WATCH];
 	int watch_size;
 	WORD breakpoint;
+	/* TIMING */
 	int curr_cycles;
 	int cycles;
 } gameboy;

@@ -31,14 +31,8 @@ main(int argc, const char **argv)
 		return 0;
 	}
 
-	while (!(gb.emu_flags & BIT(QUIT))) {
-		if (gb.emu_flags & BIT(MAP_DUMP)) {
-			map_dump(&gb);
-			return 0;
-		}
-
+	while (!(gb.emu_flags & BIT(QUIT)))
 		update_gb(&gb);
-	}
 
 	shutdown_gb(&gb);
 

@@ -182,6 +182,9 @@ handle_input(gl_window *win)
 					*win->emu_flags |= BIT(MAP_DUMP);
 				case SDLK_n:
 					return;
+				case SDLK_v:
+					SDL_GL_SetSwapInterval(!SDL_GL_GetSwapInterval());
+					return;
 				}
 				break;
 			}
