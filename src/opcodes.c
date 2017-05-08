@@ -2,6 +2,7 @@
 #include <linuxboy/opcodes.h>
 /* C Library */
 #include <stdlib.h>
+#include <string.h>
 /* Linuxboy */
 #include <linuxboy/utils.h>
 #include <linuxboy/timers.h>
@@ -697,7 +698,10 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 	if (*b < val)
 		*flag |= BIT(FLAG_C);
 	
-	if (!((*b ^ (*b - val)) & BIT(4)))
+	/*
+	if ((*b ^ (*b - val)) & BIT(4))
+	*/
+	if ((val & 0x0F) > (*b * 0x0F))
 		*flag |= BIT(FLAG_H);
 	
 	*b -= val;
@@ -772,12 +776,16 @@ void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
 	if (addr < 0x2000) {
-		if ((cpu->cart->flags & BIT(MBC_2) && addr & BIT(4)) ||
-		    (val & 0x0F) == 0)
-			cpu->cart->flags &= ~BIT(RAM_ENABLE);
-		else if (cpu->cart->flags & BIT(MBC_1))
+		/* Enable RAM bank */
+		if (cpu->cart->flags & BIT(MBC_2) && addr & BIT(4))
+			return;
+
+		if ((val & 0x0F) == 0x0A)
 			cpu->cart->flags |= BIT(RAM_ENABLE);
+		else
+			cpu->cart->flags &= ~BIT(RAM_ENABLE);
 	} else if (addr < 0x4000) {
+		/* Lo ROM bank change */
 		if (cpu->cart->flags & BIT(MBC_1))
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
 		else if (cpu->cart->flags & BIT(MBC_2))
@@ -785,15 +793,18 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
+		/* Hi ROM or RAM bank change */
 		if (cpu->cart->flags & BIT(MBC_1)) {
 			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
 				cpu->cart->ram_bank = val & 0x3;
+				load_ram_bank(cpu);
 			} else {
 				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | (val & 0xE0);
 				load_rom_bank(cpu);
 			}
 		}
 	} else if (addr < 0x8000) {
+		/* ROM/RAM banking selection */
 		if (val & BIT(0))
 			cpu->cart->flags &= ~BIT(RAM_CHANGE);
 		else
@@ -816,6 +827,10 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 			cpu->memory[addr] = (cpu->joypad & 0x0F);
 		else if (val & BIT(5))
 			cpu->memory[addr] = (cpu->joypad >> 4);
+	} else if (addr == 0xFF50) {
+		/* Unmap bootrom */
+		if (val == 1)
+			memcpy(cpu->memory, cpu->cart->rom, 0x100);
 	} else {
 		cpu->memory[addr] = val;
 	}
@@ -4968,7 +4983,7 @@ ext_op_0xC4(gb_cpu *cpu)
 int
 ext_op_0xC5(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(0);
+	cpu->regs[REG_HL].lo |= BIT(0);
 
 	return 8;
 }
@@ -4977,7 +4992,7 @@ ext_op_0xC5(gb_cpu *cpu)
 int
 ext_op_0xC6(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(0);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(0);
 
 	return 16;
 }
@@ -5040,7 +5055,7 @@ ext_op_0xCC(gb_cpu *cpu)
 int
 ext_op_0xCD(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(1);
+	cpu->regs[REG_HL].lo |= BIT(1);
 
 	return 8;
 }
@@ -5049,7 +5064,7 @@ ext_op_0xCD(gb_cpu *cpu)
 int
 ext_op_0xCE(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(1);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(1);
 
 	return 16;
 }
@@ -5112,7 +5127,7 @@ ext_op_0xD4(gb_cpu *cpu)
 int
 ext_op_0xD5(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(2);
+	cpu->regs[REG_HL].lo |= BIT(2);
 
 	return 8;
 }
@@ -5121,7 +5136,7 @@ ext_op_0xD5(gb_cpu *cpu)
 int
 ext_op_0xD6(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(2);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(2);
 
 	return 16;
 }
@@ -5184,7 +5199,7 @@ ext_op_0xDC(gb_cpu *cpu)
 int
 ext_op_0xDD(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(3);
+	cpu->regs[REG_HL].lo |= BIT(3);
 
 	return 8;
 }
@@ -5193,7 +5208,7 @@ ext_op_0xDD(gb_cpu *cpu)
 int
 ext_op_0xDE(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(3);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(3);
 
 	return 16;
 }
@@ -5256,7 +5271,7 @@ ext_op_0xE4(gb_cpu *cpu)
 int
 ext_op_0xE5(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(4);
+	cpu->regs[REG_HL].lo |= BIT(4);
 
 	return 8;
 }
@@ -5265,7 +5280,7 @@ ext_op_0xE5(gb_cpu *cpu)
 int
 ext_op_0xE6(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(4);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(4);
 
 	return 16;
 }
@@ -5328,7 +5343,7 @@ ext_op_0xEC(gb_cpu *cpu)
 int
 ext_op_0xED(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(5);
+	cpu->regs[REG_HL].lo |= BIT(5);
 
 	return 8;
 }
@@ -5337,7 +5352,7 @@ ext_op_0xED(gb_cpu *cpu)
 int
 ext_op_0xEE(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(5);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(5);
 
 	return 16;
 }
@@ -5400,7 +5415,7 @@ ext_op_0xF4(gb_cpu *cpu)
 int
 ext_op_0xF5(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(6);
+	cpu->regs[REG_HL].lo |= BIT(6);
 
 	return 8;
 }
@@ -5409,7 +5424,7 @@ ext_op_0xF5(gb_cpu *cpu)
 int
 ext_op_0xF6(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(6);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(6);
 
 	return 16;
 }
@@ -5472,7 +5487,7 @@ ext_op_0xFC(gb_cpu *cpu)
 int
 ext_op_0xFD(gb_cpu *cpu)
 {
-	cpu->regs[REG_DE].lo |= BIT(7);
+	cpu->regs[REG_HL].lo |= BIT(7);
 
 	return 8;
 }
@@ -5481,7 +5496,7 @@ ext_op_0xFD(gb_cpu *cpu)
 int
 ext_op_0xFE(gb_cpu *cpu)
 {
-	cpu->memory[cpu->regs[REG_DE].lo] |= BIT(7);
+	cpu->memory[cpu->regs[REG_HL].reg] |= BIT(7);
 
 	return 16;
 }

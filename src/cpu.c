@@ -18,7 +18,7 @@ const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
 
 /* NOT USABLE */
 void
-bootstrap(gb_cpu *cpu)
+load_bootstrap(gb_cpu *cpu)
 {
 	FILE *fp;
 	
@@ -27,17 +27,7 @@ bootstrap(gb_cpu *cpu)
 		return;
 	}
 	
-	cpu->pc = 0x0;
-	fread(&cpu->memory[cpu->pc], 1, 0x100, fp);
-	
-	while (cpu->pc != 0x100) {
-		cpu_status(cpu);
-		
-		if (exec_op(cpu) == -1)
-			return;
-		
-		getchar();
-	}
+	fread(cpu->memory, 1, 0x100, fp);
 }
 
 int
@@ -45,13 +35,13 @@ power_cpu(gb_cpu *cpu)
 {
 	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
-	/* bootstrap(cpu); */
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
+	load_bootstrap(cpu);
 	
 	/* Initialize Gameboy */
-	cpu->pc = 0x100;
+	cpu->pc = 0;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
 	
 	/* Initialize CPU registers */
@@ -62,7 +52,7 @@ power_cpu(gb_cpu *cpu)
 
 	/* Initialize special registers */
 	cpu->memory[LCD_CONTROL] = 0x91;
-	cpu->memory[LCD_STATUS] = 0x85;
+	cpu->memory[LCD_STATUS] = 0x84;
 	cpu->memory[IE] = 0x00;
 	cpu->memory[IF] = 0xE1;
 
@@ -273,6 +263,15 @@ load_rom_bank(gb_cpu *cpu)
 }
 
 void
+load_ram_bank(gb_cpu *cpu)
+{
+	if (cpu->cart->ram_bank == 0)
+		++cpu->cart->ram_bank;
+
+	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
+}
+
+void
 update_graphics(gb_cpu *cpu, int ops)
 {
 	BYTE scanline;
@@ -333,12 +332,14 @@ draw_scanline(gb_cpu *cpu)
 
 			if (attr[0] - 16 <= scanline && scanline < attr[0] - 8) {
 				if (attr[3] & BIT(6))
-					draw_sprite_row(cpu, &cpu->memory[0x8000 + attr[2] * 16 + ((7 - (scanline - (attr[0] - 16))) * 2)],
-							0, scanline, MAX(attr[1] - 8, 0), attr[3]);
+					data = &cpu->memory[0x8000 + attr[2] * 16 + ((7 - (scanline - (attr[0] - 16))) * 2)];
 				else
-					draw_sprite_row(cpu, &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)],
-							0, scanline, MAX(attr[1] - 8, 0), attr[3]);
+					data = &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)];
 
+				if (attr[1] - 8 < 0)
+					draw_sprite_row(cpu, data, 8 - attr[1], scanline, 0, attr[3]);
+				else
+					draw_sprite_row(cpu, data, 0, scanline, attr[1] - 8, attr[3]);
 			}
 		}
 	}
