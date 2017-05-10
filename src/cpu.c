@@ -38,10 +38,10 @@ power_cpu(gb_cpu *cpu)
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
-	load_bootstrap(cpu);
+	/* load_bootstrap(cpu); */
 	
 	/* Initialize Gameboy */
-	cpu->pc = 0;
+	cpu->pc = 0x100;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
 	
 	/* Initialize CPU registers */

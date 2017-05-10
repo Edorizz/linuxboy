@@ -605,8 +605,9 @@ swap_byte(BYTE *flag, BYTE *b)
 void
 rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 {
-	BYTE bit;
-	
+	BYTE bit, prev_c; 
+
+	prev_c = *flag & BIT(FLAG_C);
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z)); /* ? */
 	
 	if (rot_flags & LEFT) {
@@ -616,7 +617,7 @@ rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 		if (rot_flags & CIRCULAR)
 			*b |= bit;
 		else
-			*b |= (*flag >> FLAG_C) & 1;
+			*b |= (prev_c >> FLAG_C) & 1;
 	} else {
 		bit = *b & 1;
 		
@@ -624,7 +625,7 @@ rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 		if (rot_flags & CIRCULAR)
 			*b |= bit << 7;
 		else
-			*b |= (*flag & BIT(FLAG_C)) << (8 - FLAG_C);
+			*b |= (prev_c) << (7 - FLAG_C);
 	}
 	
 	if (/*rot_flags & BIT(FLAG_Z) && */*b == 0)
@@ -646,19 +647,18 @@ shift_byte(BYTE *flag, BYTE *b, BYTE shift_flags)
 		*b <<= 1;
 	} else {
 		/* Need to keep msb and lsb */
-		bit = *b >> 6;
+		bit = (*b >> 6) & 2;
 		bit |= *b & 1;
 
 		*b >>= 1;
-		if (shift_flags & BIT(ARITHMETIC)) {
+		bit &= 1;
+		if (shift_flags & BIT(ARITHMETIC))
 			*b |= (bit >> 1) << 7;
-			bit &= 1;
-		}
 	}
 
 	if (*b == 0)
 		*flag |= BIT(FLAG_Z);
-
+	
 	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
 }
 
@@ -701,7 +701,7 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 	/*
 	if ((*b ^ (*b - val)) & BIT(4))
 	*/
-	if ((val & 0x0F) > (*b * 0x0F))
+	if ((val & 0x0F) > (*b & 0x0F))
 		*flag |= BIT(FLAG_H);
 	
 	*b -= val;
@@ -1209,7 +1209,7 @@ op_0x24(gb_cpu *cpu)
 int
 op_0x25(gb_cpu *cpu)
 {
-	cpu->regs[REG_HL].lo = dec_byte(FLAG_P(cpu), cpu->regs[REG_HL].hi);
+	cpu->regs[REG_HL].hi = dec_byte(FLAG_P(cpu), cpu->regs[REG_HL].hi);
 	
 	return 4;
 }
@@ -1334,7 +1334,7 @@ op_0x2F(gb_cpu *cpu)
 /* JR NC,r8 */
 int op_0x30(gb_cpu *cpu, SIGNED_BYTE r8)
 {
-	if ((FLAG(cpu) & BIT(FLAG_C))) {
+	if (!(FLAG(cpu) & BIT(FLAG_C))) {
 		cpu->pc += r8;
 		return 12;
 	}
