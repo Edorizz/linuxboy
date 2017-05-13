@@ -11,12 +11,11 @@
 void
 power_gb(gameboy *gb)
 {
-	if (load_cartridge(&gb->cart) == -1)
+	if (load_cartridge(&gb->cart) == -1 &&
+	    gb->win.sdl_win == NULL &&
+	    create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1) {
 		return;
-
-	if (gb->win.sdl_win == NULL &&
-	    create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1)
-		return;
+	}
 
 	/* Link components */
 	gb->cpu.cart = &gb->cart;
@@ -45,17 +44,18 @@ void
 update_gb(gameboy *gb)
 {
 	/* Toggle debug mode if hit target breakpoint */
-	if (gb->emu_flags & BIT(BREAKPOINT) && gb->cpu.pc == gb->breakpoint)
+	if (gb->emu_flags & BIT(BREAKPOINT) && gb->cpu.pc == gb->breakpoint) {
 		gb->emu_flags |= BIT(DEBUG);
+	}
 
 	/* Print CPU status if on debug mode */
 	if (gb->emu_flags & BIT(DEBUG)) {
 		cpu_status(&gb->cpu);
 		if (gb->watch_size) {
 			printf("\n--+ WATCH LIST +--\n");
-			for (int i = 0; i != gb->watch_size; ++i)
-				printf("%04x: %02x\n",
-				       gb->watch_list[i], gb->cpu.memory[gb->watch_list[i]]);
+			for (int i = 0; i != gb->watch_size; ++i) {
+				printf("%04x: %02x\n", gb->watch_list[i], gb->cpu.memory[gb->watch_list[i]]);
+			}
 		}
 
 		handle_input(&gb->win);
@@ -77,8 +77,9 @@ update_gb(gameboy *gb)
 		update_graphics(&gb->cpu, gb->cycles);
 	}
 
-	if (gb->cpu.memory[gb->cpu.pc - 1] != 0xFB)
+	if (gb->cpu.memory[gb->cpu.pc - 1] != 0xFB) {
 		handle_interrupts(&gb->cpu);
+	}
 
 	/* Draw only if neccessary */
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {
@@ -99,8 +100,10 @@ map_dump(gameboy *gb)
 	FILE *fp = fopen("map.log", "wb");
 
 	for (int i = 0; i != 32; ++i) {
-		for (int j = 0; j != 32; ++j)
+		for (int j = 0; j != 32; ++j) {
 			fprintf(fp, "%02x ", gb->cpu.memory[0x9800 + (i * 32) + j]);
+		}
+
 		fprintf(fp, "\n");
 	}
 

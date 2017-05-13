@@ -149,9 +149,9 @@ dma_transfer(gb_cpu *cpu, BYTE val)
 {
 	WORD address = val << 8;
 	
-	for (int i = 0; i != 0xA0; ++i)
-		write_byte(cpu, 0xFE00 + i,
-			   read_byte(cpu, address + i));
+	for (int i = 0; i != 0xA0; ++i) {
+		write_byte(cpu, 0xFE00 + i, read_byte(cpu, address + i));
+	}
 }
 
 void
@@ -206,8 +206,9 @@ update_timers(gb_cpu *cpu, int ops)
 void
 load_rom_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->rom_bank == 0)
+	if (cpu->cart->rom_bank == 0) {
 		++cpu->cart->rom_bank;
+	}
 
 	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
 }
@@ -215,8 +216,9 @@ load_rom_bank(gb_cpu *cpu)
 void
 load_ram_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->ram_bank == 0)
+	if (cpu->cart->ram_bank == 0) {
 		++cpu->cart->ram_bank;
+	}
 
 	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
@@ -244,8 +246,10 @@ update_graphics(gb_cpu *cpu, int ops)
 
 				draw_scanline(cpu);
 				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x0;
-				if (stat & BIT(3))
+
+				if (stat & BIT(3)) {
 					request_interrupt(cpu, LCD_STAT);
+				}
 			}
 
 			break;
@@ -256,12 +260,16 @@ update_graphics(gb_cpu *cpu, int ops)
 				if (++cpu->memory[CURR_SCANLINE] >= 144) {
 					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x1;
 					request_interrupt(cpu, VBLANK);
-					if (stat & BIT(4))
+
+					if (stat & BIT(4)) {
 						request_interrupt(cpu, LCD_STAT);
+					}
 				} else {
 					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
-					if (stat & BIT(5))
+
+					if (stat & BIT(5)) {
 						request_interrupt(cpu, LCD_STAT);
+					}
 				}
 			}
 
@@ -273,8 +281,10 @@ update_graphics(gb_cpu *cpu, int ops)
 				if (++cpu->memory[CURR_SCANLINE] >= 153) {
 					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
 					cpu->memory[CURR_SCANLINE] = 0;
-					if (stat & BIT(5))
+
+					if (stat & BIT(5)) {
 						request_interrupt(cpu, LCD_STAT);
+					}
 				}
 			}
 
@@ -283,8 +293,9 @@ update_graphics(gb_cpu *cpu, int ops)
 
 		if (cpu->memory[CURR_SCANLINE] == cpu->memory[TARGET_SCANLINE]) {
 			cpu->memory[LCD_STATUS] |= BIT(2);
-			if (stat & BIT(6))
+			if (stat & BIT(6)) {
 				request_interrupt(cpu, LCD_STAT);
+			}
 		} else {
 			cpu->memory[LCD_STATUS] &= ~BIT(2);
 		}
@@ -401,12 +412,14 @@ inc_byte(BYTE *flag, BYTE b)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H));
 	
-	if ((BYTE)(b + 1) == 0)
+	if ((BYTE)(b + 1) == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 	
 	/* Half-carry if bit 4 changed (not sure) */
-	if ((b ^ (BYTE)(b + 1)) & BIT(4))
+	if ((b ^ (BYTE)(b + 1)) & BIT(4)) {
 		*flag |= BIT(FLAG_H);
+	}
 	
 	return b + 1;
 }
@@ -418,12 +431,14 @@ dec_byte(BYTE *flag, BYTE b)
 	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_H));
 	*flag |= BIT(FLAG_N);
 	
-	if ((BYTE)(b - 1) == 0)
+	if ((BYTE)(b - 1) == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 	
 	/* Half-carry if lower nibble is 0 */
-	if (!(b & 0x0F))
+	if (!(b & 0x0F)) {
 		*flag |= BIT(FLAG_H);
+	}
 	
 	return b - 1;
 }
@@ -437,8 +452,9 @@ swap_byte(BYTE *flag, BYTE *b)
 	nibble = *b & 0x0F;
 	*b = (*b >> 4) | (nibble << 4);
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -453,22 +469,25 @@ rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
 		bit = *b >> 7;
 		
 		*b <<= 1;
-		if (rot_flags & CIRCULAR)
+		if (rot_flags & CIRCULAR) {
 			*b |= bit;
-		else
+		} else {
 			*b |= (prev_c >> FLAG_C) & 1;
+		}
 	} else {
 		bit = *b & 1;
 		
 		*b >>= 1;
-		if (rot_flags & CIRCULAR)
+		if (rot_flags & CIRCULAR) {
 			*b |= bit << 7;
-		else
+		} else {
 			*b |= (prev_c) << (7 - FLAG_C);
+		}
 	}
 	
-	if (/*rot_flags & BIT(FLAG_Z) && */*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 	
 	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
 }
@@ -491,12 +510,14 @@ shift_byte(BYTE *flag, BYTE *b, BYTE shift_flags)
 
 		*b >>= 1;
 		bit &= 1;
-		if (shift_flags & BIT(ARITHMETIC))
+		if (shift_flags & BIT(ARITHMETIC)) {
 			*b |= (bit >> 1) << 7;
+		}
 	}
 
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 	
 	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
 }
@@ -506,16 +527,19 @@ add_byte(BYTE *flag, BYTE *b, int val)
 {
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
 	
-	if (*b + val > 0xFF)
+	if (*b + val > 0xFF) {
 		*flag |= BIT(FLAG_C);
+	}
 	
-	if ((*b & 0x0F) + (val & 0x0F) > 0x0F)
+	if ((*b & 0x0F) + (val & 0x0F) > 0x0F) {
 		*flag |= BIT(FLAG_H);
+	}
 	
 	*b += val;
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -535,16 +559,19 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_N);
 	
-	if (*b < val)
+	if (*b < val) {
 		*flag |= BIT(FLAG_C);
+	}
 	
-	if ((val & 0x0F) > (*b & 0x0F))
+	if ((val & 0x0F) > (*b & 0x0F)) {
 		*flag |= BIT(FLAG_H);
+	}
 	
 	*b -= val;
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -555,8 +582,9 @@ and_byte(BYTE *flag, BYTE *b, BYTE val)
 	
 	*b &= val;
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -566,8 +594,9 @@ xor_byte(BYTE *flag, BYTE *b, BYTE val)
 	
 	*b ^= val;
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -577,8 +606,9 @@ or_byte(BYTE *flag, BYTE *b, BYTE val)
 	
 	*b |= val;
 	
-	if (*b == 0)
+	if (*b == 0) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 void
@@ -593,8 +623,9 @@ test_bit(BYTE *flag, BYTE b, BYTE bit)
 	RESET_FLAGS(*flag, BIT(FLAG_N) | BIT(FLAG_Z));
 	*flag |= BIT(FLAG_H);
 
-	if (!(b & BIT(bit)))
+	if (!(b & BIT(bit))) {
 		*flag |= BIT(FLAG_Z);
+	}
 }
 
 BYTE
@@ -617,16 +648,18 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 		if (cpu->cart->flags & BIT(MBC_2) && addr & BIT(4))
 			return;
 
-		if ((val & 0x0F) == 0x0A)
+		if ((val & 0x0F) == 0x0A) {
 			cpu->cart->flags |= BIT(RAM_ENABLE);
-		else
+		} else {
 			cpu->cart->flags &= ~BIT(RAM_ENABLE);
+		}
 	} else if (addr < 0x4000) {
 		/* Lo ROM bank change */
-		if (cpu->cart->flags & BIT(MBC_1))
+		if (cpu->cart->flags & BIT(MBC_1)) {
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
-		else if (cpu->cart->flags & BIT(MBC_2))
+		} else if (cpu->cart->flags & BIT(MBC_2)) {
 			cpu->cart->rom_bank = val & 0x0F;
+		}
 
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
@@ -642,10 +675,11 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 		}
 	} else if (addr < 0x8000) {
 		/* ROM/RAM banking selection */
-		if (val & BIT(0))
+		if (val & BIT(0)) {
 			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		else
+		} else {
 			cpu->cart->flags |= BIT(RAM_CHANGE);
+		}
 	} else if (addr >= 0xE000 && addr < 0xFE00) {
 		/* ECHO memory */
 		cpu->memory[addr] = val;
@@ -658,16 +692,18 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == 0xFF46) {
 		dma_transfer(cpu, val);
 	} else if (addr == 0xFF00) {
-		if (val & BIT(4) && val & BIT(5))
+		if (val & BIT(4) && val & BIT(5)) {
 			cpu->memory[addr] = ~(3 << 4);
-		else if (val & BIT(4))
+		} else if (val & BIT(4)) {
 			cpu->memory[addr] = (cpu->joypad & 0x0F);
-		else if (val & BIT(5))
+		} else if (val & BIT(5)) {
 			cpu->memory[addr] = (cpu->joypad >> 4);
+		}
 	} else if (addr == 0xFF50) {
 		/* Unmap bootrom */
-		if (val == 1)
+		if (val == 1) {
 			memcpy(cpu->memory, cpu->cart->rom, 0x100);
+		}
 	} else {
 		cpu->memory[addr] = val;
 	}

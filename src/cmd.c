@@ -58,10 +58,11 @@ cmd_win_scale(gameboy *gb, const char *arg)
 void
 cmd_add_watch(gameboy *gb, const char *arg)
 {
-	if (gb->watch_size == MAX_WATCH)
+	if (gb->watch_size == MAX_WATCH) {
 		fprintf(stderr, "Watch list size exceeded\n");
-	else
+	} else {
 		gb->watch_list[gb->watch_size++] = strtol(arg, NULL, 16);
+	}
 }
 
 void

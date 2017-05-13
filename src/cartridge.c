@@ -22,8 +22,7 @@ load_cartridge(gb_cartridge *cart)
 		cart->rom_size = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 		
-		fprintf(stderr, "Reading %d bytes (%x hex)\n",
-			cart->rom_size, cart->rom_size);
+		fprintf(stderr, "Reading %d bytes (%x hex)\n", cart->rom_size, cart->rom_size);
 
 		if (fread(cart->rom, sizeof(BYTE), cart->rom_size, fp) != cart->rom_size) {
 			cart->rom_size = 0;

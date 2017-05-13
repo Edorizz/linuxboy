@@ -915,26 +915,33 @@ op_0x27(gb_cpu *cpu)
 	WORD a = cpu->regs[REG_AF].hi;
 
 	if (FLAG(cpu) & BIT(FLAG_N)) {
-		if (FLAG(cpu) & BIT(FLAG_H))
+		if (FLAG(cpu) & BIT(FLAG_H)) {
 			a = (a - 0x06) & 0xFF;
+		}
 
-		if (FLAG(cpu) & BIT(FLAG_C))
+		if (FLAG(cpu) & BIT(FLAG_C)) {
 			a -= 0x60;
+		}
 	} else {
-		if (FLAG(cpu) & BIT(FLAG_H) || (a & 0x0F) > 9)
+		if (FLAG(cpu) & BIT(FLAG_H) || (a & 0x0F) > 9) {
 			a += 0x06;
-		if (FLAG(cpu) & BIT(FLAG_C) || a > 0x9F)
+		}
+
+		if (FLAG(cpu) & BIT(FLAG_C) || a > 0x9F) {
 			a += 0x60;
+		}
 	}
 
 	cpu->regs[REG_AF].hi = a;
 	RESET_FLAGS(FLAG(cpu), BIT(FLAG_H) | BIT(FLAG_Z));
 
-	if (cpu->regs[REG_AF].hi == 0)
+	if (cpu->regs[REG_AF].hi == 0) {
 		FLAG(cpu) |= BIT(FLAG_Z);
+	}
 
-	if (a > 0xFF)
+	if (a > 0xFF) {
 		FLAG(cpu) |= BIT(FLAG_C);
+	}
 	
 	return 4;
 }
@@ -1661,10 +1668,11 @@ op_0x75(gb_cpu *cpu)
 int
 op_0x76(gb_cpu *cpu)
 {
-	if (cpu->ime)
+	if (cpu->ime) {
 		cpu->status = BIT(HALT);
-	else
+	} else {
 		cpu->pc += ops[cpu->memory[cpu->pc]].arg_size;
+	}
 	
 	return 4;
 }

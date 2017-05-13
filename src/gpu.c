@@ -41,19 +41,41 @@ draw_scanline(gb_cpu *cpu)
 
 	/* Draw sprites */
 	if (lcd & BIT(1)) {
-		for (int i = 0; i != 40; ++i) {
-			attr = &cpu->memory[0xFE00 + i * 4];
-
-			if (attr[0] - 16 <= scanline && scanline < attr[0] - 8) {
-				if (attr[3] & BIT(6))
-					data = &cpu->memory[0x8000 + attr[2] * 16 + ((7 - (scanline - (attr[0] - 16))) * 2)];
-				else
-					data = &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)];
-
-				if (attr[1] - 8 < 0)
-					draw_sprite_row(cpu, data, 8 - attr[1], scanline, 0, attr[3]);
-				else
-					draw_sprite_row(cpu, data, 0, scanline, attr[1] - 8, attr[3]);
+		if (lcd & BIT(2)) {
+			for (int i = 0; i != 40; ++i) {
+				attr = &cpu->memory[0xFE00 + i * 4];
+				
+				if (attr[0] - 16 <= scanline && scanline < attr[0]) {
+					if (attr[3] & BIT(6)) {
+						data = &cpu->memory[0x8000 + attr[2] * 16 + ((15 - (scanline - (attr[0] - 16))) * 2)];
+					} else {
+						data = &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)];
+					}
+					
+					if (attr[1] - 8 < 0) {
+						draw_sprite_row(cpu, data, 8 - attr[1], scanline, 0, attr[3]);
+					} else {
+						draw_sprite_row(cpu, data, 0, scanline, attr[1] - 8, attr[3]);
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i != 40; ++i) {
+				attr = &cpu->memory[0xFE00 + i * 4];
+				
+				if (attr[0] - 16 <= scanline && scanline < attr[0] - 8) {
+					if (attr[3] & BIT(6)) {
+						data = &cpu->memory[0x8000 + attr[2] * 16 + ((7 - (scanline - (attr[0] - 16))) * 2)];
+					} else {
+						data = &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)];
+					}
+					
+					if (attr[1] - 8 < 0) {
+						draw_sprite_row(cpu, data, 8 - attr[1], scanline, 0, attr[3]);
+					} else {
+						draw_sprite_row(cpu, data, 0, scanline, attr[1] - 8, attr[3]);
+					}
+				}
 			}
 		}
 	}
@@ -77,18 +99,21 @@ flip_screen(gb_cpu *cpu)
 void
 clear_screen(gb_cpu *cpu, int color)
 {
-	for (int i = 0; i != SCR_H; ++i)
-		for (int j = 0; j != SCR_W; ++j)
+	for (int i = 0; i != SCR_H; ++i) {
+		for (int j = 0; j != SCR_W; ++j) {
 			memcpy(cpu->scr_buf[i][j], &colors[color], 3);
+		}
+	}
 }
 
 BYTE *
 get_tile(gb_cpu *cpu, BYTE id)
 {
-	if (cpu->memory[LCD_CONTROL] & BIT(4))
+	if (cpu->memory[LCD_CONTROL] & BIT(4)) {
 		return &cpu->memory[0x8000 + id * 16];
-	else
+	} else {
 		return &cpu->memory[0x8800 + (128 + *(SIGNED_BYTE*)&id) * 16];
+	}
 }
 
 void
@@ -118,18 +143,20 @@ draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scr
 	if (attr & BIT(5)) {
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> i) << 1 & 0x2) | ((b1 >> i) & 0x1);
-			color = (palette >> (color * 2)) & 0x3;
-			
-			if (color != WHITE)
+
+			if (color != WHITE) {
+				color = (palette >> (color * 2)) & 0x3;	
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
+			}
 		}
 	} else {
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
-			color = (palette >> (color * 2)) & 0x3;
 			
-			if (color != WHITE)
+			if (color != WHITE) {
+				color = (palette >> (color * 2)) & 0x3;
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
+			}
 		}
 	}
 }

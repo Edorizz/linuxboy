@@ -137,10 +137,11 @@ render(gl_window *win)
 void
 joypad_event(gl_window *win, int event)
 {
-	if (event & BIT(EVENT_PRESS))
+	if (event & BIT(EVENT_PRESS)) {
 		*win->joypad &= ~(event & 0xFF);
-	else if (event & BIT(EVENT_RELEASE))
+	} else if (event & BIT(EVENT_RELEASE)) {
 		*win->joypad |= event & 0xFF;
+	}
 }
 
 void
