@@ -67,7 +67,6 @@ typedef struct {
 int  power_cpu(gb_cpu *cpu);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
-void set_lcd_status(gb_cpu *cpu);
 void update_graphics(gb_cpu *cpu, int ops);
 void draw_scanline(gb_cpu *cpu);
 void load_rom_bank(gb_cpu *cpu);

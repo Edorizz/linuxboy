@@ -670,7 +670,7 @@ add_byte(BYTE *flag, BYTE *b, int val)
 	if (*b + val > 0xFF)
 		*flag |= BIT(FLAG_C);
 	
-	if ((*b ^ (*b + val)) & (1 << 4))
+	if ((*b & 0x0F) + (val & 0x0F) > 0x0F)
 		*flag |= BIT(FLAG_H);
 	
 	*b += val;
@@ -685,6 +685,7 @@ add_word(BYTE *flag, WORD *w, int val)
 	RESET_FLAGS(*flag, BIT(FLAG_N));
 	
 	*flag ^= (-(*w + val > 0xFFFF) ^ *flag) & BIT(FLAG_C);
+	*flag ^= (-((*w & 0x0FFF) + (val & 0x0FFF) > 0x0FFF) ^ *flag) & BIT(FLAG_H);
 	
 	*w += val;
 }
@@ -698,9 +699,6 @@ sub_byte(BYTE *flag, BYTE *b, BYTE val)
 	if (*b < val)
 		*flag |= BIT(FLAG_C);
 	
-	/*
-	if ((*b ^ (*b - val)) & BIT(4))
-	*/
 	if ((val & 0x0F) > (*b & 0x0F))
 		*flag |= BIT(FLAG_H);
 	

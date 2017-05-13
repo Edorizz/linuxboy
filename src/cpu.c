@@ -38,28 +38,29 @@ power_cpu(gb_cpu *cpu)
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
-	/* load_bootstrap(cpu); */
+	load_bootstrap(cpu);
 	
 	/* Initialize Gameboy */
-	cpu->pc = 0x100;
+	cpu->pc = 0x0;
 	cpu->stack = (reg*)&cpu->memory[0xFFFE];
 	
-	/* Initialize CPU registers */
+	/* Initialize CPU registers
 	cpu->regs[REG_AF].reg = 0x01B0;
 	cpu->regs[REG_BC].reg = 0x0013;
 	cpu->regs[REG_DE].reg = 0x00D8;
 	cpu->regs[REG_HL].reg = 0x014D;
+	*/
 
 	/* Initialize special registers */
-	cpu->memory[LCD_CONTROL] = 0x91;
-	cpu->memory[LCD_STATUS] = 0x84;
+	cpu->memory[LCD_CONTROL] = /*0x91*/ 0x00;
+	cpu->memory[LCD_STATUS] = /*0x85*/0x84;
 	cpu->memory[IE] = 0x00;
 	cpu->memory[IF] = 0xE1;
 
 	/* Reset joypad */
 	cpu->joypad = 0xFF;
 	
-	/* Initialize memory */
+	/* Initialize memory
 	cpu->memory[0xFF05] = 0x00; 
 	cpu->memory[0xFF06] = 0x00; 
 	cpu->memory[0xFF07] = 0x00; 
@@ -91,14 +92,17 @@ power_cpu(gb_cpu *cpu)
 	cpu->memory[0xFF4A] = 0x00; 
 	cpu->memory[0xFF4B] = 0x00; 
 	cpu->memory[0xFFFF] = 0x00;
+	*/
 	
-	/* Enable interrupts */
+	/* Enable interrupts
 	cpu->ime = 1;
+	*/
 	
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
-	cpu->scanline_cnt = CLOCK_RATE / 9198;
+	/*cpu->scanline_cnt = CLOCK_RATE / 9198;*/
+	cpu->scanline_cnt = 0;
 	
 	return 0;
 }
@@ -206,54 +210,6 @@ update_timers(gb_cpu *cpu, int ops)
 }
 
 void
-set_lcd_status(gb_cpu *cpu)
-{
-	BYTE status;
-	BYTE prev_mode;
-	BYTE scanline;
-	
-	prev_mode = (status = read_byte(cpu, LCD_STATUS)) & 0x3;
-	scanline = read_byte(cpu, CURR_SCANLINE);
-	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
-		if (scanline > 144) {
-			/* MODE 1 */
-			status = ((status >> 2) << 2) | 0x1;
-			prev_mode |= BIT(3);
-		} else {
-			if (cpu->scanline_cnt > 456 - 80) {
-				/* MODE 2 */
-				status = ((status >> 2) << 2) | 0x2;
-				prev_mode |= BIT(3);
-			} else if (cpu->scanline_cnt > 456 - 252) {
-				/* MODE 3 */
-				status = ((status >> 2) << 2) | 0x3;
-			} else {
-				/* MODE 0 */
-				status = (status >> 2) << 2;
-				prev_mode |= BIT(3);
-			}
-		}
-
-		if (prev_mode & BIT(3) && ((prev_mode & 0x3) != (status & 0x3)))
-			request_interrupt(cpu, LCD_STAT);
-
-		if (read_byte(cpu, TARGET_SCANLINE) == scanline) {
-			status |= BIT(2);
-			if (status & BIT(6))
-				request_interrupt(cpu, LCD_STAT);
-		} else {
-			status &= ~BIT(2);
-		}
-	} else {
-		status = ((status >> 2) << 2) | 0x1;
-		cpu->scanline_cnt = 456;
-		write_byte(cpu, CURR_SCANLINE, 0);
-	}
-	
-	write_byte(cpu, LCD_STATUS, status);
-}
-
-void
 load_rom_bank(gb_cpu *cpu)
 {
 	if (cpu->cart->rom_bank == 0)
@@ -274,24 +230,69 @@ load_ram_bank(gb_cpu *cpu)
 void
 update_graphics(gb_cpu *cpu, int ops)
 {
-	BYTE scanline;
-	
-	set_lcd_status(cpu);
-	
+	BYTE stat;
+
 	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
-		if ((cpu->scanline_cnt -= ops) <= 0) {
-			++cpu->memory[CURR_SCANLINE];
-			scanline = read_byte(cpu, CURR_SCANLINE);
-			cpu->scanline_cnt += 456;
-			
-			if (scanline == 144) {
-				draw_scanline(cpu);
-				request_interrupt(cpu, VBLANK);
-			} else if (scanline == 153) {
-				cpu->memory[CURR_SCANLINE] = 0;
-			} else if (scanline < 144) {
-				draw_scanline(cpu);
+		cpu->scanline_cnt += ops;
+
+		switch ((stat = cpu->memory[LCD_STATUS]) & 0x3) {
+		case 2:
+			if (cpu->scanline_cnt >= 80) {
+				cpu->scanline_cnt -= 80;
+
+				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x3;
 			}
+			
+			break;
+		case 3:
+			if (cpu->scanline_cnt >= 172) {
+				cpu->scanline_cnt -= 172;
+
+				draw_scanline(cpu);
+				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x0;
+				if (stat & BIT(3))
+					request_interrupt(cpu, LCD_STAT);
+			}
+
+			break;
+		case 0:
+			if (cpu->scanline_cnt >= 204) {
+				cpu->scanline_cnt -= 204;
+
+				if (++cpu->memory[CURR_SCANLINE] >= 144) {
+					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x1;
+					request_interrupt(cpu, VBLANK);
+					if (stat & BIT(4))
+						request_interrupt(cpu, LCD_STAT);
+				} else {
+					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
+					if (stat & BIT(5))
+						request_interrupt(cpu, LCD_STAT);
+				}
+			}
+
+			break;
+		case 1:
+			if (cpu->scanline_cnt >= 456) {
+				cpu->scanline_cnt -= 456;
+
+				if (++cpu->memory[CURR_SCANLINE] >= 153) {
+					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
+					cpu->memory[CURR_SCANLINE] = 0;
+					if (stat & BIT(5))
+						request_interrupt(cpu, LCD_STAT);
+				}
+			}
+
+			break;
+		}
+
+		if (cpu->memory[CURR_SCANLINE] == cpu->memory[TARGET_SCANLINE]) {
+			cpu->memory[LCD_STATUS] |= BIT(2);
+			if (stat & BIT(6))
+				request_interrupt(cpu, LCD_STAT);
+		} else {
+			cpu->memory[LCD_STATUS] &= ~BIT(2);
 		}
 	}
 }
@@ -303,7 +304,7 @@ draw_scanline(gb_cpu *cpu)
 	BYTE lcd, scanline, scroll_x, scroll_y, id, *data, *attr;
 
 	lcd = read_byte(cpu, LCD_CONTROL);
-	scanline = read_byte(cpu, CURR_SCANLINE) - 1;
+	scanline = read_byte(cpu, CURR_SCANLINE);
 	scroll_x = read_byte(cpu, SCROLL_X);
 	scroll_y = read_byte(cpu, SCROLL_Y);
 

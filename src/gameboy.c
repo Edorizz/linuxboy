@@ -76,7 +76,8 @@ update_gb(gameboy *gb)
 		update_graphics(&gb->cpu, gb->cycles);
 	}
 
-	handle_interrupts(&gb->cpu);
+	if (gb->cpu.memory[gb->cpu.pc - 1] != 0xFB)
+		handle_interrupts(&gb->cpu);
 
 	/* Draw only if neccessary */
 	if (gb->curr_cycles >= CLOCK_RATE / 60) {
