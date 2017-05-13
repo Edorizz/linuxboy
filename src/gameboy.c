@@ -11,9 +11,8 @@
 void
 power_gb(gameboy *gb)
 {
-	if (load_cartridge(&gb->cart) == -1 &&
-	    gb->win.sdl_win == NULL &&
-	    create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1) {
+	if (load_cartridge(&gb->cart) == -1 ||
+	    (gb->win.sdl_win == NULL && create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1)) {
 		return;
 	}
 

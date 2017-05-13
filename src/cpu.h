@@ -11,8 +11,8 @@
 #define SCROLL_X		0xFF43
 #define CURR_SCANLINE		0xFF44
 #define TARGET_SCANLINE		0xFF45
-#define WINDOW_X		0xFF4A
-#define WINDOW_Y		0xFF4B
+#define WINDOW_Y		0xFF4A
+#define WINDOW_X		0xFF4B
 
 /* OTHER */
 #define CLOCK_RATE	4194304

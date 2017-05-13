@@ -14,17 +14,20 @@ const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
 void
 draw_scanline(gb_cpu *cpu)
 {
-	BYTE lcd, scanline, scroll_x, scroll_y, id, *data, *attr;
+	BYTE lcd, scanline, scroll_x, scroll_y, window_x, window_y, id, *data, *attr;
 
 	lcd = read_byte(cpu, LCD_CONTROL);
 	scanline = read_byte(cpu, CURR_SCANLINE);
+
 	scroll_x = read_byte(cpu, SCROLL_X);
 	scroll_y = read_byte(cpu, SCROLL_Y);
+	window_x = read_byte(cpu, WINDOW_X);
+	window_y = read_byte(cpu, WINDOW_Y);
 
 	/* Draw tiles */
 	if (lcd & BIT(0)) {
 		for (int i = 0; i * 8 - scroll_x < SCR_W; ++i) {
-			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) +
+			id = cpu->memory[(0x9800 + (lcd & BIT(3) ? 0x400 : 0)) +
 					 ((scroll_y + scanline) / 8 % 32 * 32) +
 					 ((scroll_x / 8 + i) % 32)];
 			data = get_tile(cpu, id);
@@ -36,7 +39,16 @@ draw_scanline(gb_cpu *cpu)
 
 	/* Draw window */
 	if (lcd & BIT(5)) {
-		/* TODO */
+		if (window_y <= scanline) {
+			for (int i = 0; i * 8 + window_x - 7 < SCR_W; ++i) {
+				id = cpu->memory[(0x9800 + (lcd & BIT(6) ? 0x400 : 0)) +
+						 ((scanline - window_y) / 8 * 32) + i];
+				data = get_tile(cpu, id);
+
+				draw_tile_row(cpu, data + (scanline - window_y) % 8 * 2,
+					      0, scanline, window_x + i * 8 - 7, cpu->memory[0xFF47]);
+			}
+		}
 	}
 
 	/* Draw sprites */
@@ -116,6 +128,18 @@ get_tile(gb_cpu *cpu, BYTE id)
 	}
 }
 
+int
+get_color(BYTE *pixel)
+{
+	for (int i = 0; i != MAX_COLORS; ++i) {
+		if (memcmp(&colors[i], pixel, 3) == 0) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 void
 draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette)
 {
@@ -144,7 +168,7 @@ draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scr
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> i) << 1 & 0x2) | ((b1 >> i) & 0x1);
 
-			if (color != WHITE) {
+			if (color != WHITE && (!(attr & BIT(7)) || get_color(cpu->scr_buf[screen_y][screen_x + i - offset]) == WHITE)) {
 				color = (palette >> (color * 2)) & 0x3;	
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 			}
@@ -153,7 +177,7 @@ draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scr
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
 			
-			if (color != WHITE) {
+			if (color != WHITE && (!(attr & BIT(7)) || get_color(cpu->scr_buf[screen_y][screen_x + i - offset]) == WHITE)) {
 				color = (palette >> (color * 2)) & 0x3;
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 			}
