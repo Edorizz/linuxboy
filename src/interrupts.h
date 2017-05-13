@@ -1,7 +1,7 @@
 #ifndef LINUXBOY_INTERRUPTS_H
 #define LINUXBOY_INTERRUPTS_H
 
-#include <linuxboy/cpu.h>
+#include "cpu.h"
 
 /* INTERRUPT REGISTERS */
 #define IE			0xFFFF

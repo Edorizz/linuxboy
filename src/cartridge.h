@@ -1,7 +1,7 @@
 #ifndef LINUXBOY_CARTRIDGE_H
 #define LINUXBOY_CARTRIDGE_H
 
-#include <linuxboy/utils.h>
+#include "utils.h"
 
 #define CARTRIDGE_SIZE	0x200000
 #define CARTRIDGE_TYPE	0x147

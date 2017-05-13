@@ -1,20 +1,16 @@
 /* Header file */
-#include <linuxboy/cpu.h>
+#include "cpu.h"
 /* C library */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 /* Linuxboy */
-#include <linuxboy/utils.h>
-#include <linuxboy/opcodes.h>
-#include <linuxboy/timers.h>
-#include <linuxboy/interrupts.h>
-
-const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
-				   { 136, 192, 112 },	/* LIGHT_GRAY */
-				   {  52, 104,  86 },	/* DARK_GRAY */
-				   {   8,  24,  32 } };	/* BLACK */
+#include "gpu.h"
+#include "utils.h"
+#include "opcodes.h"
+#include "timers.h"
+#include "interrupts.h"
 
 /* NOT USABLE */
 void
@@ -198,12 +194,10 @@ update_timers(gb_cpu *cpu, int ops)
 			set_frequency(cpu);
 			
 			if (read_byte(cpu, TIMA) == 255) {
-				write_byte(cpu, TIMA,
-					   read_byte(cpu, TMA));
+				write_byte(cpu, TIMA, read_byte(cpu, TMA));
 				request_interrupt(cpu, TIMER);
 			} else {
-				write_byte(cpu, TIMA,
-					   read_byte(cpu, TIMA) + 1);
+				write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
 			}
 		}
 	}
@@ -293,131 +287,6 @@ update_graphics(gb_cpu *cpu, int ops)
 				request_interrupt(cpu, LCD_STAT);
 		} else {
 			cpu->memory[LCD_STATUS] &= ~BIT(2);
-		}
-	}
-}
-
-/* TODO: Make this clearer */
-void
-draw_scanline(gb_cpu *cpu)
-{
-	BYTE lcd, scanline, scroll_x, scroll_y, id, *data, *attr;
-
-	lcd = read_byte(cpu, LCD_CONTROL);
-	scanline = read_byte(cpu, CURR_SCANLINE);
-	scroll_x = read_byte(cpu, SCROLL_X);
-	scroll_y = read_byte(cpu, SCROLL_Y);
-
-	/* Draw tiles */
-	if (lcd & BIT(0)) {
-		for (int i = 0; i * 8 - scroll_x < SCR_W; ++i) {
-			id = cpu->memory[(0x9800 + (lcd & BIT(3)) * 0x400) +
-					 ((scroll_y + scanline) / 8 % 32 * 32) +
-					 ((scroll_x / 8 + i) % 32)];
-			data = get_tile(cpu, id);
-			
-			draw_tile_row(cpu, data + (scroll_y + scanline) % 8 * 2,
-				      i == 0 ? scroll_x % 8 : 0, scanline, MAX(i * 8 - scroll_x % 8, 0), cpu->memory[0xFF47]);
-		}
-	}
-
-	/* Draw window */
-	if (lcd & BIT(5)) {
-		/* TODO */
-	}
-
-	/* Draw sprites */
-	if (lcd & BIT(1)) {
-		for (int i = 0; i != 40; ++i) {
-			attr = &cpu->memory[0xFE00 + i * 4];
-
-			if (attr[0] - 16 <= scanline && scanline < attr[0] - 8) {
-				if (attr[3] & BIT(6))
-					data = &cpu->memory[0x8000 + attr[2] * 16 + ((7 - (scanline - (attr[0] - 16))) * 2)];
-				else
-					data = &cpu->memory[0x8000 + attr[2] * 16 + ((scanline - (attr[0] - 16)) * 2)];
-
-				if (attr[1] - 8 < 0)
-					draw_sprite_row(cpu, data, 8 - attr[1], scanline, 0, attr[3]);
-				else
-					draw_sprite_row(cpu, data, 0, scanline, attr[1] - 8, attr[3]);
-			}
-		}
-	}
-}
-
-/* TODO: Too much malloc! */
-void
-flip_screen(gb_cpu *cpu)
-{
-	BYTE *top_row, *bot_row;
-
-	for (int i = 0; i != SCR_H / 2; ++i) {
-		top_row = &cpu->scr_buf[SCR_H - i - 1][0][0];
-		bot_row = &cpu->scr_buf[i][0][0];
-
-		memcpy(&cpu->scr_buf[SCR_H][0][0], bot_row, SCR_W * 3);
-		memcpy(bot_row, top_row, SCR_W * 3);
-		memcpy(top_row, &cpu->scr_buf[SCR_H][0][0], SCR_W * 3);
-	}
-}
-
-void
-clear_screen(gb_cpu *cpu, int color)
-{
-	for (int i = 0; i != SCR_H; ++i)
-		for (int j = 0; j != SCR_W; ++j)
-			memcpy(cpu->scr_buf[i][j], &colors[color], 3);
-}
-
-BYTE *
-get_tile(gb_cpu *cpu, BYTE id)
-{
-	if (cpu->memory[LCD_CONTROL] & BIT(4))
-		return &cpu->memory[0x8000 + id * 16];
-	else
-		return &cpu->memory[0x8800 + (128 + *(SIGNED_BYTE*)&id) * 16];
-}
-
-void
-draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette)
-{
-	BYTE b1, b2, color;
-
-	b1 = *data;
-	b2 = *(data + 1);
-
-	for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
-		color = (palette >> ((((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1)) * 2)) & 0x3;
-
-		memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
-	}
-}
-
-void
-draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE attr)
-{
-	BYTE b1, b2, palette, color;
-
-	b1 = *data;
-	b2 = *(data + 1);
-	palette = cpu->memory[attr & BIT(4) ? 0xFF49 : 0xFF48];
-
-	if (attr & BIT(5)) {
-		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
-			color = ((b2 >> i) << 1 & 0x2) | ((b1 >> i) & 0x1);
-			color = (palette >> (color * 2)) & 0x3;
-			
-			if (color != WHITE)
-				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
-		}
-	} else {
-		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
-			color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
-			color = (palette >> (color * 2)) & 0x3;
-			
-			if (color != WHITE)
-				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 		}
 	}
 }
@@ -524,5 +393,314 @@ cpu_status(const gb_cpu *cpu)
 	printf("\nlcd: %02x\tstat: %02x\n",
 	       cpu->memory[LCD_CONTROL],
 	       cpu->memory[LCD_STATUS]);
+}
+
+/* DOESN'T MODIFY GAME MEMORY */
+BYTE
+inc_byte(BYTE *flag, BYTE b)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H));
+	
+	if ((BYTE)(b + 1) == 0)
+		*flag |= BIT(FLAG_Z);
+	
+	/* Half-carry if bit 4 changed (not sure) */
+	if ((b ^ (BYTE)(b + 1)) & BIT(4))
+		*flag |= BIT(FLAG_H);
+	
+	return b + 1;
+}
+
+/* DOESN'T MODIFY GAME MEMORY */
+BYTE
+dec_byte(BYTE *flag, BYTE b)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_Z) | BIT(FLAG_H));
+	*flag |= BIT(FLAG_N);
+	
+	if ((BYTE)(b - 1) == 0)
+		*flag |= BIT(FLAG_Z);
+	
+	/* Half-carry if lower nibble is 0 */
+	if (!(b & 0x0F))
+		*flag |= BIT(FLAG_H);
+	
+	return b - 1;
+}
+
+void
+swap_byte(BYTE *flag, BYTE *b)
+{
+	BYTE nibble;
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
+	
+	nibble = *b & 0x0F;
+	*b = (*b >> 4) | (nibble << 4);
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags)
+{
+	BYTE bit, prev_c; 
+
+	prev_c = *flag & BIT(FLAG_C);
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z)); /* ? */
+	
+	if (rot_flags & LEFT) {
+		bit = *b >> 7;
+		
+		*b <<= 1;
+		if (rot_flags & CIRCULAR)
+			*b |= bit;
+		else
+			*b |= (prev_c >> FLAG_C) & 1;
+	} else {
+		bit = *b & 1;
+		
+		*b >>= 1;
+		if (rot_flags & CIRCULAR)
+			*b |= bit << 7;
+		else
+			*b |= (prev_c) << (7 - FLAG_C);
+	}
+	
+	if (/*rot_flags & BIT(FLAG_Z) && */*b == 0)
+		*flag |= BIT(FLAG_Z);
+	
+	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
+}
+
+void
+shift_byte(BYTE *flag, BYTE *b, BYTE shift_flags)
+{
+	BYTE bit;
+
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
+
+	if (shift_flags & BIT(LEFT)) {
+		bit = *b >> 7;
+
+		*b <<= 1;
+	} else {
+		/* Need to keep msb and lsb */
+		bit = (*b >> 6) & 2;
+		bit |= *b & 1;
+
+		*b >>= 1;
+		bit &= 1;
+		if (shift_flags & BIT(ARITHMETIC))
+			*b |= (bit >> 1) << 7;
+	}
+
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+	
+	*flag ^= (-bit ^ *flag) & BIT(FLAG_C);
+}
+
+void
+add_byte(BYTE *flag, BYTE *b, int val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
+	
+	if (*b + val > 0xFF)
+		*flag |= BIT(FLAG_C);
+	
+	if ((*b & 0x0F) + (val & 0x0F) > 0x0F)
+		*flag |= BIT(FLAG_H);
+	
+	*b += val;
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+add_word(BYTE *flag, WORD *w, int val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_N));
+	
+	*flag ^= (-(*w + val > 0xFFFF) ^ *flag) & BIT(FLAG_C);
+	*flag ^= (-((*w & 0x0FFF) + (val & 0x0FFF) > 0x0FFF) ^ *flag) & BIT(FLAG_H);
+	
+	*w += val;
+}
+
+void
+sub_byte(BYTE *flag, BYTE *b, BYTE val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_Z));
+	*flag |= BIT(FLAG_N);
+	
+	if (*b < val)
+		*flag |= BIT(FLAG_C);
+	
+	if ((val & 0x0F) > (*b & 0x0F))
+		*flag |= BIT(FLAG_H);
+	
+	*b -= val;
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+and_byte(BYTE *flag, BYTE *b, BYTE val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_N) | BIT(FLAG_Z));
+	*flag |= BIT(FLAG_H);
+	
+	*b &= val;
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+xor_byte(BYTE *flag, BYTE *b, BYTE val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
+	
+	*b ^= val;
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+or_byte(BYTE *flag, BYTE *b, BYTE val)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_C) | BIT(FLAG_H) | BIT(FLAG_N) | BIT(FLAG_Z));
+	
+	*b |= val;
+	
+	if (*b == 0)
+		*flag |= BIT(FLAG_Z);
+}
+
+void
+cp_byte(BYTE *flag, BYTE b, BYTE val)
+{
+	sub_byte(flag, &b, val);
+}
+
+void
+test_bit(BYTE *flag, BYTE b, BYTE bit)
+{
+	RESET_FLAGS(*flag, BIT(FLAG_N) | BIT(FLAG_Z));
+	*flag |= BIT(FLAG_H);
+
+	if (!(b & BIT(bit)))
+		*flag |= BIT(FLAG_Z);
+}
+
+BYTE
+read_byte(gb_cpu *cpu, WORD addr)
+{
+	return cpu->memory[addr];
+}
+
+WORD
+read_word(gb_cpu *cpu, WORD addr)
+{
+	return *(WORD*)&cpu->memory[addr];
+}
+
+void
+write_byte(gb_cpu *cpu, WORD addr, BYTE val)
+{
+	if (addr < 0x2000) {
+		/* Enable RAM bank */
+		if (cpu->cart->flags & BIT(MBC_2) && addr & BIT(4))
+			return;
+
+		if ((val & 0x0F) == 0x0A)
+			cpu->cart->flags |= BIT(RAM_ENABLE);
+		else
+			cpu->cart->flags &= ~BIT(RAM_ENABLE);
+	} else if (addr < 0x4000) {
+		/* Lo ROM bank change */
+		if (cpu->cart->flags & BIT(MBC_1))
+			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
+		else if (cpu->cart->flags & BIT(MBC_2))
+			cpu->cart->rom_bank = val & 0x0F;
+
+		load_rom_bank(cpu);
+	} else if (addr < 0x6000) {
+		/* Hi ROM or RAM bank change */
+		if (cpu->cart->flags & BIT(MBC_1)) {
+			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
+				cpu->cart->ram_bank = val & 0x3;
+				load_ram_bank(cpu);
+			} else {
+				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | (val & 0xE0);
+				load_rom_bank(cpu);
+			}
+		}
+	} else if (addr < 0x8000) {
+		/* ROM/RAM banking selection */
+		if (val & BIT(0))
+			cpu->cart->flags &= ~BIT(RAM_CHANGE);
+		else
+			cpu->cart->flags |= BIT(RAM_CHANGE);
+	} else if (addr >= 0xE000 && addr < 0xFE00) {
+		/* ECHO memory */
+		cpu->memory[addr] = val;
+		write_byte(cpu, addr - 0x2000, val);
+	} else if (addr >= 0xFEA0 && addr < 0xFF00) {
+		/* Not usable */
+	} else if (addr == DIVIDER_REGISTER) {
+		/* Writing to the divider register resets it */
+		cpu->memory[addr] = 0;
+	} else if (addr == 0xFF46) {
+		dma_transfer(cpu, val);
+	} else if (addr == 0xFF00) {
+		if (val & BIT(4) && val & BIT(5))
+			cpu->memory[addr] = ~(3 << 4);
+		else if (val & BIT(4))
+			cpu->memory[addr] = (cpu->joypad & 0x0F);
+		else if (val & BIT(5))
+			cpu->memory[addr] = (cpu->joypad >> 4);
+	} else if (addr == 0xFF50) {
+		/* Unmap bootrom */
+		if (val == 1)
+			memcpy(cpu->memory, cpu->cart->rom, 0x100);
+	} else {
+		cpu->memory[addr] = val;
+	}
+}
+
+void
+write_word(gb_cpu *cpu, WORD addr, WORD val)
+{
+	*(WORD*)&cpu->memory[addr] = val;
+}
+
+WORD
+pop(gb_cpu *cpu)
+{
+	return (cpu->stack++)->reg;
+}
+
+void
+push(gb_cpu *cpu, WORD val)
+{
+	(--cpu->stack)->reg = val;
+}
+
+void
+call(gb_cpu *cpu, WORD addr)
+{
+	push(cpu, cpu->pc);
+	cpu->pc = addr;
+}
+
+void
+ret(gb_cpu *cpu)
+{
+	cpu->pc = pop(cpu);
 }
 

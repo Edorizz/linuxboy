@@ -1,11 +1,12 @@
 /* Header file */
-#include <linuxboy/gameboy.h>
+#include "gameboy.h"
 /* C Library */
 #include <stdio.h>
 #include <time.h>
 /* Linuxboy */
-#include <linuxboy/timers.h>
-#include <linuxboy/interrupts.h>
+#include "gpu.h"
+#include "timers.h"
+#include "interrupts.h"
 
 void
 power_gb(gameboy *gb)

@@ -1,5 +1,5 @@
 /* Header file */
-#include <linuxboy/glsl_shader.h>
+#include "glsl_shader.h"
 /* C Library */
 #include <stdio.h>
 #include <stdlib.h>

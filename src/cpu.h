@@ -1,15 +1,8 @@
 #ifndef LINUXBOY_CPU_H
 #define LINUXBOY_CPU_H
 
-#include <linuxboy/utils.h>
-#include <linuxboy/cartridge.h>
-
-/* PIXEL COLORS */
-#define WHITE			0
-#define LIGHT_GRAY		1
-#define DARK_GRAY		2
-#define BLACK			3
-#define MAX_COLORS		4
+#include "utils.h"
+#include "cartridge.h"
 
 /* SPECIAL REGISTERS */
 #define LCD_CONTROL		0xFF40
@@ -22,12 +15,11 @@
 #define WINDOW_Y		0xFF4B
 
 /* OTHER */
-#define CLOCK_RATE		4194304
+#define CLOCK_RATE	4194304
 
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum cpu_flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
 enum cpu_status	{ HALT, STOP };
-enum draw_flags	{ FLIP_X, FLIP_Y, BG_PRIORITY };
 
 /* RGB PIXEL */
 typedef struct {
@@ -68,21 +60,39 @@ int  power_cpu(gb_cpu *cpu);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
 void update_graphics(gb_cpu *cpu, int ops);
-void draw_scanline(gb_cpu *cpu);
 void load_rom_bank(gb_cpu *cpu);
 void load_ram_bank(gb_cpu *cpu);
-
-/* GRAPHICS */
-void flip_screen(gb_cpu *cpu);
-void clear_screen(gb_cpu *cpu, int color);
-BYTE *get_tile(gb_cpu *cpu, BYTE id);
-void draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette);
-void draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE sprite_attr);
-void draw_tiles(gb_cpu *cpu);
 
 /* DEBUGGING */
 void disassemble(const gb_cpu *cpu);
 void cpu_status(const gb_cpu *cpu);
+
+/* OPCODE HELPERS */
+BYTE inc_byte(BYTE *flag, BYTE b);
+BYTE dec_byte(BYTE *flag, BYTE b);
+void swap_byte(BYTE *flag, BYTE *b);
+void rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags);
+void shift_byte(BYTE *flag, BYTE *b, BYTE shift_flags);
+void add_byte(BYTE *flag, BYTE *b, int val);
+void add_word(BYTE *flag, WORD *w, int val);
+void sub_byte(BYTE *flag, BYTE *b, BYTE val);
+
+void and_byte(BYTE *flag, BYTE *b, BYTE val);
+void xor_byte(BYTE *flag, BYTE *b, BYTE val);
+void or_byte(BYTE *flag, BYTE *b, BYTE val);
+void cp_byte(BYTE *flag, BYTE b, BYTE val);
+void test_bit(BYTE *flag, BYTE b, BYTE bit);
+
+BYTE read_byte(gb_cpu *cpu, WORD addr);
+WORD read_word(gb_cpu *cpu, WORD addr);
+void write_byte(gb_cpu *cpu, WORD addr, BYTE val);
+void write_word(gb_cpu *cpu, WORD addr, WORD val);
+
+WORD pop(gb_cpu *cpu);
+void push(gb_cpu *cpu, WORD val);
+
+void call(gb_cpu *cpu, WORD addr);
+void ret(gb_cpu *cpu);
 
 #endif /* LINUXBOY_CPU_H */
 

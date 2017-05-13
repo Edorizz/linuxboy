@@ -1,9 +1,9 @@
 #ifndef LINUXBOY_GAMEBOY_H
 #define LINUXBOY_GAMEBOY_H
 
-#include <linuxboy/cpu.h>
-#include <linuxboy/cartridge.h>
-#include <linuxboy/window.h>
+#include "cpu.h"
+#include "cartridge.h"
+#include "window.h"
 
 #define MAX_WATCH	16
 

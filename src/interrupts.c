@@ -1,11 +1,11 @@
 /* Header file */
-#include <linuxboy/interrupts.h>
+#include "interrupts.h"
 /* C library */
 #include <stdio.h>
 #include <stdlib.h>
 /* Linuxboy */
-#include <linuxboy/utils.h>
-#include <linuxboy/opcodes.h>
+#include "utils.h"
+#include "opcodes.h"
 
 void
 request_interrupt(gb_cpu *cpu, BYTE interrupt)

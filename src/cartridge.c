@@ -1,4 +1,5 @@
-#include <linuxboy/cartridge.h>
+/* Header file */
+#include "cartridge.h"
 
 int
 load_cartridge(gb_cartridge *cart)

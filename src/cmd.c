@@ -1,4 +1,5 @@
-#include <linuxboy/cmd.h>
+/* Header file */
+#include "cmd.h"
 
 const cmd_option cmd_options[CMD_OPTIONS] = { { 'b', "break", cmd_breakpoint },
 					      { 'x', "width", cmd_win_width },

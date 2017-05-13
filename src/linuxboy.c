@@ -1,7 +1,7 @@
 /* C library */
 #include <stdio.h>
 /* Linuxboy */
-#include <linuxboy/linuxboy.h>
+#include "linuxboy.h"
 
 /* Function prototypes */
 void usage(const char **argv);

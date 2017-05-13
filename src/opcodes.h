@@ -1,7 +1,7 @@
 #ifndef LINUXBOY_OPCODES_H
 #define LINUXBOY_OPCODES_H
 
-#include <linuxboy/cpu.h>
+#include "cpu.h"
 
 #define SIGNED	4
 
@@ -16,30 +16,6 @@ typedef struct {
 
 extern const op ops[0x100];
 extern const op ext_ops[0x100];
-
-/* OPCODE HELPERS */
-BYTE inc_byte(BYTE *flag, BYTE b);
-BYTE dec_byte(BYTE *flag, BYTE b);
-void rot_byte(BYTE *flag, BYTE *b, BYTE rot_flags);
-void add_byte(BYTE *flag, BYTE *b, int val);
-void add_word(BYTE *flag, WORD *w, int val);
-void sub_byte(BYTE *flag, BYTE *b, BYTE val);
-
-void and_byte(BYTE *flag, BYTE *b, BYTE val);
-void xor_byte(BYTE *flag, BYTE *b, BYTE val);
-void or_byte(BYTE *flag, BYTE *b, BYTE val);
-void cp_byte(BYTE *flag, BYTE b, BYTE val);
-
-BYTE read_byte(gb_cpu *cpu, WORD addr);
-WORD read_word(gb_cpu *cpu, WORD addr);
-void write_byte(gb_cpu *cpu, WORD addr, BYTE val);
-void write_word(gb_cpu *cpu, WORD addr, WORD val);
-
-WORD pop(gb_cpu *cpu);
-void push(gb_cpu *cpu, WORD val);
-
-void call(gb_cpu *cpu, WORD addr);
-void ret(gb_cpu *cpu);
 
 /* OPCODES */
 int op_0x00(gb_cpu *cpu);

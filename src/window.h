@@ -3,7 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
-#include <linuxboy/utils.h>
+
+#include "utils.h"
 
 enum emu_flags	{ BREAKPOINT, QUIT, DEBUG, MAP_DUMP, TMP };
 enum joypad	{ BUTTON_A, BUTTON_B, BUTTON_SELECT, BUTTON_START,

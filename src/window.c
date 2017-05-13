@@ -1,11 +1,9 @@
 /* Header file */
-#include <linuxboy/window.h>
+#include "window.h"
 /* C Library */
 #include <stdlib.h>
-/* OpenGL */
-#include <GL/glew.h>
 /* Linuxboy */
-#include <linuxboy/glsl_shader.h>
+#include "glsl_shader.h"
 
 const key_pair joypad_input[8] = { { SDLK_j, BUTTON_A }, { SDLK_k, BUTTON_B },
 				   { SDLK_i, BUTTON_SELECT }, { SDLK_u, BUTTON_START },

@@ -1,7 +1,7 @@
 #ifndef LINUXBOY_CMD_H
 #define LINUXBOY_CMD_H
 
-#include <linuxboy/gameboy.h>
+#include "gameboy.h"
 
 #define CMD_OPTIONS	6
 
