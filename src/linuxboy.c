@@ -44,7 +44,7 @@ void
 usage(const char **argv)
 {
 	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr]\n"
-	       "\t-b addr: set breakpoint at 'addr' (hex)\n"
+	       "\t-b: set breakpoint at 'addr' (hex)\n"
 	       "\t-h: print this message and quit\n"
 	       "\t-s: set screen width to 160 * 'scale' and screen height to 144 * 'scale'\n"
 	       "\t-x: set screen width to 'width'\n"

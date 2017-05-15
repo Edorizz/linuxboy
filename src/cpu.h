@@ -42,7 +42,7 @@ typedef struct {
 	BYTE memory[0x10000]; /* 64KB */
 	reg regs[REG_MAX];
 	WORD pc;
-	reg *stack;
+	WORD stack;
 	/* SPECIAL REGISTERS */
 	BYTE ime; /* Interrupt master switch */
 	BYTE joypad;

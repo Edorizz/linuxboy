@@ -254,7 +254,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "PUSH HL", 1, op_0xE5 },
 			{ "AND %02x", 2, op_0xE6 },
 			{ "RST 20H", 1, op_0xE7 },
-			{ "ADD SP,%02x", 2, op_0xE8 },
+			{ "ADD SP,%02x", 2 | SIGNED, op_0xE8 },
 			{ "JP (HL)", 1, op_0xE9 },
 			{ "LD ($%04x),A", 3, op_0xEA },
 			{ "--", 1, NULL },
@@ -271,7 +271,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "PUSH AF", 1, op_0xF5 },
 			{ "OR %02x", 2, op_0xF6 },
 			{ "RST 30H", 1, op_0xF7 },
-			{ "LD HL,SP+%02x", 2, op_0xF8 },
+			{ "LD HL,SP+%d", 2 | SIGNED, op_0xF8 },
 			{ "LD SP,HL", 1, op_0xF9 },
 			{ "LD A,($%04x)", 3, op_0xFA },
 			{ "EI", 1, op_0xFB },
@@ -630,8 +630,8 @@ op_0x07(gb_cpu *cpu)
 int
 op_0x08(gb_cpu *cpu, WORD a16)
 {
-	write_byte(cpu, a16, cpu->stack->lo);
-	write_byte(cpu, a16 + 1, cpu->stack->hi);
+	write_byte(cpu, a16, cpu->memory[cpu->stack + 1]);
+	write_byte(cpu, a16 + 1, cpu->memory[cpu->stack]);
 	
 	return 20;
 }
@@ -1038,7 +1038,7 @@ int op_0x30(gb_cpu *cpu, SIGNED_BYTE r8)
 int
 op_0x31(gb_cpu *cpu, WORD d16)
 {
-	cpu->stack = (reg*)&cpu->memory[d16];
+	cpu->stack = d16;
 	
 	return 12;
 }
@@ -1056,7 +1056,7 @@ op_0x32(gb_cpu *cpu)
 int
 op_0x33(gb_cpu *cpu)
 {
-	++cpu->stack->reg;
+	cpu->stack += 2;
 	
 	return 8;
 }
@@ -1117,7 +1117,7 @@ op_0x38(gb_cpu *cpu, SIGNED_BYTE r8)
 int
 op_0x39(gb_cpu *cpu)
 {
-	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, cpu->stack->reg);
+	add_word(FLAG_P(cpu), &cpu->regs[REG_HL].reg, *(WORD*)&cpu->memory[cpu->stack]);
 	
 	return 8;
 }
@@ -1135,7 +1135,7 @@ op_0x3A(gb_cpu *cpu)
 int
 op_0x3B(gb_cpu *cpu)
 {
-	--cpu->stack->reg;
+	cpu->stack -= 2;
 	
 	return 8;
 }
@@ -2722,7 +2722,19 @@ op_0xE7(gb_cpu *cpu)
 int
 op_0xE8(gb_cpu *cpu, SIGNED_BYTE r8)
 {
-	add_word(FLAG_P(cpu), &cpu->stack->reg, r8);
+	WORD result = cpu->stack + r8;
+	
+	RESET_FLAGS(FLAG(cpu), BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H) | BIT(FLAG_C));
+
+	if (((cpu->stack ^ r8 ^ result) & 0x100) == 0x100) {
+		FLAG(cpu) |= BIT(FLAG_C);
+	}
+
+	if (((cpu->stack ^ r8 ^ result) & 0x10) == 0x10) {
+		FLAG(cpu) |= BIT(FLAG_H);
+	}
+
+	cpu->stack = result;
 	
 	return 16;
 }
@@ -2777,6 +2789,7 @@ int
 op_0xF1(gb_cpu *cpu)
 {
 	cpu->regs[REG_AF].reg = pop(cpu);
+	cpu->regs[REG_AF].lo &= 0xF0;
 	
 	return 12;
 }
@@ -2828,10 +2841,22 @@ op_0xF7(gb_cpu *cpu)
 
 /* LD HL,SP+r8 */
 int
-op_0xF8(gb_cpu *cpu, BYTE r8)
+op_0xF8(gb_cpu *cpu, SIGNED_BYTE r8)
 {
-	cpu->regs[REG_HL].reg = (BYTE*)cpu->stack - cpu->memory + r8;
+	WORD result = cpu->stack + r8;
 	
+	RESET_FLAGS(FLAG(cpu), BIT(FLAG_Z) | BIT(FLAG_N) | BIT(FLAG_H) | BIT(FLAG_C));
+
+	if (((cpu->stack ^ r8 ^ result) & 0x100) == 0x100) {
+		FLAG(cpu) |= BIT(FLAG_C);
+	}
+
+	if (((cpu->stack ^ r8 ^ result) & 0x10) == 0x10) {
+		FLAG(cpu) |= BIT(FLAG_H);
+	}
+
+	cpu->regs[REG_HL].reg = result;
+
 	return 12;
 }
 
@@ -2839,7 +2864,8 @@ op_0xF8(gb_cpu *cpu, BYTE r8)
 int
 op_0xF9(gb_cpu *cpu)
 {
-	cpu->stack->reg = cpu->regs[REG_HL].reg;
+	/*cpu->stack->reg = cpu->regs[REG_HL].reg;*/
+	cpu->stack = cpu->regs[REG_HL].reg;
 	
 	return 8;
 }

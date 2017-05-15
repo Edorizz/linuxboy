@@ -42,6 +42,12 @@ shutdown_gb(gameboy *gb)
 void
 update_gb(gameboy *gb)
 {
+	/* Save current gameboy state to state.gbs if needed */
+	if (gb->emu_flags & BIT(SAVE_STATE)) {
+		save_state_gb(gb, "state.gbs");
+		gb->emu_flags ^= BIT(SAVE_STATE);
+	}
+
 	/* Toggle debug mode if hit target breakpoint */
 	if (gb->emu_flags & BIT(BREAKPOINT) && gb->cpu.pc == gb->breakpoint) {
 		gb->emu_flags |= BIT(DEBUG);
@@ -60,6 +66,7 @@ update_gb(gameboy *gb)
 		handle_input(&gb->win);
 	}
 
+	/* DEBUGGING: Print current tile map to a map.log */
 	if (gb->emu_flags & BIT(MAP_DUMP)) {
 		map_dump(gb);
 		gb->emu_flags ^= BIT(MAP_DUMP);
@@ -91,6 +98,19 @@ update_gb(gameboy *gb)
 
 		swap_window(&gb->win);
 	}
+}
+
+void
+save_state_gb(gameboy *gb, const char *path)
+{
+	FILE *fp = fopen(path, "wb");
+
+
+}
+
+void
+load_state_gb(gameboy *gb, const char *path)
+{
 }
 
 void

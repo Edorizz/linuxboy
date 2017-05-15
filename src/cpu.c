@@ -38,7 +38,7 @@ power_cpu(gb_cpu *cpu)
 	
 	/* Initialize Gameboy */
 	cpu->pc = 0x0;
-	cpu->stack = (reg*)&cpu->memory[0xFFFE];
+	cpu->stack = 0xFFFE;
 	
 	/* Initialize CPU registers
 	cpu->regs[REG_AF].reg = 0x01B0;
@@ -159,16 +159,16 @@ set_frequency(gb_cpu *cpu)
 {
 	switch (read_byte(cpu, TMC) & 0x3) {
 	case 0:
-		cpu->timer_cnt += CLOCK_RATE / 4096;
+		cpu->timer_cnt += /*1024*/1024;
 		break;
 	case 1:
-		cpu->timer_cnt += CLOCK_RATE / 262144;
+		cpu->timer_cnt += /*16*/16;
 		break;
 	case 2:
-		cpu->timer_cnt += CLOCK_RATE / 65536;
+		cpu->timer_cnt += /*64*/64;
 		break;
 	case 3:
-		cpu->timer_cnt += CLOCK_RATE / 16384;
+		cpu->timer_cnt += /*256*/256;
 		break;
 	}
 }
@@ -185,10 +185,10 @@ divider_register(gb_cpu *cpu, int ops)
 void
 update_timers(gb_cpu *cpu, int ops)
 {
-	/* UPDATE DIVIDER REGISTER */
+	/* update divider register */
 	divider_register(cpu, ops);
 	
-	/* UPDATE TIMER */
+	/* Update timer */
 	if (read_byte(cpu, TMC) & BIT(2)) {
 		if ((cpu->timer_cnt -= ops) <= 0) {
 			set_frequency(cpu);
@@ -285,9 +285,7 @@ update_graphics(gb_cpu *cpu, int ops)
 					if (stat & BIT(5)) {
 						request_interrupt(cpu, LCD_STAT);
 					}
-				}
-			}
-
+				}} 
 			break;
 		}
 
@@ -375,7 +373,7 @@ cpu_status(const gb_cpu *cpu)
 	/* THIS CAN ALL GO IN ONE BIG PRINTF() BUT THIS WAY LOOKS CLEANER */
 	
 	/* Stack pointer */
-	printf("\nsp(%04x): %04x\n", (WORD)((BYTE*)cpu->stack - cpu->memory), cpu->stack->reg);
+	printf("\nsp(%04x): %02x%02x\n", cpu->stack, cpu->memory[cpu->stack + 1], cpu->memory[cpu->stack]);
 	
 	/* Pretty flag */
 	flag = cpu->regs[REG_AF].lo;
@@ -689,8 +687,12 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == DIVIDER_REGISTER) {
 		/* Writing to the divider register resets it */
 		cpu->memory[addr] = 0;
-	} else if (addr == 0xFF46) {
-		dma_transfer(cpu, val);
+	} else if (addr == TMC) {
+		if ((val & 0x3) != (cpu->memory[TMC] & 0x3)) {
+			set_frequency(cpu);
+		}
+
+		cpu->memory[TMC] = val;
 	} else if (addr == 0xFF00) {
 		if (val & BIT(4) && val & BIT(5)) {
 			cpu->memory[addr] = ~(3 << 4);
@@ -699,6 +701,10 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 		} else if (val & BIT(5)) {
 			cpu->memory[addr] = (cpu->joypad >> 4);
 		}
+	} else if (addr == IF) {
+		cpu->memory[IF] = (cpu->memory[IF] & ~0x1F) | (val & 0x1F);
+	} else if (addr == 0xFF46) {
+		dma_transfer(cpu, val);
 	} else if (addr == 0xFF50) {
 		/* Unmap bootrom */
 		if (val == 1) {
@@ -718,13 +724,19 @@ write_word(gb_cpu *cpu, WORD addr, WORD val)
 WORD
 pop(gb_cpu *cpu)
 {
-	return (cpu->stack++)->reg;
+	WORD val = *(WORD*)&cpu->memory[cpu->stack];
+
+	cpu->stack += 2;
+	return val;
 }
 
 void
 push(gb_cpu *cpu, WORD val)
 {
-	(--cpu->stack)->reg = val;
+	cpu->stack -= 2;
+
+	cpu->memory[cpu->stack + 1] = (val & 0xFF00) >> 8;
+	cpu->memory[cpu->stack] = val & 0x00FF;
 }
 
 void

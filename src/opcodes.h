@@ -272,7 +272,7 @@ int op_0xF3(gb_cpu *cpu);
 int op_0xF5(gb_cpu *cpu);
 int op_0xF6(gb_cpu *cpu, BYTE d8);
 int op_0xF7(gb_cpu *cpu);
-int op_0xF8(gb_cpu *cpu, BYTE r8);
+int op_0xF8(gb_cpu *cpu, SIGNED_BYTE r8);
 int op_0xF9(gb_cpu *cpu);
 int op_0xFA(gb_cpu *cpu, WORD a16);
 int op_0xFB(gb_cpu *cpu);

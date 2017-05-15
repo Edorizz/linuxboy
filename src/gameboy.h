@@ -27,6 +27,8 @@ void reset_gb(gameboy *gb);
 void shutdown_gb(gameboy *gb);
 void update_gb(gameboy *gb);
 void resize_gb(gameboy *gb, int width, int height);
+void save_state_gb(gameboy *gb, const char *path);
+void load_state_gb(gameboy *gb, const char *path);
 
 void map_dump(gameboy *gb);
 

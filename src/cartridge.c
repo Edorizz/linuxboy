@@ -32,6 +32,9 @@ load_cartridge(gb_cartridge *cart)
 		}
 
 		switch (cart->rom[CARTRIDGE_TYPE]) {
+		case 0:
+			cart->flags = 0;
+			break;
 		case 1:
 		case 2:
 		case 3:
@@ -41,7 +44,12 @@ load_cartridge(gb_cartridge *cart)
 		case 5:
 			cart->flags |= BIT(MBC_2);
 			break;
+		default:
+			printf("Unsupported cartridge type (%d)\n", cart->rom[CARTRIDGE_TYPE]);
+			return -1;
+			break;
 		}
+		printf("Cartridge type (%d)\n", cart->rom[CARTRIDGE_TYPE]);
 
 		fclose(fp);
 	}
