@@ -17,6 +17,7 @@ typedef struct {
 	WORD watch_list[MAX_WATCH];
 	int watch_size;
 	WORD breakpoint;
+	const char *state_path;
 	/* TIMING */
 	int curr_cycles;
 	int cycles;

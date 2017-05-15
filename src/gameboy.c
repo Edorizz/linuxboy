@@ -20,8 +20,12 @@ power_gb(gameboy *gb)
 	gb->cpu.cart = &gb->cart;
 	gb->win.scr_buf = &gb->cpu.scr_buf[0][0][0];
 
-	/* Power components */
-	power_cpu(&gb->cpu);
+	if (gb->emu_flags & BIT(LOAD_STATE)) {
+		load_state_gb(gb, gb->state_path);
+	} else {
+		/* Power components */
+		power_cpu(&gb->cpu);
+	}
 }
 
 void
@@ -105,12 +109,23 @@ save_state_gb(gameboy *gb, const char *path)
 {
 	FILE *fp = fopen(path, "wb");
 
+	fwrite(((BYTE*)(&gb->cpu)) + sizeof(gb_cartridge*),
+	       1, sizeof(gb_cpu) - sizeof(gb_cartridge*),
+	       fp);
 
+	fclose(fp);
 }
 
 void
 load_state_gb(gameboy *gb, const char *path)
 {
+	FILE *fp = fopen(path, "rb");
+
+	fread(((BYTE*)(&gb->cpu)) + sizeof(gb_cartridge*),
+	      1, sizeof(gb_cpu) - sizeof(gb_cartridge*),
+	      fp);
+
+	fclose(fp);
 }
 
 void

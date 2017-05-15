@@ -10,16 +10,17 @@ int
 main(int argc, const char **argv)
 {
 	gameboy gb;
+	int arg_size;
 
 	reset_gb(&gb);
 	for (int i = 1; i != argc; ++i) {
 		if (argv[i][0] == '-') {
-			if (!cmd_check(&gb, argv + i)) {
+			if ((arg_size = cmd_check(&gb, argv + i)) == -1) {
 				usage(argv);
 				return 0;
 			}
 
-			++i;
+			i += arg_size;
 		} else {
 			gb.cart.rom_path = argv[i];
 		}
@@ -43,13 +44,6 @@ main(int argc, const char **argv)
 void
 usage(const char **argv)
 {
-	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr]\n"
-	       "\t-b: set breakpoint at 'addr' (hex)\n"
-	       "\t-h: print this message and quit\n"
-	       "\t-s: set screen width to 160 * 'scale' and screen height to 144 * 'scale'\n"
-	       "\t-x: set screen width to 'width'\n"
-	       "\t-y: set screen height to 'height'\n"
-	       "\t-w: add 'addr' to the watch list\n",
-		argv[0]);
+	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr]\n", argv[0]);
 }
 

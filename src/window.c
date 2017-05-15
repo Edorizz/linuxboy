@@ -172,22 +172,25 @@ handle_input(gl_window *win)
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 				case SDLK_q:
+				case SDLK_F1:
 					*win->emu_flags |= BIT(QUIT);
 					break;
-				case SDLK_p:
+				case SDLK_F2:
 					*win->emu_flags ^= BIT(DEBUG);
-					break;
-				case SDLK_m:
+					return;
+				case SDLK_F3:
 					*win->emu_flags |= BIT(MAP_DUMP);
-					return;
-				case SDLK_z:
+					break;
+				case SDLK_F4:
 					*win->emu_flags |= BIT(SAVE_STATE);
-					return;
+					break;
 				case SDLK_n:
 					return;
-				case SDLK_v:
+				case SDLK_F5:
 					SDL_GL_SetSwapInterval(!SDL_GL_GetSwapInterval());
-					return;
+					break;
+				default:
+					break;
 				}
 				break;
 			}
