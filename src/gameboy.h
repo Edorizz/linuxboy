@@ -31,7 +31,5 @@ void resize_gb(gameboy *gb, int width, int height);
 void save_state_gb(gameboy *gb, const char *path);
 void load_state_gb(gameboy *gb, const char *path);
 
-void map_dump(gameboy *gb);
-
 #endif /* LINUXBOY_GAMEBOY_H */
 

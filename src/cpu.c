@@ -309,6 +309,10 @@ update_graphics(gb_cpu *cpu, int ops)
 	}
 }
 
+/*
+ * -==+ DEBUGGING +==-
+ */
+
 void
 disassemble(const gb_cpu *cpu)
 {
@@ -330,6 +334,22 @@ disassemble(const gb_cpu *cpu)
 			pc += ops[op].arg_size;
 		}
 	}
+}
+
+void
+map_dump(const gb_cpu *cpu)
+{
+	FILE *fp = fopen("map.log", "wb");
+
+	for (int i = 0; i != 32; ++i) {
+		for (int j = 0; j != 32; ++j) {
+			fprintf(fp, "%02x ", cpu->memory[0x9800 + (i * 32) + j]);
+		}
+
+		fprintf(fp, "\n");
+	}
+
+	fclose(fp);
 }
 
 void
@@ -425,6 +445,10 @@ cpu_status(const gb_cpu *cpu)
 	       cpu->memory[TMA], cpu->memory[TMA],
 	       cpu->memory[TMC], cpu->memory[TMC]);
 }
+
+/*
+ * -==+ OPCODE HELPERS +==-
+ */
 
 /* DOESN'T MODIFY GAME MEMORY */
 BYTE

@@ -72,7 +72,7 @@ update_gb(gameboy *gb)
 
 	/* DEBUGGING: Print current tile map to a map.log */
 	if (gb->emu_flags & BIT(MAP_DUMP)) {
-		map_dump(gb);
+		map_dump(&gb->cpu);
 		gb->emu_flags ^= BIT(MAP_DUMP);
 	}
 
@@ -126,22 +126,6 @@ load_state_gb(gameboy *gb, const char *path)
 	fread(((BYTE*)(&gb->cpu)) + sizeof(gb_cartridge*),
 	      1, sizeof(gb_cpu) - sizeof(gb_cartridge*),
 	      fp);
-
-	fclose(fp);
-}
-
-void
-map_dump(gameboy *gb)
-{
-	FILE *fp = fopen("map.log", "wb");
-
-	for (int i = 0; i != 32; ++i) {
-		for (int j = 0; j != 32; ++j) {
-			fprintf(fp, "%02x ", gb->cpu.memory[0x9800 + (i * 32) + j]);
-		}
-
-		fprintf(fp, "\n");
-	}
 
 	fclose(fp);
 }

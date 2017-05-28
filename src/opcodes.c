@@ -553,7 +553,7 @@ const op ext_ops[0x100] = { { "RLC B", 2, ext_op_0x00 },
 			    { "SET 7,A", 2, ext_op_0xFF } };
 
 /*
- * ---=== OPCODES ===---
+ * -==+ OPCODES +==-
  */
 
 /* NOP */
@@ -2902,7 +2902,9 @@ op_0xFF(gb_cpu *cpu)
 	return 16;
 }
 
-/* ---=== EXTENDED OPCODES ===--- */
+/*
+ * -==+ EXTENDED OPCODES +==-
+ */
 
 /* | BIT(FLAG_Z) ? */
 /* RLC B */

@@ -15,7 +15,7 @@ void
 draw_scanline(gb_cpu *cpu)
 {
 	BYTE lcd, scanline, scroll_x, scroll_y, window_x, window_y, id, *data, *attr;
-
+	
 	lcd = read_byte(cpu, LCD_CONTROL);
 	scanline = read_byte(cpu, CURR_SCANLINE);
 
@@ -46,7 +46,7 @@ draw_scanline(gb_cpu *cpu)
 				data = get_tile(cpu, id);
 
 				draw_tile_row(cpu, data + (scanline - window_y) % 8 * 2,
-					      0, scanline, window_x + i * 8 - 7, cpu->memory[0xFF47]);
+					      window_x - 7 + i * 8 < 0 ? 7 - window_x : 0, scanline, MAX(window_x - 7 + i * 8, 0), cpu->memory[0xFF47]);
 			}
 		}
 	}

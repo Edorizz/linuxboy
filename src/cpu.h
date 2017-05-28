@@ -65,6 +65,7 @@ void load_ram_bank(gb_cpu *cpu);
 
 /* DEBUGGING */
 void disassemble(const gb_cpu *cpu);
+void map_dump(const gb_cpu *cpu);
 void cpu_status(const gb_cpu *cpu);
 
 /* OPCODE HELPERS */

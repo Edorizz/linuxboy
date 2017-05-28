@@ -11,7 +11,7 @@ void
 request_interrupt(gb_cpu *cpu, BYTE interrupt)
 {
 	write_byte(cpu, IF, read_byte(cpu, IF) | BIT(interrupt));
-	cpu->status = 0;
+	cpu->status &= ~(BIT(HALT) | BIT(STOP));
 }
 
 void
