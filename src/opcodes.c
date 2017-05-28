@@ -271,7 +271,7 @@ const op ops[0x100] = { { "NOP", 1, op_0x00 },
 			{ "PUSH AF", 1, op_0xF5 },
 			{ "OR %02x", 2, op_0xF6 },
 			{ "RST 30H", 1, op_0xF7 },
-			{ "LD HL,SP+%d", 2 | SIGNED, op_0xF8 },
+			{ "LD HL,SP+%02x", 2 | SIGNED, op_0xF8 },
 			{ "LD SP,HL", 1, op_0xF9 },
 			{ "LD A,($%04x)", 3, op_0xFA },
 			{ "EI", 1, op_0xFB },
@@ -1068,7 +1068,7 @@ op_0x34(gb_cpu *cpu)
 	write_byte(cpu, cpu->regs[REG_HL].reg,
 		   inc_byte(FLAG_P(cpu), read_byte(cpu, cpu->regs[REG_HL].reg)));
 	
-	return 4;
+	return 12;
 }
 
 /* DEC (HL) */
@@ -1078,7 +1078,7 @@ op_0x35(gb_cpu *cpu)
 	write_byte(cpu, cpu->regs[REG_HL].reg,
 		   dec_byte(FLAG_P(cpu), read_byte(cpu, cpu->regs[REG_HL].reg)));
 	
-	return 4;
+	return 12;
 }
 
 /* LD (HL),d8 */
@@ -1087,7 +1087,7 @@ op_0x36(gb_cpu *cpu, BYTE d8)
 {
 	write_byte(cpu, cpu->regs[REG_HL].reg, d8);
 	
-	return 8;
+	return 12;
 }
 
 /* SCF */
@@ -1668,11 +1668,6 @@ op_0x75(gb_cpu *cpu)
 int
 op_0x76(gb_cpu *cpu)
 {
-	if (cpu->ime) {
-		cpu->status = BIT(HALT);
-	} else {
-		cpu->pc += ops[cpu->memory[cpu->pc]].arg_size;
-	}
 	
 	return 4;
 }
@@ -3479,7 +3474,7 @@ int
 ext_op_0x3E(gb_cpu *cpu)
 {
 	shift_byte(FLAG_P(cpu),
-		   &cpu->memory[cpu->regs[REG_DE].reg], BIT(RIGHT));
+		   &cpu->memory[cpu->regs[REG_HL].reg], BIT(RIGHT));
 
 	return 16;
 }
@@ -3554,7 +3549,7 @@ ext_op_0x46(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 0);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 0,A */
@@ -3627,7 +3622,7 @@ ext_op_0x4E(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 1);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 1,A */
@@ -3700,7 +3695,7 @@ ext_op_0x56(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 2);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 2,A */
@@ -3773,7 +3768,7 @@ ext_op_0x5E(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 3);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 3,A */
@@ -3846,7 +3841,7 @@ ext_op_0x66(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 4);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 4,A */
@@ -3919,7 +3914,7 @@ ext_op_0x6E(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 5);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 5,A */
@@ -3992,7 +3987,7 @@ ext_op_0x76(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 6);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 6,A */
@@ -4065,7 +4060,7 @@ ext_op_0x7E(gb_cpu *cpu)
 	test_bit(FLAG_P(cpu),
 		 cpu->memory[cpu->regs[REG_HL].reg], 7);
 
-	return 16;
+	return 12;
 }
 
 /* BIT 7,A */

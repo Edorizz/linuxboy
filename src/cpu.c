@@ -56,6 +56,10 @@ power_cpu(gb_cpu *cpu)
 	/* Reset joypad */
 	cpu->joypad = 0xFF;
 	
+	cpu->memory[0xFF05] = 0x00;
+	cpu->memory[0xFF06] = 0x00;
+	cpu->memory[0xFF07] = 0xF8;
+
 	/* Initialize memory
 	cpu->memory[0xFF05] = 0x00; 
 	cpu->memory[0xFF06] = 0x00; 
@@ -195,6 +199,7 @@ update_timers(gb_cpu *cpu, int ops)
 			
 			if (read_byte(cpu, TIMA) == 255) {
 				write_byte(cpu, TIMA, read_byte(cpu, TMA));
+
 				request_interrupt(cpu, TIMER);
 			} else {
 				write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
@@ -285,7 +290,9 @@ update_graphics(gb_cpu *cpu, int ops)
 					if (stat & BIT(5)) {
 						request_interrupt(cpu, LCD_STAT);
 					}
-				}} 
+				}
+			}
+
 			break;
 		}
 
@@ -297,6 +304,8 @@ update_graphics(gb_cpu *cpu, int ops)
 		} else {
 			cpu->memory[LCD_STATUS] &= ~BIT(2);
 		}
+	} else {
+		cpu->memory[LCD_STATUS] |= BIT(2);
 	}
 }
 
@@ -353,7 +362,6 @@ cpu_status(const gb_cpu *cpu)
 			
 			printf(opcode->assembly,
 			       *sw < 0 ? "-" : "", *sw < 0 ? -*sw : *sw);
-			
 			break;
 		}
 	} else {
@@ -375,7 +383,7 @@ cpu_status(const gb_cpu *cpu)
 	/* Stack pointer */
 	printf("\nsp(%04x): %02x%02x\n", cpu->stack, cpu->memory[cpu->stack + 1], cpu->memory[cpu->stack]);
 	
-	/* Pretty flag */
+	/* Pretty little flag */
 	flag = cpu->regs[REG_AF].lo;
 	printf("\nflags: %c%c%c%c",
 	       flag & BIT(FLAG_Z) ? 'Z' : '.',
@@ -402,6 +410,20 @@ cpu_status(const gb_cpu *cpu)
 	printf("\nlcd: %02x\tstat: %02x\n",
 	       cpu->memory[LCD_CONTROL],
 	       cpu->memory[LCD_STATUS]);
+
+	printf("\n ==+ TIMING +==\n");
+
+	printf("\nscanline_cnt: %d\n",
+	       cpu->scanline_cnt);
+
+	printf("timer_cnt: %d\n"
+	       "TIMA: %d (%.2x)\n"
+	       "TMA: %d (%.2x)\n"
+	       "TMC: %d (%.2x)\n",
+	       cpu->timer_cnt,
+	       cpu->memory[TIMA], cpu->memory[TIMA],
+	       cpu->memory[TMA], cpu->memory[TMA],
+	       cpu->memory[TMC], cpu->memory[TMC]);
 }
 
 /* DOESN'T MODIFY GAME MEMORY */
@@ -688,9 +710,7 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 		/* Writing to the divider register resets it */
 		cpu->memory[addr] = 0;
 	} else if (addr == TMC) {
-		if ((val & 0x3) != (cpu->memory[TMC] & 0x3)) {
 			set_frequency(cpu);
-		}
 
 		cpu->memory[TMC] = val;
 	} else if (addr == 0xFF00) {

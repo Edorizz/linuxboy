@@ -59,7 +59,7 @@ delete_window(gl_window *win)
 	SDL_DestroyWindow(win->sdl_win);
 	SDL_Quit();
 
-	/* Delete OpenGL buffers */
+	/* Delete buffers */
 	glDeleteVertexArrays(1, &win->vao);
 	glDeleteBuffers(1, &win->vbo);
 	glDeleteTextures(1, &win->texture);
