@@ -79,8 +79,10 @@ update_gb(gameboy *gb)
 	if (!(gb->cpu.status & BIT(STOP))) {
 		if (!(gb->cpu.status & BIT(HALT))) {
 			/* Execute opcode */
-			gb->curr_cycles += gb->cycles = exec_op(&gb->cpu);
+			gb->cycles = exec_op(&gb->cpu);
 		}
+
+		gb->curr_cycles += gb->cycles;
 		
 		/* Update internals */
 		update_timers(&gb->cpu, gb->cycles);
@@ -92,9 +94,9 @@ update_gb(gameboy *gb)
 	}
 
 	/* Draw only if neccessary */
-	if (gb->curr_cycles >= CLOCK_RATE / 60) {
+	if (gb->curr_cycles >= CLOCK_RATE / 60 && gb->cpu.memory[CURR_SCANLINE] >= 144) {
 		handle_input(&gb->win);
-		gb->curr_cycles = 0;
+		gb->curr_cycles -= CLOCK_RATE / 60;
 
 		flip_screen(&gb->cpu);
 		render(&gb->win);

@@ -1668,6 +1668,7 @@ op_0x75(gb_cpu *cpu)
 int
 op_0x76(gb_cpu *cpu)
 {
+	cpu->status = BIT(HALT);
 	
 	return 4;
 }
