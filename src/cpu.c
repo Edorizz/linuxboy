@@ -305,7 +305,7 @@ update_graphics(gb_cpu *cpu, int ops)
 			cpu->memory[LCD_STATUS] &= ~BIT(2);
 		}
 	} else {
-		cpu->memory[LCD_STATUS] |= BIT(2);
+		cpu->memory[LCD_STATUS] &= ~0x3/* |= BIT(2) */;
 	}
 }
 

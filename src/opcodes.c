@@ -1984,7 +1984,7 @@ int
 op_0x98(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_BC].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -1994,7 +1994,7 @@ int
 op_0x99(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_BC].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -2004,7 +2004,7 @@ int
 op_0x9A(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_DE].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -2014,7 +2014,7 @@ int
 op_0x9B(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_DE].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -2024,7 +2024,7 @@ int
 op_0x9C(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_HL].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -2034,7 +2034,7 @@ int
 op_0x9D(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_HL].lo + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
@@ -2044,7 +2044,7 @@ int
 op_0x9E(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 read_byte(cpu, cpu->regs[REG_HL].reg) + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 8;
 }
@@ -2054,7 +2054,7 @@ int
 op_0x9F(gb_cpu *cpu)
 {
 	sub_byte(FLAG_P(cpu), &cpu->regs[REG_AF].hi,
-		 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) << FLAG_C));
+		 cpu->regs[REG_AF].hi + ((FLAG(cpu) & BIT(FLAG_C)) >> FLAG_C));
 	
 	return 4;
 }
