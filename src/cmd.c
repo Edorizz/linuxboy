@@ -1,3 +1,22 @@
+/*
+ * Linuxboy - Nintendo Game Boy Emulator
+ * Copyright (C) 2017  Edgar Mendoza
+
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 /* Header file */
 #include "cmd.h"
 
@@ -91,7 +110,8 @@ cmd_help(gameboy *gb, const char *arg)
 	       "\t-s: set screen width to 160 * 'scale' and screen height to 144 * 'scale'\n"
 	       "\t-x: set screen width to 'width'\n"
 	       "\t-y: set screen height to 'height'\n"
-	       "\t-w: add 'addr' to the watch list\n");
+	       "\t-w: add 'addr' to the watch list\n"
+	       "\t-l: load CPU state from 'state'\n");
 
 	return 0;
 }
