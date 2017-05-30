@@ -22,7 +22,7 @@
 
 #include "gameboy.h"
 
-#define CMD_OPTIONS	7
+#define CMD_OPTIONS	8
 
 typedef struct {
 	char cmd_short;
@@ -40,6 +40,7 @@ int cmd_win_scale(gameboy *gb, const char *arg);
 int cmd_add_watch(gameboy *gb, const char *arg);
 int cmd_load_state(gameboy *gb, const char *arg);
 int cmd_help(gameboy *gb, const char *arg);
+int cmd_bootstrap(gameboy *gb, const char *arg);
 
 #endif /* LINUXBOY_CMD_H */
 

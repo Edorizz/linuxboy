@@ -46,26 +46,67 @@ load_bootstrap(gb_cpu *cpu)
 }
 
 int
-power_cpu(gb_cpu *cpu)
+power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 {
 	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
-	load_bootstrap(cpu);
-	
-	/* Initialize Gameboy */
-	cpu->pc = 0x0;
-	cpu->stack = 0xFFFE;
-	
-	/* Initialize CPU registers
-	cpu->regs[REG_AF].reg = 0x01B0;
-	cpu->regs[REG_BC].reg = 0x0013;
-	cpu->regs[REG_DE].reg = 0x00D8;
-	cpu->regs[REG_HL].reg = 0x014D;
-	*/
 
+	if (bootstrap == NULL) {
+		/* Initialize Gameboy */
+		cpu->pc = 0x100;
+		cpu->stack = 0xFFFE;
+
+		/* Initialize CPU registers */
+		cpu->regs[REG_AF].reg = 0x01B0;
+		cpu->regs[REG_BC].reg = 0x0013;
+		cpu->regs[REG_DE].reg = 0x00D8;
+		cpu->regs[REG_HL].reg = 0x014D;
+		
+		/* Initialize memory */
+		cpu->memory[0xFF05] = 0x00; 
+		cpu->memory[0xFF06] = 0x00; 
+		cpu->memory[0xFF07] = 0x00; 
+		cpu->memory[0xFF10] = 0x80; 
+		cpu->memory[0xFF11] = 0xBF; 
+		cpu->memory[0xFF12] = 0xF3; 
+		cpu->memory[0xFF14] = 0xBF; 
+		cpu->memory[0xFF16] = 0x3F; 
+		cpu->memory[0xFF17] = 0x00; 
+		cpu->memory[0xFF19] = 0xBF; 
+		cpu->memory[0xFF1A] = 0x7F; 
+		cpu->memory[0xFF1B] = 0xFF; 
+		cpu->memory[0xFF1C] = 0x9F; 
+		cpu->memory[0xFF1E] = 0xBF; 
+		cpu->memory[0xFF20] = 0xFF; 
+		cpu->memory[0xFF21] = 0x00; 
+		cpu->memory[0xFF22] = 0x00; 
+		cpu->memory[0xFF23] = 0xBF; 
+		cpu->memory[0xFF24] = 0x77; 
+		cpu->memory[0xFF25] = 0xF3;
+		cpu->memory[0xFF26] = 0xF1; 
+		cpu->memory[0xFF40] = 0x91; 
+		cpu->memory[0xFF42] = 0x00; 
+		cpu->memory[0xFF43] = 0x00; 
+		cpu->memory[0xFF45] = 0x00; 
+		cpu->memory[0xFF47] = 0xFC; 
+		cpu->memory[0xFF48] = 0xFF; 
+		cpu->memory[0xFF49] = 0xFF; 
+		cpu->memory[0xFF4A] = 0x00; 
+		cpu->memory[0xFF4B] = 0x00; 
+		cpu->memory[0xFFFF] = 0x00;
+		
+		/* Enable interrupts */
+		cpu->ime = 1;
+	
+	} else {
+		memcpy(cpu->memory, bootstrap, 0x100);
+
+		cpu->pc = 0x0;
+	}
+	
 	/* Initialize special registers */
 	cpu->memory[LCD_CONTROL] = /*0x91*/ 0x00;
 	cpu->memory[LCD_STATUS] = /*0x85*/0x84;
@@ -79,48 +120,10 @@ power_cpu(gb_cpu *cpu)
 	cpu->memory[0xFF06] = 0x00;
 	cpu->memory[0xFF07] = 0xF8;
 
-	/* Initialize memory
-	cpu->memory[0xFF05] = 0x00; 
-	cpu->memory[0xFF06] = 0x00; 
-	cpu->memory[0xFF07] = 0x00; 
-	cpu->memory[0xFF10] = 0x80; 
-	cpu->memory[0xFF11] = 0xBF; 
-	cpu->memory[0xFF12] = 0xF3; 
-	cpu->memory[0xFF14] = 0xBF; 
-	cpu->memory[0xFF16] = 0x3F; 
-	cpu->memory[0xFF17] = 0x00; 
-	cpu->memory[0xFF19] = 0xBF; 
-	cpu->memory[0xFF1A] = 0x7F; 
-	cpu->memory[0xFF1B] = 0xFF; 
-	cpu->memory[0xFF1C] = 0x9F; 
-	cpu->memory[0xFF1E] = 0xBF; 
-	cpu->memory[0xFF20] = 0xFF; 
-	cpu->memory[0xFF21] = 0x00; 
-	cpu->memory[0xFF22] = 0x00; 
-	cpu->memory[0xFF23] = 0xBF; 
-	cpu->memory[0xFF24] = 0x77; 
-	cpu->memory[0xFF25] = 0xF3;
-	cpu->memory[0xFF26] = 0xF1; 
-	cpu->memory[0xFF40] = 0x91; 
-	cpu->memory[0xFF42] = 0x00; 
-	cpu->memory[0xFF43] = 0x00; 
-	cpu->memory[0xFF45] = 0x00; 
-	cpu->memory[0xFF47] = 0xFC; 
-	cpu->memory[0xFF48] = 0xFF; 
-	cpu->memory[0xFF49] = 0xFF; 
-	cpu->memory[0xFF4A] = 0x00; 
-	cpu->memory[0xFF4B] = 0x00; 
-	cpu->memory[0xFFFF] = 0x00;
-	*/
-	
-	/* Enable interrupts
-	cpu->ime = 1;
-	*/
-	
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
-	/*cpu->scanline_cnt = CLOCK_RATE / 9198;*/
+	cpu->scanline_cnt = CLOCK_RATE / 9198;
 	cpu->scanline_cnt = 0;
 	
 	return 0;

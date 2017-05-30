@@ -75,7 +75,7 @@ typedef struct {
 } gb_cpu;
 
 /* CPU FUNCTIONS */
-int  power_cpu(gb_cpu *cpu);
+int  power_cpu(gb_cpu *cpu, const BYTE *bootstrap);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
 void update_graphics(gb_cpu *cpu, int ops);

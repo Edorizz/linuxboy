@@ -1,14 +1,14 @@
 # Linuxboy (WIP)
-Linuxboy is a feature-rich (hopefully) Game Boy emulator mostly intended to be used as a full-blown debugger. I'll most likely write a series of blog posts explaining the inner working in the near future to help emulator beginners understand how the Game Boy worked and how to implement it in code, but for now just I'll focus on actually developing the damn thing.
+Linuxboy is a (hopefully) feature-rich Game Boy emulator mostly intended to be used as a full-blown debugger. I'll most likely write a series of blog posts explaining the inner working in the near future to help emulator beginners understand how the Game Boy worked and how to implement it in code, but for now just I'll focus on actually developing the damn thing.
 
 ## Status
-Currently the emulator supports most of the features of the original Game Boy except for audio and other types of memory banking which are not MBC1A
+Currently the emulator supports most of the features of the original Game Boy except for audio and other types of memory banking which are not MBC1.
 
 ## TODO's
 ### Near future TODO's
-- [ ] Enable/Disable Bootrom
+- [x] Enable/Disable Bootrom
 - [ ] Finish memory banking
-- [ ] Remove Bootrom dependency
+- [x] Remove Bootrom dependency
 - [ ] Implement Saving
 - [ ] Fix sprites rendering priority
 
@@ -66,7 +66,8 @@ Keep in mind that full compatibility doesn't mean perferct emulation, it just me
 ![castlevania_gm](img/castlevania_gm.png)
 
 ## Building
-Linuxboy depends on SDL2 and GLEW for rendering which can be easily installed by using your preffered package manager.
+Linuxboy depends on SDL2 and GLEW for rendering which can be easily installed by using your preferred package manager.
+
 To compile just run:
 ```
 make
@@ -81,13 +82,14 @@ And to run:
 usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state]
 ```
 
-- -b, --break:  set breakpoint at 'addr' (hex).
-- -h, --help:   print help message and quit.
-- -s, --scale:  set screen width to 160 * 'scale' and screen height to 144 * 'scale'.
-- -x, --width:  set screen width to 'width'.
-- -y, --height: set screen height to 'height'.
-- -w, --watch:  add 'addr' to the watch list.
-- -l, --state:  load CPU state from 'state'.
+- -b, --break:     set breakpoint at 'addr' (hex).
+- -h, --help:      print help message and quit.
+- -s, --scale:     set screen width to 160 * 'scale' and screen height to 144 * 'scale'.
+- -x, --width:     set screen width to 'width'.
+- -y, --height:    set screen height to 'height'.
+- -w, --watch:     add 'addr' to the watch list.
+- -l, --state:     load CPU state from 'state'.
+- -n, --bootstrap: load bootstrap.
 
 ## Controls
 | Key | Action |

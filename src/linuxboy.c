@@ -63,6 +63,6 @@ main(int argc, const char **argv)
 void
 usage(const char **argv)
 {
-	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state]\n", argv[0]);
+	printf("usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state] [-n]\n", argv[0]);
 }
 
