@@ -102,4 +102,9 @@ usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state
 | k   | B |
 | u   | START |
 | i   | SELECT |
+| q/F1 | QUIT |
+| F2  | DEBUG |
+| F3  | DUMP TILE MAP |
+| F4  | SAVE CURRENT STATE |
+| F5  | DISABLE V-SYNC |
 

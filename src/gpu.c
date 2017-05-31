@@ -159,6 +159,18 @@ get_color(BYTE *pixel)
 	return -1;
 }
 
+int
+paletted(int color, BYTE palette)
+{
+	for (int i = 0; i != 4; ++i) {
+		if (((palette >> (i * 2)) & 0x3) == color) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 void
 draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette)
 {
@@ -168,8 +180,10 @@ draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scree
 	b2 = *(data + 1);
 
 	for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
-		color = (palette >> ((((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1)) * 2)) & 0x3;
+		color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
+		memcpy(cpu->scr_buf[SCR_H][screen_x + i - offset], &colors[color], 3);
 
+		color = (palette >> ((((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1)) * 2)) & 0x3;
 		memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 	}
 }
@@ -187,7 +201,8 @@ draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scr
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> i) << 1 & 0x2) | ((b1 >> i) & 0x1);
 
-			if (color != WHITE && (!(attr & BIT(7)) || get_color(cpu->scr_buf[screen_y][screen_x + i - offset]) == WHITE)) {
+			if (color != WHITE &&
+			    (!(attr & BIT(7)) || get_color(cpu->scr_buf[SCR_H][screen_x + i - offset]) == WHITE)) {
 				color = (palette >> (color * 2)) & 0x3;	
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 			}
@@ -196,7 +211,8 @@ draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int scr
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
 			color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
 			
-			if (color != WHITE && (!(attr & BIT(7)) || get_color(cpu->scr_buf[screen_y][screen_x + i - offset]) == WHITE)) {
+			if (color != WHITE &&
+			    (!(attr & BIT(7)) || get_color(cpu->scr_buf[SCR_H][screen_x + i - offset]) == WHITE)) {
 				color = (palette >> (color * 2)) & 0x3;
 				memcpy(cpu->scr_buf[screen_y][screen_x + i - offset], &colors[color], 3);
 			}

@@ -31,20 +31,6 @@
 #include "timers.h"
 #include "interrupts.h"
 
-/* NOT USABLE */
-void
-load_bootstrap(gb_cpu *cpu)
-{
-	FILE *fp;
-	
-	if ((fp = fopen("bootstrap.gb", "rb")) == NULL) {
-		fprintf(stderr, "Failed to open bootstrap.gb: %s\n", strerror(errno));
-		return;
-	}
-	
-	fread(cpu->memory, 1, 0x100, fp);
-}
-
 int
 power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 {
@@ -97,7 +83,7 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 		cpu->memory[0xFF4A] = 0x00; 
 		cpu->memory[0xFF4B] = 0x00; 
 		cpu->memory[0xFFFF] = 0x00;
-		
+
 		/* Enable interrupts */
 		cpu->ime = 1;
 	
@@ -105,25 +91,23 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 		memcpy(cpu->memory, bootstrap, 0x100);
 
 		cpu->pc = 0x0;
+
+		cpu->memory[LCD_CONTROL] = /*0x91*/0x00;
+		cpu->memory[0xFF05] = 0x00;
+		cpu->memory[0xFF06] = 0x00;
+		cpu->memory[0xFF07] = 0xF8;
+		cpu->memory[LCD_STATUS] = /*0x85*/0x84;
+		cpu->memory[IE] = 0x00;
+		cpu->memory[IF] = 0xE1;
 	}
 	
-	/* Initialize special registers */
-	cpu->memory[LCD_CONTROL] = /*0x91*/ 0x00;
-	cpu->memory[LCD_STATUS] = /*0x85*/0x84;
-	cpu->memory[IE] = 0x00;
-	cpu->memory[IF] = 0xE1;
 
 	/* Reset joypad */
 	cpu->joypad = 0xFF;
-	
-	cpu->memory[0xFF05] = 0x00;
-	cpu->memory[0xFF06] = 0x00;
-	cpu->memory[0xFF07] = 0xF8;
 
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
-	cpu->scanline_cnt = CLOCK_RATE / 9198;
 	cpu->scanline_cnt = 0;
 	
 	return 0;
@@ -735,7 +719,8 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 				cpu->cart->ram_bank = val & 0x3;
 				load_ram_bank(cpu);
 			} else {
-				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | (val & 0xE0);
+				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5)/*(val & 0xE0)*/;
+				printf("%d\n", val);
 				load_rom_bank(cpu);
 			}
 		}

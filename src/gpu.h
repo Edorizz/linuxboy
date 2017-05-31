@@ -39,3 +39,4 @@ void draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, in
 void draw_tiles(gb_cpu *cpu);
 
 #endif /* LINUXBOY_GPU_H */
+
