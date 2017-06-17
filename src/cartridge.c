@@ -63,7 +63,6 @@ load_cartridge(gb_cartridge *cart)
 		case 0x06:
 			cart->flags = MBC2;
 			break;
-			/*
 		case 0x0F:
 		case 0x10:
 		case 0x11:
@@ -71,7 +70,6 @@ load_cartridge(gb_cartridge *cart)
 		case 0x13:
 			cart->flags = MBC3;
 			break;
-			*/
 		case 0x19:
 		case 0x1A:
 		case 0x1B:
@@ -81,7 +79,7 @@ load_cartridge(gb_cartridge *cart)
 			cart->flags = MBC5;
 			break;
 		default:
-			printf("Unsupported cartridge type (%d)\n", cart->rom[CARTRIDGE_TYPE]);
+			printf("Unsupported cartridge type (%x)\n", cart->rom[CARTRIDGE_TYPE]);
 			return -1;
 			break;
 		}

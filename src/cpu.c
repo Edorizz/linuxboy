@@ -41,20 +41,8 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
 
+	/* Setup MBC function */
 	cpu->mbc = mbc_types[cpu->cart->flags & 0x0F];
-
-	/*
-	for (int i = 0; i != 4; ++i) {
-		if (cpu->cart->flags & BIT(MBC_1 + i)) {
-			cpu->mbc = mbc_types[i + 1];
-			break;
-		}
-	}
-
-	if (i == 4) {
-		cpu->mbc = mbc_types[0];
-	}
-	*/
 
 	/* Load bootstrap or continues from previous CPU state save */
 	if (bootstrap == NULL) {
@@ -253,46 +241,8 @@ load_ram_bank(gb_cpu *cpu)
 	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
 
-/*
+/* -==+ MEMORY BANK CONTROLLERS +==- */
 
-	if (addr < 0x2000) {
-		if (cpu->cart->flags & BIT(MBC2) && addr & BIT(4))
-			return;
-
-		if ((val & 0x0F) == 0x0A) {
-			cpu->cart->flags |= BIT(RAM_ENABLE);
-		} else {
-			cpu->cart->flags &= ~BIT(RAM_ENABLE);
-		}
-	} else if (addr < 0x4000) {
-		if (cpu->cart->flags & BIT(MBC1)) {
-			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
-		} else if (cpu->cart->flags & BIT(MBC2)) {
-			cpu->cart->rom_bank = val & 0x0F;
-		}
-
-		load_rom_bank(cpu);
-	} else if (addr < 0x6000) {
-		if (cpu->cart->flags & BIT(MBC1)) {
-			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
-				cpu->cart->ram_bank = val & 0x3;
-				load_ram_bank(cpu);
-			} else {
-				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5);
-				printf("%d\n", val);
-				load_rom_bank(cpu);
-			}
-		}
-	} else if (addr < 0x8000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	}
- */
-
-/* Memory Bank Controllers */
 void
 mbc0(gb_cpu *cpu, WORD addr, BYTE val)
 {
@@ -390,6 +340,27 @@ mbc2(gb_cpu *cpu, WORD addr, BYTE val)
 void
 mbc3(gb_cpu *cpu, WORD addr, BYTE val)
 {
+	if (addr < 0x2000) {
+		if ((val & 0x0F) == 0x0A) {
+			cpu->cart->flags |= BIT(RAM_ENABLE);
+		} else {
+			cpu->cart->flags &= ~BIT(RAM_ENABLE);
+		}
+	} else if (addr < 0x4000) {
+		cpu->cart->rom_bank = val & 0x7F;
+
+		load_rom_bank(cpu);
+	} else if (addr < 0x6000) {
+		if (val <= 0x3) {
+			cpu->cart->ram_bank = val;
+
+			load_ram_bank(cpu);
+		} else if (val >= 0x8 && val <= 0xC) {
+			/* RTC register select */
+		}
+	} else if (addr < 0x8000) {
+		/* Latch clock data */
+	}
 }
 
 void

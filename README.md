@@ -19,7 +19,7 @@ Currently the emulator supports most of the features of the original Game Boy ex
 - [ ] Graphical debugger
 
 ## Tested Games List
-Keep in mind that full compatibility doesn't mean perferct emulation, it just means that no errors have been found yet.
+Keep in mind that full compatibility doesn't mean perfect emulation, it just means that no errors have been found yet.
 
 
 | Game | Compatibility | Notes |
