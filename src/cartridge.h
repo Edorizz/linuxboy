@@ -25,7 +25,7 @@
 #define CARTRIDGE_SIZE	0x200000
 #define CARTRIDGE_TYPE	0x147
 
-enum mbc { MBC_1, MBC_2, RAM_ENABLE, RAM_CHANGE };
+enum mbc { MBC_1, MBC_2, MBC_3, MBC_5, MBC_6, RAM_ENABLE, RAM_CHANGE };
 
 typedef struct {
 	const char *rom_path;

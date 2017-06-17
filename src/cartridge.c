@@ -54,13 +54,13 @@ load_cartridge(gb_cartridge *cart)
 		case 0:
 			cart->flags = 0;
 			break;
-		case 1:
-		case 2:
-		case 3:
-			cart->flags |= BIT(MBC_1);
-			break;
-		case 4:
-		case 5:
+		case 0x01:
+		case 0x02:
+		case 0x03:
+		     	cart->flags |= BIT(MBC_1);
+		     	break;
+		case 0x05:
+		case 0x06:
 			cart->flags |= BIT(MBC_2);
 			break;
 		default:

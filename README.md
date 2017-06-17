@@ -6,11 +6,11 @@ Currently the emulator supports most of the features of the original Game Boy ex
 
 ## TODO's
 ### Near future TODO's
-- [x] Enable/Disable Bootrom
 - [ ] Finish memory banking
-- [x] Remove Bootrom dependency
 - [ ] Implement Saving
-- [ ] Fix sprites rendering priority
+- [x] Enable/Disable Bootrom
+- [x] Remove Bootrom dependency
+- [x] Fix sprites rendering priority
 
 ### *I'll do it someday, stop bothering* TODO's
 - [ ] Audio support
@@ -31,7 +31,7 @@ Keep in mind that full compatibility doesn't mean perferct emulation, it just me
 | Kirby's Dream Land 2                       | ⚪️⚪️⚪️⚪️⚪️ |   Won't boot. |
 | Legend of Zelda, The: Link's Awakening     | 🔵🔵🔵⚪️⚪️ |   Tiles sometimes don't load properly when switching areas. |
 | Mega Man II                                | 🔵🔵🔵🔵⚪️ |   Sprites are sometimes rendered below tiles. (Air Man) |
-| Metroid II: Return of Samus                | 🔵🔵🔵🔵⚪️ |   Samus is invisible for the first part of the game. |
+| Metroid II: Return of Samus                | 🔵🔵🔵🔵️🔵|   ~~Samus is invisible for the first part of the game.~~ |
 | Tennis                                     | 🔵🔵🔵🔵🔵 |    |
 | Super Mario Land                           | 🔵🔵🔵🔵🔵 |    |
 | Super Mario Land 2: 6 Golden Coins         | 🔵🔵🔵🔵🔵 |    |

@@ -45,12 +45,14 @@ main(int argc, const char **argv)
 		}
 	}
 
+	printf("Powering Linuxboy...\n");
 	power_gb(&gb);
 	if (gb.cart.rom_size == 0) {
 		usage(argv);
 		return 0;
 	}
 
+	printf("Linuxboy [READY]\n");
 	while (!(gb.emu_flags & BIT(QUIT))) {
 		update_gb(&gb);
 	}

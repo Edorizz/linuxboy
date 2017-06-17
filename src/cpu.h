@@ -55,9 +55,11 @@ typedef union {
 } reg;
 
 /* CPU */
-typedef struct {
-	/* GAME MEMORY */
+typedef struct _gb_cpu {
+	/* CARTRIDGE */
 	gb_cartridge *cart;
+	void (*mbc)(struct _gb_cpu*, WORD, BYTE);
+	/* GAME MEMORY */
 	BYTE memory[0x10000]; /* 64KB */
 	reg regs[REG_MAX];
 	WORD pc;
@@ -81,6 +83,14 @@ void dma_transfer(gb_cpu *cpu, BYTE val);
 void update_graphics(gb_cpu *cpu, int ops);
 void load_rom_bank(gb_cpu *cpu);
 void load_ram_bank(gb_cpu *cpu);
+
+/* Memory Bank Controllers */
+void mbc0(gb_cpu *cpu, WORD addr, BYTE val);
+void mbc1(gb_cpu *cpu, WORD addr, BYTE val);
+void mbc2(gb_cpu *cpu, WORD addr, BYTE val);
+void mbc3(gb_cpu *cpu, WORD addr, BYTE val);
+void mbc5(gb_cpu *cpu, WORD addr, BYTE val);
+void mbc6(gb_cpu *cpu, WORD addr, BYTE val);
 
 /* DEBUGGING */
 void disassemble(const gb_cpu *cpu);
