@@ -47,12 +47,12 @@ const BYTE gb_bootstrap [0x100] = {
 	0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50
 };
 
-void
+int
 power_gb(gameboy *gb)
 {
 	if (load_cartridge(&gb->cart) == -1 ||
 	    (gb->win.sdl_win == NULL && create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1)) {
-		return;
+		return -1;
 	}
 
 	/* Link components */
@@ -67,6 +67,8 @@ power_gb(gameboy *gb)
 		power_cpu(&gb->cpu, gb->emu_flags & BIT(BOOTSTRAP) ? gb_bootstrap : NULL);
 		gb->emu_flags &= ~BIT(BOOTSTRAP);
 	}
+
+	return 0;
 }
 
 void

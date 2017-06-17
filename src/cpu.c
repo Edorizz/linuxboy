@@ -31,23 +31,32 @@
 #include "timers.h"
 #include "interrupts.h"
 
+void (*mbc_types[MBC_MAX])(gb_cpu*, WORD, BYTE) = { mbc0, mbc1, mbc2, mbc3, mbc5 };
+
 int
 power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 {
-	/* Execute the DMG bootstrap */
 	memset(cpu->memory, 0, 0x10000);
 	
 	/* Load the first two ROM banks (32KB) into main mamery */
 	memcpy(cpu->memory, cpu->cart->rom, 0x8000);
 
-	if (cpu->cart->flags & BIT(MBC_1)) {
-		cpu->mbc = mbc1;
-	} else if (cpu->cart->flags & BIT(MBC_2)) {
-		cpu->mbc = mbc2;
-	} else {
-		cpu->mbc = mbc0;
+	cpu->mbc = mbc_types[cpu->cart->flags & 0x0F];
+
+	/*
+	for (int i = 0; i != 4; ++i) {
+		if (cpu->cart->flags & BIT(MBC_1 + i)) {
+			cpu->mbc = mbc_types[i + 1];
+			break;
+		}
 	}
 
+	if (i == 4) {
+		cpu->mbc = mbc_types[0];
+	}
+	*/
+
+	/* Load bootstrap or continues from previous CPU state save */
 	if (bootstrap == NULL) {
 		/* Initialize Gameboy */
 		cpu->pc = 0x100;
@@ -247,7 +256,7 @@ load_ram_bank(gb_cpu *cpu)
 /*
 
 	if (addr < 0x2000) {
-		if (cpu->cart->flags & BIT(MBC_2) && addr & BIT(4))
+		if (cpu->cart->flags & BIT(MBC2) && addr & BIT(4))
 			return;
 
 		if ((val & 0x0F) == 0x0A) {
@@ -256,15 +265,15 @@ load_ram_bank(gb_cpu *cpu)
 			cpu->cart->flags &= ~BIT(RAM_ENABLE);
 		}
 	} else if (addr < 0x4000) {
-		if (cpu->cart->flags & BIT(MBC_1)) {
+		if (cpu->cart->flags & BIT(MBC1)) {
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
-		} else if (cpu->cart->flags & BIT(MBC_2)) {
+		} else if (cpu->cart->flags & BIT(MBC2)) {
 			cpu->cart->rom_bank = val & 0x0F;
 		}
 
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
-		if (cpu->cart->flags & BIT(MBC_1)) {
+		if (cpu->cart->flags & BIT(MBC1)) {
 			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
 				cpu->cart->ram_bank = val & 0x3;
 				load_ram_bank(cpu);
@@ -329,7 +338,6 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 			load_ram_bank(cpu);
 		} else {
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5);
-			printf("%d\n", val);
 			load_rom_bank(cpu);
 		}
 
@@ -387,11 +395,20 @@ mbc3(gb_cpu *cpu, WORD addr, BYTE val)
 void
 mbc5(gb_cpu *cpu, WORD addr, BYTE val)
 {
-}
-
-void
-mbc6(gb_cpu *cpu, WORD addr, BYTE val)
-{
+	if (addr < 0x2000) {
+		if ((val & 0x0F) == 0x0A) {
+			cpu->cart->flags |= BIT(RAM_ENABLE);
+		} else {
+			cpu->cart->flags &= ~BIT(RAM_ENABLE);
+		}
+	} else if (addr < 0x3000) {
+		cpu->cart->rom_bank &= ~0xFF;
+		cpu->cart->rom_bank |= val;
+	} else if (addr < 0x4000) {
+		cpu->cart->rom_bank |= (val & BIT(0)) << 8;
+	} else if (addr < 0x6000) {
+		cpu->cart->ram_bank = val & 0x0F;
+	}
 }
 
 void
@@ -854,49 +871,9 @@ void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
 	/* Call corresponding bank controller */
-	cpu->mbc(cpu, addr, val);
-
-	/*
-	if (addr < 0x2000) {
-		if (cpu->cart->flags & BIT(MBC_2) && addr & BIT(4))
-			return;
-
-		if ((val & 0x0F) == 0x0A) {
-			cpu->cart->flags |= BIT(RAM_ENABLE);
-		} else {
-			cpu->cart->flags &= ~BIT(RAM_ENABLE);
-		}
-	} else if (addr < 0x4000) {
-		if (cpu->cart->flags & BIT(MBC_1)) {
-			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
-		} else if (cpu->cart->flags & BIT(MBC_2)) {
-			cpu->cart->rom_bank = val & 0x0F;
-		}
-
-		load_rom_bank(cpu);
-	} else if (addr < 0x6000) {
-		if (cpu->cart->flags & BIT(MBC_1)) {
-			if (cpu->cart->flags & BIT(RAM_CHANGE)) {
-				cpu->cart->ram_bank = val & 0x3;
-				load_ram_bank(cpu);
-			} else {
-				cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5);
-				printf("%d\n", val);
-				load_rom_bank(cpu);
-			}
-		}
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	} else if (addr < 0x8000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	} else */if (addr >= 0xE000 && addr < 0xFE00) {
+	if (addr < 0x8000) {
+		cpu->mbc(cpu, addr, val);
+	} else if (addr >= 0xE000 && addr < 0xFE00) {
 		/* ECHO memory */
 		cpu->memory[addr] = val;
 		write_byte(cpu, addr - 0x2000, val);

@@ -25,14 +25,15 @@
 #define CARTRIDGE_SIZE	0x200000
 #define CARTRIDGE_TYPE	0x147
 
-enum mbc { MBC_1, MBC_2, MBC_3, MBC_5, MBC_6, RAM_ENABLE, RAM_CHANGE };
+enum mbc	{ MBC0, MBC1, MBC2, MBC3, MBC5, MBC_MAX }; /* Bits 0-3 */
+enum cart_flags { RAM_ENABLE = 4, RAM_CHANGE }; /* Bits 4+ */
 
 typedef struct {
 	const char *rom_path;
 	BYTE rom[CARTRIDGE_SIZE];
 	BYTE flags;
 	int rom_size;
-	BYTE rom_bank;
+	WORD rom_bank;
 	BYTE ram_bank;
 } gb_cartridge;
 

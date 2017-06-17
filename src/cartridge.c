@@ -41,7 +41,7 @@ load_cartridge(gb_cartridge *cart)
 		cart->rom_size = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 		
-		fprintf(stderr, "Reading %d bytes (%x hex)\n", cart->rom_size, cart->rom_size);
+		fprintf(stderr, "Reading %d bytes (%xh)\n", cart->rom_size, cart->rom_size);
 
 		if (fread(cart->rom, sizeof(BYTE), cart->rom_size, fp) != cart->rom_size) {
 			cart->rom_size = 0;
@@ -57,18 +57,35 @@ load_cartridge(gb_cartridge *cart)
 		case 0x01:
 		case 0x02:
 		case 0x03:
-		     	cart->flags |= BIT(MBC_1);
+		     	cart->flags = MBC1;
 		     	break;
 		case 0x05:
 		case 0x06:
-			cart->flags |= BIT(MBC_2);
+			cart->flags = MBC2;
+			break;
+			/*
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+			cart->flags = MBC3;
+			break;
+			*/
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+			cart->flags = MBC5;
 			break;
 		default:
 			printf("Unsupported cartridge type (%d)\n", cart->rom[CARTRIDGE_TYPE]);
 			return -1;
 			break;
 		}
-		printf("Cartridge type (%d)\n", cart->rom[CARTRIDGE_TYPE]);
+		printf("Cartridge type (%x)\n", cart->rom[CARTRIDGE_TYPE]);
 
 		fclose(fp);
 	}

@@ -42,7 +42,7 @@ typedef struct {
 	int cycles;
 } gameboy;
 
-void power_gb(gameboy *gb);
+int  power_gb(gameboy *gb);
 void reset_gb(gameboy *gb);
 void shutdown_gb(gameboy *gb);
 void update_gb(gameboy *gb);

@@ -37,9 +37,9 @@ Keep in mind that full compatibility doesn't mean perferct emulation, it just me
 | Super Mario Land 2: 6 Golden Coins         | 🔵🔵🔵🔵🔵 |    |
 | Wario Land: Super Mario Land 3             | 🔵🔵🔵🔵⚪️ |   Sprites sometimes flicker when in little Wario mode |
 | Pac-Man                                    | 🔵🔵🔵🔵🔵 |    |
-| Donkey Kong                                | ⚪️⚪️⚪️⚪️⚪️ |   Won't boot. |
+| Donkey Kong                                | 🔵🔵️⚪️️⚪️⚪️ |   Weird flashing on menu and levels. |
 | Castlevania II: Belmont's Revenge          | 🔵🔵🔵⚪️⚪️ |   HUD is displayed weirdly, tiles pop in and out mid game. |
-| F-1 Race                                   | ⚪️⚪️⚪️⚪️⚪️ |   Won't boot. |
+| F-1 Race                                   | 🔵🔵️️⚪️⚪️⚪️ |   Race track is not rendered properly. |
 
 ## Screenshots
 ![nintendo](img/nintendo.png)
@@ -79,7 +79,7 @@ And to run:
 
 ## Command line options
 ```
-usage: %s rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state]
+usage: ./lboy rom [-h] [-b addr] [-s scale [-x width -y height]] [-w addr] [-l state]
 ```
 
 - -b, --break:     set breakpoint at 'addr' (hex).
