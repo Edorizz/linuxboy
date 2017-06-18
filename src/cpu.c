@@ -224,20 +224,12 @@ update_timers(gb_cpu *cpu, int ops)
 void
 load_rom_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->rom_bank == 0) {
-		++cpu->cart->rom_bank;
-	}
-
 	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
 }
 
 void
 load_ram_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->ram_bank == 0) {
-		++cpu->cart->ram_bank;
-	}
-
 	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
 
@@ -246,27 +238,7 @@ load_ram_bank(gb_cpu *cpu)
 void
 mbc0(gb_cpu *cpu, WORD addr, BYTE val)
 {
-	if (addr < 0x2000) {
-		if ((val & 0x0F) == 0x0A) {
-			cpu->cart->flags |= BIT(RAM_ENABLE);
-		} else {
-			cpu->cart->flags &= ~BIT(RAM_ENABLE);
-		}
-	} else if (addr < 0x4000) {
-		load_rom_bank(cpu);
-	} else if (addr < 0x6000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	} else if (addr < 0x8000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	}
+	/* Nothing to do here */
 }
 
 void
@@ -280,6 +252,10 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 		}
 	} else if (addr < 0x4000) {
 		cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
+
+		if (!(cpu->cart->rom_bank % 0x20)) {
+			++cpu->cart->rom_bank;
+		}
 		
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
@@ -288,6 +264,11 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 			load_ram_bank(cpu);
 		} else {
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5);
+
+			if (!(cpu->cart->rom_bank % 0x20)) {
+				++cpu->cart->rom_bank;
+			}
+
 			load_rom_bank(cpu);
 		}
 
@@ -309,7 +290,7 @@ void
 mbc2(gb_cpu *cpu, WORD addr, BYTE val)
 {
 	if (addr < 0x2000) {
-		if (addr & BIT(4)) {
+		if (addr & BIT(8)) {
 			return;
 		}
 
@@ -322,18 +303,6 @@ mbc2(gb_cpu *cpu, WORD addr, BYTE val)
 		cpu->cart->rom_bank = val & 0x0F;
 
 		load_rom_bank(cpu);
-	} else if (addr < 0x6000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	} else if (addr < 0x8000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
 	}
 }
 
@@ -348,6 +317,10 @@ mbc3(gb_cpu *cpu, WORD addr, BYTE val)
 		}
 	} else if (addr < 0x4000) {
 		cpu->cart->rom_bank = val & 0x7F;
+
+		if (cpu->cart->rom_bank == 0) {
+			++cpu->cart->rom_bank;
+		}
 
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
@@ -449,7 +422,7 @@ update_graphics(gb_cpu *cpu, int ops)
 
 			break;
 		}
-
+		
 		if (cpu->memory[CURR_SCANLINE] == cpu->memory[TARGET_SCANLINE]) {
 			cpu->memory[LCD_STATUS] |= BIT(2);
 			if (stat & BIT(6)) {
@@ -832,12 +805,6 @@ read_byte(gb_cpu *cpu, WORD addr)
 	return cpu->memory[addr];
 }
 
-WORD
-read_word(gb_cpu *cpu, WORD addr)
-{
-	return *(WORD*)&cpu->memory[addr];
-}
-
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
@@ -878,12 +845,6 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else {
 		cpu->memory[addr] = val;
 	}
-}
-
-void
-write_word(gb_cpu *cpu, WORD addr, WORD val)
-{
-	*(WORD*)&cpu->memory[addr] = val;
 }
 
 WORD

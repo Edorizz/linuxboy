@@ -25,6 +25,7 @@
 #define CARTRIDGE_SIZE	0x200000
 #define CARTRIDGE_TYPE	0x147
 
+/* Used in gb_cartridge.flags */
 enum mbc	{ MBC0, MBC1, MBC2, MBC3, MBC5, MBC_MAX }; /* Bits 0-3 */
 enum cart_flags { RAM_ENABLE = 4, RAM_CHANGE }; /* Bits 4+ */
 

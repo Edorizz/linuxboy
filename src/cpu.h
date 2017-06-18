@@ -114,9 +114,7 @@ void cp_byte(BYTE *flag, BYTE b, BYTE val);
 void test_bit(BYTE *flag, BYTE b, BYTE bit);
 
 BYTE read_byte(gb_cpu *cpu, WORD addr);
-WORD read_word(gb_cpu *cpu, WORD addr);
 void write_byte(gb_cpu *cpu, WORD addr, BYTE val);
-void write_word(gb_cpu *cpu, WORD addr, WORD val);
 
 WORD pop(gb_cpu *cpu);
 void push(gb_cpu *cpu, WORD val);
