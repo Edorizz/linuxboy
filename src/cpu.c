@@ -176,16 +176,16 @@ set_frequency(gb_cpu *cpu)
 {
 	switch (read_byte(cpu, TMC) & 0x3) {
 	case 0:
-		cpu->timer_cnt += 1024;
+		cpu->timer_cnt = 1024;
 		break;
 	case 1:
-		cpu->timer_cnt += 16;
+		cpu->timer_cnt = 16;
 		break;
 	case 2:
-		cpu->timer_cnt += 64;
+		cpu->timer_cnt = 64;
 		break;
 	case 3:
-		cpu->timer_cnt += 256;
+		cpu->timer_cnt = 256;
 		break;
 	}
 }
@@ -193,8 +193,8 @@ set_frequency(gb_cpu *cpu)
 void
 divider_register(gb_cpu *cpu, int ops)
 {
-	if ((cpu->divider_cnt -= ops) < 0) {
-		cpu->divider_cnt += 256;
+	if ((cpu->divider_cnt += ops) >= 256) {
+		cpu->divider_cnt -= 256;
 		++cpu->memory[DIVIDER_REGISTER];
 	}
 }
@@ -204,14 +204,21 @@ update_timers(gb_cpu *cpu, int ops)
 {
 	/* Update divider register */
 	divider_register(cpu, ops);
-	
+
+	if (cpu->status & BIT(TIMER_RELOAD) && (cpu->tmp_cnt -= ops) <= 0) {
+		write_byte(cpu, TIMA, read_byte(cpu, TMA));
+		cpu->status &= ~BIT(TIMER_RELOAD);
+	}
+
 	/* Update timer */
 	if (read_byte(cpu, TMC) & BIT(2)) {
 		if ((cpu->timer_cnt -= ops) <= 0) {
 			set_frequency(cpu);
 			
 			if (read_byte(cpu, TIMA) == 255) {
-				write_byte(cpu, TIMA, read_byte(cpu, TMA));
+				write_byte(cpu, TIMA, 0);
+				cpu->tmp_cnt = 4;
+				cpu->status |= BIT(TIMER_RELOAD);
 
 				request_interrupt(cpu, TIMER);
 			} else {
@@ -224,20 +231,12 @@ update_timers(gb_cpu *cpu, int ops)
 void
 load_rom_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->rom_bank == 0) {
-		++cpu->cart->rom_bank;
-	}
-
 	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
 }
 
 void
 load_ram_bank(gb_cpu *cpu)
 {
-	if (cpu->cart->ram_bank == 0) {
-		++cpu->cart->ram_bank;
-	}
-
 	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
 
@@ -281,6 +280,10 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr < 0x4000) {
 		cpu->cart->rom_bank = (cpu->cart->rom_bank & 0xE0) | (val & 0x1F);
 		
+		if (cpu->cart->rom_bank % 0x20 == 0) {
+			++cpu->cart->rom_bank;
+		}
+
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
 		if (cpu->cart->flags & BIT(RAM_CHANGE)) {
@@ -288,6 +291,11 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 			load_ram_bank(cpu);
 		} else {
 			cpu->cart->rom_bank = (cpu->cart->rom_bank & 0x1F) | ((val & 0x3) << 5);
+			
+			if (cpu->cart->rom_bank % 0x20 == 0) {
+				++cpu->cart->rom_bank;
+			}
+			
 			load_rom_bank(cpu);
 		}
 
@@ -348,6 +356,10 @@ mbc3(gb_cpu *cpu, WORD addr, BYTE val)
 		}
 	} else if (addr < 0x4000) {
 		cpu->cart->rom_bank = val & 0x7F;
+
+		if (cpu->cart->rom_bank == 0) {
+			++cpu->cart->rom_bank;
+		}
 
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
@@ -841,6 +853,8 @@ read_word(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
+	int tmp;
+
 	/* Call corresponding bank controller */
 	if (addr < 0x8000) {
 		cpu->mbc(cpu, addr, val);
@@ -851,20 +865,43 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr >= 0xFEA0 && addr < 0xFF00) {
 		/* Not usable */
 	} else if (addr == DIVIDER_REGISTER) {
-		/* Writing to the divider register resets it */
-		cpu->memory[addr] = 0;
-	} else if (addr == TMC) {
-			set_frequency(cpu);
+		tmp = 0;
+		switch (read_byte(cpu, TMC) & 0x3) {
+		case 0:
+			tmp = 512;
+			break;
+		case 1:
+			tmp = 8;
+			break;
+		case 2:
+			tmp = 32;
+			break;
+		case 3:
+			tmp = 128;
+			break;
+		}
 
+		if (cpu->divider_cnt >= tmp) {
+			write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
+		}
+		printf("%d\t:%d\n", cpu->divider_cnt, tmp);
+
+		/* Writing to the divider register resets it */
+		cpu->memory[DIVIDER_REGISTER] = 0;
+		cpu->divider_cnt = 0;
+		set_frequency(cpu);
+	} else if (addr == TMC) {
 		cpu->memory[TMC] = val;
+	} else if (addr == TIMA) {
+		cpu->memory[TIMA] = val;
 	} else if (addr == 0xFF00) {
-		cpu->memory[addr] = (cpu->memory[addr] & 0xCF) | (val & ~0xCF);
+		cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xCF) | (val & ~0xCF);
 		
 		if (val & BIT(4) && val & BIT(5)) {
 		} else if (val & BIT(4)) {
-			cpu->memory[addr] = (cpu->memory[addr] & 0xF0) | (cpu->joypad & 0x0F);
+			cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xF0) | (cpu->joypad & 0x0F);
 		} else if (val & BIT(5)) {
-			cpu->memory[addr] = (cpu->memory[addr] & 0xF0) | (cpu->joypad >> 4);
+			cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xF0) | (cpu->joypad >> 4);
 		}
 	} else if (addr == IF) {
 		cpu->memory[IF] = (cpu->memory[IF] & ~0x1F) | (val & 0x1F);

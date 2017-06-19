@@ -38,7 +38,7 @@
 
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum cpu_flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
-enum cpu_status	{ HALT, STOP };
+enum cpu_status	{ HALT, STOP, TIMER_RELOAD };
 
 /* RGB PIXEL */
 typedef struct {
@@ -72,6 +72,7 @@ typedef struct _gb_cpu {
 	int divider_cnt;
 	int timer_cnt;
 	int scanline_cnt;
+	int tmp_cnt;
 	/* GRAPHICS */
 	BYTE scr_buf[SCR_H + 1][SCR_W][3]; /* Extra screen row is used as a temporary buffer when flipping the screen */
 } gb_cpu;
