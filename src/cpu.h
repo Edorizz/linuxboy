@@ -23,30 +23,14 @@
 #include "utils.h"
 #include "cartridge.h"
 
-/* SPECIAL REGISTERS */
-#define LCD_CONTROL		0xFF40
-#define LCD_STATUS		0xFF41
-#define SCROLL_Y		0xFF42
-#define SCROLL_X		0xFF43
-#define CURR_SCANLINE		0xFF44
-#define TARGET_SCANLINE		0xFF45
-#define WINDOW_Y		0xFF4A
-#define WINDOW_X		0xFF4B
-
-/* OTHER */
 #define CLOCK_RATE	4194304
 
 enum regs	{ REG_AF, REG_BC, REG_DE, REG_HL, REG_MAX };
 enum cpu_flags	{ FLAG_C = 4, FLAG_H, FLAG_N, FLAG_Z };
 enum cpu_status	{ HALT, STOP, TIMER_RELOAD };
 
-/* RGB PIXEL */
-typedef struct {
-	BYTE r, g, b;
-} color;
-
-/* 16-BIT REGISTER */
-typedef union {
+/* -==+ 16-BIT Register +==- */
+typedef union _reg {
 	WORD reg;
 	struct {
 		BYTE lo;
@@ -54,30 +38,37 @@ typedef union {
 	};
 } reg;
 
-/* CPU */
+/*
+ * -==+ Game Boy CPU component +==-
+ * Does all main operations, takes input from a Game Boy
+ * cartridge pointer ('cart').
+
+ * Other main components depend on the CPU's main memory
+ * array ('memory') to operate. The GPU takes input from
+ * VRAM, OAM and the I/O ports while the APU takes input
+ * only from the I/O ports.
+ */
 typedef struct _gb_cpu {
-	/* CARTRIDGE */
-	gb_cartridge *cart;
+	/* [Cartridge] */
+	gb_cart *cart;
 	void (*mbc)(struct _gb_cpu*, WORD, BYTE);
-	/* GAME MEMORY */
+	/* [Game Memory] */
 	BYTE memory[0x10000]; /* 64KB */
 	reg regs[REG_MAX];
 	WORD pc;
 	WORD stack;
-	/* SPECIAL REGISTERS */
+	/* [Special Registers] */
 	BYTE ime; /* Interrupt master switch */
 	BYTE joypad;
 	BYTE status;
-	/* TIMING */
+	/* [Timing] */
 	int divider_cnt;
 	int timer_cnt;
 	int scanline_cnt;
 	int tmp_cnt;
-	/* GRAPHICS */
-	BYTE scr_buf[SCR_H + 1][SCR_W][3]; /* Extra screen row is used as a temporary buffer when flipping the screen */
 } gb_cpu;
 
-/* CPU FUNCTIONS */
+/* -==+ CPU Functions +==- */
 int  power_cpu(gb_cpu *cpu, const BYTE *bootstrap);
 int  exec_op(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
@@ -85,7 +76,7 @@ void update_graphics(gb_cpu *cpu, int ops);
 void load_rom_bank(gb_cpu *cpu);
 void load_ram_bank(gb_cpu *cpu);
 
-/* Memory Bank Controllers */
+/* -==+ Memory Bank Controllers +==- */
 void mbc0(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc1(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc2(gb_cpu *cpu, WORD addr, BYTE val);
@@ -93,12 +84,12 @@ void mbc3(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc5(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc6(gb_cpu *cpu, WORD addr, BYTE val);
 
-/* DEBUGGING */
+/* -==+ Debugging +==- */
 void disassemble(const gb_cpu *cpu);
 void map_dump(const gb_cpu *cpu);
 void cpu_status(const gb_cpu *cpu);
 
-/* OPCODE HELPERS */
+/* -==+ Opcode Helpers +==- */
 BYTE inc_byte(BYTE *flag, BYTE b);
 BYTE dec_byte(BYTE *flag, BYTE b);
 void swap_byte(BYTE *flag, BYTE *b);

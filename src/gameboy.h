@@ -21,17 +21,19 @@
 #define LINUXBOY_GAMEBOY_H
 
 #include "cpu.h"
+#include "gpu.h"
 #include "cartridge.h"
 #include "window.h"
 
 #define MAX_WATCH	16
 
-typedef struct {
+typedef struct _gb {
 	/* MAIN COMPONENTS */
 	gb_cpu cpu;
-	gb_cartridge cart;
-	gl_window win;
+	gb_gpu gpu;
+	gb_cart cart;
 	/* EMULATION */
+	gl_win win;
 	BYTE emu_flags;
 	WORD watch_list[MAX_WATCH];
 	int watch_size;
@@ -40,15 +42,15 @@ typedef struct {
 	/* TIMING */
 	int curr_cycles;
 	int cycles;
-} gameboy;
+} gb;
 
-int  power_gb(gameboy *gb);
-void reset_gb(gameboy *gb);
-void shutdown_gb(gameboy *gb);
-void update_gb(gameboy *gb);
-void resize_gb(gameboy *gb, int width, int height);
-void save_state_gb(gameboy *gb, const char *path);
-void load_state_gb(gameboy *gb, const char *path);
+int  power_gb(gb *gb);
+void reset_gb(gb *gb);
+void shutdown_gb(gb *gb);
+void update_gb(gb *gb);
+void resize_gb(gb *gb, int width, int height);
+void save_state_gb(gb *gb, const char *path);
+void load_state_gb(gb *gb, const char *path);
 
-#endif /* LINUXBOY_GAMEBOY_H */
+#endif /* LINUXBOY_GB_H */
 

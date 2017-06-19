@@ -30,7 +30,7 @@ const key_pair joypad_input[8] = { { SDLK_j, BUTTON_A }, { SDLK_k, BUTTON_B },
 				   { SDLK_w, PAD_UP }, { SDLK_s, PAD_DOWN } };
 
 int
-create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
+create_window(gl_win *win, BYTE *joypad, BYTE *emu_flags)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Video initialization error: %s\n", SDL_GetError());
@@ -39,7 +39,7 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 
 	win->sdl_win = SDL_CreateWindow("Linuxboy",
 					SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-					win->width, win->height,
+					win->win_w, win->win_h,
 					SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
 	if (win->sdl_win == NULL) {
@@ -72,7 +72,15 @@ create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags)
 }
 
 void
-delete_window(gl_window *win)
+link_scr_buf(gl_win *win, const BYTE *buf, int h, int w)
+{
+	win->scr_buf = buf;
+	win->scr_buf_h = h;
+	win->scr_buf_w = w;
+}
+
+void
+delete_window(gl_win *win)
 {
 	/* Terminate SDL */
 	SDL_DestroyWindow(win->sdl_win);
@@ -89,13 +97,13 @@ delete_window(gl_window *win)
 }
 
 void
-swap_window(gl_window *win)
+swap_window(gl_win *win)
 {
 	SDL_GL_SwapWindow(win->sdl_win);
 }
 
 void
-init_gl(gl_window *win)
+init_gl(gl_win *win)
 {
 	/* Quad vertices */
 	static const GLfloat vertex_data[] = { -1.0f,  1.0f, 1.0f, 0.0f, 1.0f,
@@ -130,13 +138,13 @@ init_gl(gl_window *win)
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_W, SCR_H, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, win->scr_buf_w, win->scr_buf_h, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void
-render(gl_window *win)
+render(gl_win *win)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -144,7 +152,7 @@ render(gl_window *win)
 	
 	glBindTexture(GL_TEXTURE_2D, win->texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-		     SCR_W, SCR_H, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
+		     win->scr_buf_w, win->scr_buf_h, 0, GL_RGB, GL_UNSIGNED_BYTE, win->scr_buf);
 	glBindVertexArray(win->vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
@@ -154,7 +162,7 @@ render(gl_window *win)
 }
 
 void
-joypad_event(gl_window *win, int event)
+joypad_event(gl_win *win, int event)
 {
 	if (event & BIT(EVENT_PRESS)) {
 		*win->joypad &= ~(event & 0xFF);
@@ -164,7 +172,7 @@ joypad_event(gl_window *win, int event)
 }
 
 void
-handle_joypad(gl_window *win, SDL_Event *event)
+handle_joypad(gl_win *win, SDL_Event *event)
 {
 	for (int i = 0; i != 8; ++i) {
 		if (joypad_input[i].scancode == event->key.keysym.sym) {
@@ -176,7 +184,7 @@ handle_joypad(gl_window *win, SDL_Event *event)
 }
 
 void
-handle_input(gl_window *win)
+handle_input(gl_win *win)
 {
 	SDL_Event event;
 

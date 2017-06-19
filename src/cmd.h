@@ -24,23 +24,23 @@
 
 #define CMD_OPTIONS	8
 
-typedef struct {
+typedef struct _cmd_opt {
 	char cmd_short;
 	char *cmd_long;
-	int (*fnc)(gameboy*, const char*);
-} cmd_option;
+	int (*fnc)(gb*, const char*);
+} cmd_opt;
 
-int cmd_check(gameboy *gb, const char **argv);
+int cmd_check(gb *gb, const char **argv);
 
 /* COMMAND LINE OPTIONS */
-int cmd_breakpoint(gameboy *gb, const char *arg);
-int cmd_win_width(gameboy *gb, const char *arg);
-int cmd_win_height(gameboy *gb, const char *arg);
-int cmd_win_scale(gameboy *gb, const char *arg);
-int cmd_add_watch(gameboy *gb, const char *arg);
-int cmd_load_state(gameboy *gb, const char *arg);
-int cmd_help(gameboy *gb, const char *arg);
-int cmd_bootstrap(gameboy *gb, const char *arg);
+int cmd_breakpoint(gb *gb, const char *arg);
+int cmd_win_width(gb *gb, const char *arg);
+int cmd_win_height(gb *gb, const char *arg);
+int cmd_win_scale(gb *gb, const char *arg);
+int cmd_add_watch(gb *gb, const char *arg);
+int cmd_load_state(gb *gb, const char *arg);
+int cmd_help(gb *gb, const char *arg);
+int cmd_bootstrap(gb *gb, const char *arg);
 
 #endif /* LINUXBOY_CMD_H */
 

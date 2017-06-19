@@ -28,16 +28,16 @@
 enum mbc	{ MBC0, MBC1, MBC2, MBC3, MBC5, MBC_MAX }; /* Bits 0-3 */
 enum cart_flags { RAM_ENABLE = 4, RAM_CHANGE }; /* Bits 4+ */
 
-typedef struct {
+typedef struct _gb_cart {
 	const char *rom_path;
 	BYTE rom[CARTRIDGE_SIZE];
 	BYTE flags;
 	int rom_size;
 	WORD rom_bank;
 	BYTE ram_bank;
-} gb_cartridge;
+} gb_cart;
 
-int load_cartridge(gb_cartridge *cart);
+int load_cartridge(gb_cart *cart);
 
 #endif /* LINUXBOY_CARTRIDGE_H */
 

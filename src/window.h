@@ -30,36 +30,44 @@ enum joypad	{ BUTTON_A, BUTTON_B, BUTTON_SELECT, BUTTON_START,
 		  PAD_RIGHT, PAD_LEFT, PAD_UP, PAD_DOWN,
 		  EVENT, EVENT_PRESS, EVENT_RELEASE };
 
-typedef struct {
+typedef struct _key_pair {
 	int scancode;
 	int joypad_bit;
 } key_pair;
 
-typedef struct {
+/*
+ * -==+ OpenGL Window -==+
+ * Takes data from an external screen buffer of RGB values
+ * (specified by 'scr_buf'), and outputs it to an OpenGL
+ * window.
+ */
+typedef struct _gl_win {
 	SDL_Window *sdl_win;
 	const BYTE *scr_buf;
-	int width, height;
+	int scr_buf_h, scr_buf_w;
+	int win_h, win_w;
 	BYTE *joypad;
 	BYTE *emu_flags;
 	/* OPENGL */
 	GLuint shader;
 	GLuint vao, vbo;
 	GLuint texture;
-} gl_window;
+} gl_win;
 
 /* WINDOW FUNCTIONS */
-int  create_window(gl_window *win, BYTE *joypad, BYTE *emu_flags);
-void delete_window(gl_window *win);
-void swap_window(gl_window *win);
+int  create_window(gl_win *win, BYTE *joypad, BYTE *emu_flags);
+void link_scr_buf(gl_win *win, const BYTE *buf, int h, int w);
+void delete_window(gl_win *win);
+void swap_window(gl_win *win);
 
 /* GRAPHICS (OPENGL) */
-void init_gl(gl_window *win);
-void render(gl_window *win);
+void init_gl(gl_win *win);
+void render(gl_win *win);
 
 /* INPUT FUNCTIONS */
-void joypad_event(gl_window *win, int event);
-void handle_joypad(gl_window *win, SDL_Event *event);
-void handle_input(gl_window *win);
+void joypad_event(gl_win *win, int event);
+void handle_joypad(gl_win *win, SDL_Event *event);
+void handle_input(gl_win *win);
 
 #endif /* LINUBOY_WINDOW_H */
 
