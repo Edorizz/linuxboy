@@ -60,7 +60,7 @@ power_gb(gb *gb)
 	gb->gpu.vram	= &gb->cpu.memory[0x8000];
 	gb->gpu.oam	= &gb->cpu.memory[0xFE00];
 	gb->gpu.io	= &gb->cpu.memory[0xFF00];
-	gb->win.scr_buf	= &gb->gpu.scr_buf[0][0][0];
+	link_scr_buf(&gb->win, gb->gpu.scr_buf[0][0], SCR_H, SCR_W);
 
 	if (gb->emu_flags & BIT(LOAD_STATE)) {
 		load_state_gb(gb, gb->state_path);
@@ -132,21 +132,20 @@ update_gb(gb *gb)
 		
 		/* Update internals */
 		update_timers(&gb->cpu, gb->cycles);
-		update_graphics(&gb->cpu, gb->cycles);
+		update_graphics(&gb->gpu, gb->cycles);
 	}
 
 	if (gb->cpu.memory[gb->cpu.pc - 1] != 0xFB) {
-		handle_interrupts(&gb->cpu);
+		handle_intr(&gb->cpu);
 	}
 
-	/* Draw only if neccessary */
 	if (gb->curr_cycles >= CLOCK_RATE / 60 && gb->cpu.memory[LY] >= 144) {
 		handle_input(&gb->win);
 		gb->curr_cycles -= CLOCK_RATE / 60;
 
 		flip_screen(&gb->gpu);
 		render(&gb->win);
-		clear_screen(&gb->gpu, WHITE);
+		clear_screen(&gb->gpu, LIGHT_GRAY);
 
 		swap_window(&gb->win);
 	}

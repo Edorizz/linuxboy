@@ -24,15 +24,27 @@
 
 #define CMD_OPTIONS	8
 
+/*
+ * -==+ Command Line Argument +==-
+ * Links a specific character or string to a function.
+ * (makes handling with command line arguments easier)
+ */
 typedef struct _cmd_opt {
+	/*
+	 * [Argument]
+	 * Specifies which character or string the user has to
+	 * type to trigger the argument function ('fnc').
+	 */
 	char cmd_short;
 	char *cmd_long;
+
+	/* [Link Function] */
 	int (*fnc)(gb*, const char*);
 } cmd_opt;
 
 int cmd_check(gb *gb, const char **argv);
 
-/* COMMAND LINE OPTIONS */
+/* -==+ Command Line Options +==- */
 int cmd_breakpoint(gb *gb, const char *arg);
 int cmd_win_width(gb *gb, const char *arg);
 int cmd_win_height(gb *gb, const char *arg);

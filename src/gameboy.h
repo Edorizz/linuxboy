@@ -27,19 +27,42 @@
 
 #define MAX_WATCH	16
 
+/*
+ * -==+ Game Boy +==-
+ * Main Game Boy data structure.
+ * Contains all Game Boy components in an easy to understand
+ * (and to mantain) manner.
+ */
 typedef struct _gb {
-	/* MAIN COMPONENTS */
+	/*
+	 * [Main Components]
+	 * Main Game Boy components. They mostly work in a pipeline
+	 * kind of manner, starting from the cartridge and ending
+	 * with the window.
+
+	 * cart -> cpu -> gpu -> win
+	 */
+	gb_cart cart;
 	gb_cpu cpu;
 	gb_gpu gpu;
-	gb_cart cart;
-	/* EMULATION */
 	gl_win win;
+
+	/*
+	 * [Emulation]
+	 * Variables which serve the purpose of adding functionality to
+	 * the emulator. (breakpoints, change speed, watching variables,
+	 * etc.)
+	 */
 	BYTE emu_flags;
 	WORD watch_list[MAX_WATCH];
 	int watch_size;
 	WORD breakpoint;
 	const char *state_path;
-	/* TIMING */
+
+	/*
+	 * [Timing]
+	 * Controls the timing of the whole emulator.
+	 */
 	int curr_cycles;
 	int cycles;
 } gb;

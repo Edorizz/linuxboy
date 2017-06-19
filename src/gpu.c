@@ -21,6 +21,8 @@
 #include "gpu.h"
 /* C library */
 #include <string.h>
+/* Linuxboy */
+#include "interrupts.h"
 
 /* Monochrome shades, change this to change main colors */
 const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
@@ -28,12 +30,99 @@ const color colors[MAX_COLORS] = { { 224, 248, 208 },	/* WHITE */
 				   {  52, 104,  86 },	/* DARK_GRAY */
 				   {   8,  24,  32 } };	/* BLACK */
 
+void
+update_graphics(gb_gpu *gpu, int cycles)
+{
+	BYTE stat;
+
+	if (gpu->io[IO(LCDC)] & BIT(7)) {
+		gpu->scanline_cnt += cycles;
+
+		switch ((stat = gpu->io[IO(STAT)]) & 0x3) {
+		case 2:
+			if (gpu->scanline_cnt >= 80) {
+				gpu->scanline_cnt -= 80;
+
+				gpu->io[IO(STAT)] = (stat & ~0x3) | 0x3;
+			}
+			
+			break;
+		case 3:
+			if (gpu->scanline_cnt >= 172) {
+				gpu->scanline_cnt -= 172;
+
+				gpu->io[IO(STAT)] = (stat & ~0x3) | 0x0;
+
+				if (stat & BIT(3)) {
+					/* request_interrupt(gpu, LCD_STAT); */
+					gpu->io[IO(IF)] |= BIT(LCD_STAT);
+				}
+			}
+
+			break;
+		case 0:
+			if (gpu->scanline_cnt >= 204) {
+				gpu->scanline_cnt -= 204;
+
+				draw_scanline(gpu);
+				if (++gpu->io[IO(LY)] >= 144) {
+					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x1;
+					/* request_interrupt(gpu, LCD_STAT); */
+					gpu->io[IO(IF)] |= BIT(VBLANK);
+
+					if (stat & BIT(4)) {
+						/* request_interrupt(gpu, LCD_STAT); */
+						gpu->io[IO(IF)] |= BIT(LCD_STAT);
+					}
+				} else {
+					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x2;
+					
+					if (stat & BIT(5)) {
+						/* request_interrupt(gpu, LCD_STAT); */
+						gpu->io[IO(IF)] |= BIT(LCD_STAT);
+					}
+				}
+			}
+
+			break;
+		case 1:
+			if (gpu->scanline_cnt >= 456) {
+				gpu->scanline_cnt -= 456;
+
+				if (++gpu->io[IO(LY)] >= 153) {
+					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x2;
+					gpu->io[IO(LY)] = 0;
+
+					if (stat & BIT(5)) {
+						/* request_interrupt(gpu, LCD_STAT); */
+						gpu->io[IO(IF)] |= BIT(LCD_STAT);
+					}
+				}
+			}
+
+			break;
+		}
+
+		if (gpu->io[IO(LY)] == gpu->io[IO(LYC)]) {
+			gpu->io[IO(STAT)] |= BIT(2);
+			if (stat & BIT(6)) {
+				/* request_interrupt(gpu, LCD_STAT); */
+				gpu->io[IO(IF)] |= BIT(LCD_STAT);
+			}
+		} else {
+			gpu->io[IO(STAT)] &= ~BIT(2);
+		}
+	} else {
+		gpu->io[IO(STAT)] &= ~0x3/* |= BIT(2) */;
+	}
+}
+
 /* TODO: Make this clearer */
 void
 draw_scanline(gb_gpu *gpu)
 {
 	BYTE lcdc, scanline, scroll_y, scroll_x, window_y, window_x, id, *data, *attr;
-	
+
 	/* LCD Controller */
 	lcdc	 = gpu->io[IO(LCDC)];
 

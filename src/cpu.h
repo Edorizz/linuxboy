@@ -71,12 +71,17 @@ typedef struct _gb_cpu {
 /* -==+ CPU Functions +==- */
 int  power_cpu(gb_cpu *cpu, const BYTE *bootstrap);
 int  exec_op(gb_cpu *cpu);
+void handle_intr(gb_cpu *cpu);
 void dma_transfer(gb_cpu *cpu, BYTE val);
-void update_graphics(gb_cpu *cpu, int ops);
+
+/* -==+ Timing +==- */
+void set_frequency(gb_cpu *cpu);
+void divider_register(gb_cpu *cpu, int cycles);
+void update_timers(gb_cpu *cpu, int cycles);
+
+/* -==+ Banking +==- */
 void load_rom_bank(gb_cpu *cpu);
 void load_ram_bank(gb_cpu *cpu);
-
-/* -==+ Memory Bank Controllers +==- */
 void mbc0(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc1(gb_cpu *cpu, WORD addr, BYTE val);
 void mbc2(gb_cpu *cpu, WORD addr, BYTE val);

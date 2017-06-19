@@ -71,6 +71,9 @@ typedef struct _gb_gpu {
 	BYTE *oam;	/* 0xFE00 - 0xFE9F  (160B)*/
 	BYTE *io;	/* 0xFF00 - 0xFF7F  (128B)*/
 
+	/* [Timing] */
+	int scanline_cnt;
+
 	/*
 	 * [Screen buffer]
 	 * Represents the screen pixel buffer. It is used by the window
@@ -79,6 +82,7 @@ typedef struct _gb_gpu {
 	BYTE scr_buf[SCR_H + 1][SCR_W][3];
 } gb_gpu;
 
+void update_graphics(gb_gpu *gpu, int cycles);
 void draw_scanline(gb_gpu *gpu);
 void flip_screen(gb_gpu *gpu);
 void clear_screen(gb_gpu *gpu, int color);

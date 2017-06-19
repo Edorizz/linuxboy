@@ -30,6 +30,10 @@ enum joypad	{ BUTTON_A, BUTTON_B, BUTTON_SELECT, BUTTON_START,
 		  PAD_RIGHT, PAD_LEFT, PAD_UP, PAD_DOWN,
 		  EVENT, EVENT_PRESS, EVENT_RELEASE };
 
+/*
+ * -==+ Input Pair +==-
+ * Maps keyboard input to Game Boy buttons
+ */
 typedef struct _key_pair {
 	int scancode;
 	int joypad_bit;
@@ -42,29 +46,48 @@ typedef struct _key_pair {
  * window.
  */
 typedef struct _gl_win {
+	/*
+	 * [SDL Window]
+	 * Window to draw to and recieve input from.
+	 */
 	SDL_Window *sdl_win;
+	int win_h, win_w;
+
+	/*
+	 * [Screen Buffer]
+	 * Screen buffer produced by the GPU, draw this.
+	 */
 	const BYTE *scr_buf;
 	int scr_buf_h, scr_buf_w;
-	int win_h, win_w;
-	BYTE *joypad;
-	BYTE *emu_flags;
-	/* OPENGL */
+
+	/*
+	 * [OpenGL]
+	 * Necessary variables for OpenGL functionality.
+	 */
 	GLuint shader;
 	GLuint vao, vbo;
 	GLuint texture;
+
+	/*
+	 * [External]
+	 * Pointers which serve the purpose of connecting
+	 * external components.
+	 */
+	BYTE *joypad;
+	BYTE *emu_flags;
 } gl_win;
 
-/* WINDOW FUNCTIONS */
+/* -==+ Window Functions +==- */
 int  create_window(gl_win *win, BYTE *joypad, BYTE *emu_flags);
 void link_scr_buf(gl_win *win, const BYTE *buf, int h, int w);
 void delete_window(gl_win *win);
 void swap_window(gl_win *win);
 
-/* GRAPHICS (OPENGL) */
+/* -==+ Graphics (OpenGL) +==- */
 void init_gl(gl_win *win);
 void render(gl_win *win);
 
-/* INPUT FUNCTIONS */
+/* -==+ Input Functions +==- */
 void joypad_event(gl_win *win, int event);
 void handle_joypad(gl_win *win, SDL_Event *event);
 void handle_input(gl_win *win);

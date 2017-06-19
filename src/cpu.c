@@ -97,11 +97,11 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 
 		cpu->pc = 0x0;
 
-		cpu->memory[LCD_CONTROL] = /*0x91*/0x00;
 		cpu->memory[0xFF05] = 0x00;
 		cpu->memory[0xFF06] = 0x00;
 		cpu->memory[0xFF07] = 0xF8;
-		cpu->memory[LCD_STATUS] = /*0x85*/0x84;
+		cpu->memory[0xFF40] = /*0x91*/0x00;
+		cpu->memory[0xFF41] = /*0x85*/0x84;
 		cpu->memory[IE] = 0x00;
 		cpu->memory[IF] = 0xE1;
 	}
@@ -162,6 +162,40 @@ exec_op(gb_cpu *cpu)
 }
 
 void
+handle_intr(gb_cpu *cpu)
+{
+	BYTE interrupts;
+
+	if (cpu->ime && (cpu->memory[IE] & cpu->memory[IF])) {
+		interrupts = cpu->memory[IE] & cpu->memory[IF];
+		cpu->ime = 0;
+
+		for (int i = 0; i != INTERRUPT_MAX; ++i) {
+			if (interrupts & BIT(i)) {
+				cpu->status &= ~(BIT(HALT) | BIT(STOP));
+
+				cpu->memory[IF] ^= BIT(i);
+
+				call(cpu, 0x40 + i * 8);
+				return;
+			}
+		}
+	}
+}
+
+void
+load_rom_bank(gb_cpu *cpu)
+{
+	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
+}
+
+void
+load_ram_bank(gb_cpu *cpu)
+{
+	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
+}
+
+void
 dma_transfer(gb_cpu *cpu, BYTE val)
 {
 	WORD address = val << 8;
@@ -191,28 +225,28 @@ set_frequency(gb_cpu *cpu)
 }
 
 void
-divider_register(gb_cpu *cpu, int ops)
+divider_register(gb_cpu *cpu, int cycles)
 {
-	if ((cpu->divider_cnt += ops) >= 256) {
+	if ((cpu->divider_cnt += cycles) >= 256) {
 		cpu->divider_cnt -= 256;
 		++cpu->memory[DIVIDER_REGISTER];
 	}
 }
 
 void
-update_timers(gb_cpu *cpu, int ops)
+update_timers(gb_cpu *cpu, int cycles)
 {
 	/* Update divider register */
-	divider_register(cpu, ops);
+	divider_register(cpu, cycles);
 
-	if (cpu->status & BIT(TIMER_RELOAD) && (cpu->tmp_cnt -= ops) <= 0) {
+	if (cpu->status & BIT(TIMER_RELOAD) && (cpu->tmp_cnt -= cycles) <= 0) {
 		write_byte(cpu, TIMA, read_byte(cpu, TMA));
 		cpu->status &= ~BIT(TIMER_RELOAD);
 	}
 
 	/* Update timer */
 	if (read_byte(cpu, TMC) & BIT(2)) {
-		if ((cpu->timer_cnt -= ops) <= 0) {
+		if ((cpu->timer_cnt -= cycles) <= 0) {
 			set_frequency(cpu);
 			
 			if (read_byte(cpu, TIMA) == 255) {
@@ -220,24 +254,13 @@ update_timers(gb_cpu *cpu, int ops)
 				cpu->tmp_cnt = 4;
 				cpu->status |= BIT(TIMER_RELOAD);
 
-				request_interrupt(cpu, TIMER);
+				/* request_interrupt(cpu, TIMER); */
+				cpu->memory[IF] |= BIT(TIMER);
 			} else {
 				write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
 			}
 		}
 	}
-}
-
-void
-load_rom_bank(gb_cpu *cpu)
-{
-	memcpy(&cpu->memory[0x4000], &cpu->cart->rom[cpu->cart->rom_bank * 0x4000], 0x4000);
-}
-
-void
-load_ram_bank(gb_cpu *cpu)
-{
-	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
 
 /* -==+ MEMORY BANK CONTROLLERS +==- */
@@ -394,87 +417,6 @@ mbc5(gb_cpu *cpu, WORD addr, BYTE val)
 	}
 }
 
-void
-update_graphics(gb_cpu *cpu, int ops)
-{
-	BYTE stat;
-
-	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
-		cpu->scanline_cnt += ops;
-
-		switch ((stat = cpu->memory[LCD_STATUS]) & 0x3) {
-		case 2:
-			if (cpu->scanline_cnt >= 80) {
-				cpu->scanline_cnt -= 80;
-
-				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x3;
-			}
-			
-			break;
-		case 3:
-			if (cpu->scanline_cnt >= 172) {
-				cpu->scanline_cnt -= 172;
-
-				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x0;
-
-				if (stat & BIT(3)) {
-					request_interrupt(cpu, LCD_STAT);
-				}
-			}
-
-			break;
-		case 0:
-			if (cpu->scanline_cnt >= 204) {
-				cpu->scanline_cnt -= 204;
-
-				draw_scanline(cpu);
-				if (++cpu->memory[CURR_SCANLINE] >= 144) {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x1;
-					request_interrupt(cpu, VBLANK);
-
-					if (stat & BIT(4)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				} else {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
-
-					if (stat & BIT(5)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				}
-			}
-
-			break;
-		case 1:
-			if (cpu->scanline_cnt >= 456) {
-				cpu->scanline_cnt -= 456;
-
-				if (++cpu->memory[CURR_SCANLINE] >= 153) {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
-					cpu->memory[CURR_SCANLINE] = 0;
-
-					if (stat & BIT(5)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				}
-			}
-
-			break;
-		}
-
-		if (cpu->memory[CURR_SCANLINE] == cpu->memory[TARGET_SCANLINE]) {
-			cpu->memory[LCD_STATUS] |= BIT(2);
-			if (stat & BIT(6)) {
-				request_interrupt(cpu, LCD_STAT);
-			}
-		} else {
-			cpu->memory[LCD_STATUS] &= ~BIT(2);
-		}
-	} else {
-		cpu->memory[LCD_STATUS] &= ~0x3/* |= BIT(2) */;
-	}
-}
-
 /*
  * -==+ DEBUGGING +==-
  */
@@ -593,9 +535,11 @@ cpu_status(const gb_cpu *cpu)
 	       cpu->memory[IF],
 	       cpu->ime);
 
+	/*
 	printf("\nlcd: %02x\tstat: %02x\n",
 	       cpu->memory[LCD_CONTROL],
 	       cpu->memory[LCD_STATUS]);
+	*/
 
 	printf("\n ==+ TIMING +==\n");
 
@@ -910,6 +854,7 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == 0xFF50) {
 		/* Unmap bootrom */
 		if (val == 1) {
+			printf("woiefj");
 			memcpy(cpu->memory, cpu->cart->rom, 0x100);
 		}
 	} else {
