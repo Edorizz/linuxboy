@@ -64,6 +64,11 @@ update_graphics(gb_gpu *gpu, int cycles)
 			if (gpu->scanline_cnt >= 204) {
 				gpu->scanline_cnt -= 204;
 
+				/*
+				printf("ly: %d", gpu->io[IO(LY)]);
+				getchar();
+				*/
+
 				draw_scanline(gpu);
 				if (++gpu->io[IO(LY)] >= 144) {
 					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x1;
@@ -89,7 +94,12 @@ update_graphics(gb_gpu *gpu, int cycles)
 			if (gpu->scanline_cnt >= 456) {
 				gpu->scanline_cnt -= 456;
 
-				if (++gpu->io[IO(LY)] >= 153) {
+				/*
+				printf("\t(ly): %d", gpu->io[IO(LY)]);
+				getchar();
+				*/
+
+				if (++gpu->io[IO(LY)] >= 154) {
 					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x2;
 					gpu->io[IO(LY)] = 0;
 
@@ -135,6 +145,11 @@ draw_scanline(gb_gpu *gpu)
 	window_y = gpu->io[IO(WY)];
 	window_x = gpu->io[IO(WX)];
 
+	if (scanline < 0 || scanline >= SCR_H) {
+		printf("ly: %d\n", scanline);
+		return;
+	}
+
 	/* Draw tiles */
 	if (lcdc & BIT(0)) {
 		for (int i = 0; i * 8 - scroll_x < SCR_W; ++i) {
@@ -142,7 +157,7 @@ draw_scanline(gb_gpu *gpu)
 				       ((scroll_y + scanline) / 8 % 32 * 32) +
 				       ((scroll_x / 8 + i) % 32)];
 			data = get_tile(gpu, id);
-			
+
 			draw_tile_row(gpu, data + (scroll_y + scanline) % 8 * 2,
 				      i == 0 ? scroll_x % 8 : 0, scanline, MAX(i * 8 - scroll_x % 8, 0), gpu->io[IO(BGP)]);
 		}
@@ -233,9 +248,9 @@ BYTE *
 get_tile(gb_gpu *gpu, BYTE id)
 {
 	if (gpu->io[IO(LCDC)] & BIT(4)) {
-		return &gpu->vram[id * 16];
+		return &gpu->vram[id * 0x10];
 	} else {
-		return &gpu->vram[(128 + *(SIGNED_BYTE*)&id) * 16];
+		return &gpu->vram[0x0800 + (128 + *(SIGNED_BYTE*)&id) * 0x10];
 	}
 }
 
@@ -271,7 +286,7 @@ draw_tile_row(gb_gpu *gpu, const BYTE *data, int offset, int screen_y, int scree
 	b1 = *data;
 	b2 = *(data + 1);
 
-	for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
+	for (int i = offset; i < 8 && screen_x + i - offset < SCR_W; ++i) {
 		color = ((b2 >> (7 - i)) << 1 & 0x2) | ((b1 >> (7 - i)) & 0x1);
 		memcpy(gpu->scr_buf[SCR_H][screen_x + i - offset], &colors[color], 3);
 

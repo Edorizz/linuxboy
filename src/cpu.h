@@ -64,7 +64,6 @@ typedef struct _gb_cpu {
 	/* [Timing] */
 	int divider_cnt;
 	int timer_cnt;
-	int scanline_cnt;
 	int tmp_cnt;
 } gb_cpu;
 

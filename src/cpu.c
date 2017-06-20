@@ -115,7 +115,6 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
-	cpu->scanline_cnt = 0;
 	
 	return 0;
 }
@@ -267,29 +266,7 @@ update_timers(gb_cpu *cpu, int cycles)
 
 void
 mbc0(gb_cpu *cpu, WORD addr, BYTE val)
-{
-	if (addr < 0x2000) {
-		if ((val & 0x0F) == 0x0A) {
-			cpu->cart->flags |= BIT(RAM_ENABLE);
-		} else {
-			cpu->cart->flags &= ~BIT(RAM_ENABLE);
-		}
-	} else if (addr < 0x4000) {
-		load_rom_bank(cpu);
-	} else if (addr < 0x6000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	} else if (addr < 0x8000) {
-		if (val & BIT(0)) {
-			cpu->cart->flags &= ~BIT(RAM_CHANGE);
-		} else {
-			cpu->cart->flags |= BIT(RAM_CHANGE);
-		}
-	}
-}
+{ }
 
 void
 mbc1(gb_cpu *cpu, WORD addr, BYTE val)
@@ -542,9 +519,6 @@ cpu_status(const gb_cpu *cpu)
 	*/
 
 	printf("\n ==+ TIMING +==\n");
-
-	printf("\nscanline_cnt: %d\n",
-	       cpu->scanline_cnt);
 
 	printf("timer_cnt: %d\n"
 	       "TIMA: %d (%.2x)\n"
@@ -799,6 +773,9 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
 	int tmp;
 
+	if (addr == 0xFF41)
+		return;
+
 	/* Call corresponding bank controller */
 	if (addr < 0x8000) {
 		cpu->mbc(cpu, addr, val);
@@ -854,7 +831,6 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr == 0xFF50) {
 		/* Unmap bootrom */
 		if (val == 1) {
-			printf("woiefj");
 			memcpy(cpu->memory, cpu->cart->rom, 0x100);
 		}
 	} else {

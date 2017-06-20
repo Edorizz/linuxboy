@@ -145,7 +145,7 @@ update_gb(gb *gb)
 
 		flip_screen(&gb->gpu);
 		render(&gb->win);
-		clear_screen(&gb->gpu, LIGHT_GRAY);
+		clear_screen(&gb->gpu, WHITE);
 
 		swap_window(&gb->win);
 	}
