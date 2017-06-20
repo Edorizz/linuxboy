@@ -773,9 +773,6 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
 	int tmp;
 
-	if (addr == 0xFF41)
-		return;
-
 	/* Call corresponding bank controller */
 	if (addr < 0x8000) {
 		cpu->mbc(cpu, addr, val);

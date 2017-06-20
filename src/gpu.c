@@ -51,12 +51,13 @@ update_graphics(gb_gpu *gpu, int cycles)
 			if (gpu->scanline_cnt >= 172) {
 				gpu->scanline_cnt -= 172;
 
-				gpu->io[IO(STAT)] = (stat & ~0x3) | 0x0;
-
+				draw_scanline(gpu);
 				if (stat & BIT(3)) {
 					/* request_interrupt(gpu, LCD_STAT); */
 					gpu->io[IO(IF)] |= BIT(LCD_STAT);
 				}
+
+				gpu->io[IO(STAT)] = (stat & ~0x3) | 0x0;
 			}
 
 			break;
@@ -64,12 +65,6 @@ update_graphics(gb_gpu *gpu, int cycles)
 			if (gpu->scanline_cnt >= 204) {
 				gpu->scanline_cnt -= 204;
 
-				/*
-				printf("ly: %d", gpu->io[IO(LY)]);
-				getchar();
-				*/
-
-				draw_scanline(gpu);
 				if (++gpu->io[IO(LY)] >= 144) {
 					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x1;
 					/* request_interrupt(gpu, LCD_STAT); */
@@ -94,12 +89,7 @@ update_graphics(gb_gpu *gpu, int cycles)
 			if (gpu->scanline_cnt >= 456) {
 				gpu->scanline_cnt -= 456;
 
-				/*
-				printf("\t(ly): %d", gpu->io[IO(LY)]);
-				getchar();
-				*/
-
-				if (++gpu->io[IO(LY)] >= 154) {
+				if (++gpu->io[IO(LY)] >= 153) {
 					gpu->io[IO(STAT)] = (stat & ~0x3) | 0x2;
 					gpu->io[IO(LY)] = 0;
 
@@ -302,7 +292,7 @@ draw_sprite_row(gb_gpu *gpu, const BYTE *data, int offset, int screen_y, int scr
 
 	b1 = *data;
 	b2 = *(data + 1);
-	palette = gpu->io[IO(attr & BIT(4) ? 0xFF49 : 0xFF48)];
+	palette = gpu->io[IO(attr & BIT(4) ? OBP1 : OBP0)];
 
 	if (attr & BIT(5)) {
 		for (int i = offset; i != 8 && screen_x + i - offset < SCR_W; ++i) {
