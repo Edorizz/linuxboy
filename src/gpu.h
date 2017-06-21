@@ -20,23 +20,77 @@
 #ifndef LINUXBOY_GPU_H
 #define LINUXBOY_GPU_H
 
-#include "cpu.h"
+#include "utils.h"
 
-/* PIXEL COLORS */
-#define WHITE			0
-#define LIGHT_GRAY		1
-#define DARK_GRAY		2
-#define BLACK			3
-#define MAX_COLORS		4
+/* -==+ Screen dimensions +==- */
+#define SCR_W		160
+#define SCR_H		144
 
-void draw_scanline(gb_cpu *cpu);
-void flip_screen(gb_cpu *cpu);
-void clear_screen(gb_cpu *cpu, int color);
-BYTE *get_tile(gb_cpu *cpu, BYTE id);
+/* -==+ LCD I/O +==- */
+#define LCDC		0xFF40	/* LCD Control */
+#define STAT		0xFF41	/* LCD Status */
+#define SCY		0xFF42	/* Scroll Y */
+#define SCX		0xFF43	/* Scroll X */
+#define LY		0xFF44	/* Current Scanline */
+#define LYC		0xFF45	/* Compare Scanline */
+#define DMA		0xFF46	/* DMA Transfer */
+#define BGP		0xFF47	/* Backgroud Palette */
+#define OBP0		0xFF48	/* Sprite Palette 0 */
+#define OBP1		0xFF49	/* Sprite Palette 1 */
+#define WY		0xFF4A	/* Window Scroll Y */
+#define WX		0xFF4B	/* Window Scroll X */
+
+/* -==+ Convert I/O address to relative address +==- */
+#define IO(d)		((d) - 0xFF00)
+
+/* -==+ Pixel Colors */
+#define WHITE		0
+#define LIGHT_GRAY	1
+#define DARK_GRAY	2
+#define BLACK		3
+#define MAX_COLORS	4
+
+/* -==+ RGB Pixel +==- */
+typedef struct _color {
+	BYTE r, g, b;
+} color;
+
+/*
+ * -==+ Game Boy GPU component -==+
+ * Proccesses data in VRAM/OAM pointers and outputs result to a
+ * screen buffer which is used by the correspoinding Window component
+ * and renders it to the screen.
+ */
+typedef struct _gb_gpu {
+	/*
+	 * [Video memory pointers]
+	 * They all point to the same array so a single pointer
+	 * might have been enough but this grants better readability
+	 */
+	BYTE *vram;	/* 0x8000 - 0x9FFF  (2KiB) */
+	BYTE *oam;	/* 0xFE00 - 0xFE9F  (160B)*/
+	BYTE *io;	/* 0xFF00 - 0xFF7F  (128B)*/
+
+	/* [Timing] */
+	int scanline_cnt;
+
+	/*
+	 * [Screen buffer]
+	 * Represents the screen pixel buffer. It is used by the window
+	 * to draw to the screen.
+	 */
+	BYTE scr_buf[SCR_H + 1][SCR_W][3];
+} gb_gpu;
+
+void update_graphics(gb_gpu *gpu, int cycles);
+void draw_scanline(gb_gpu *gpu);
+void flip_screen(gb_gpu *gpu);
+void clear_screen(gb_gpu *gpu, int color);
+BYTE *get_tile(gb_gpu *gpu, BYTE id);
 int  get_color(BYTE *pixel);
-void draw_tile_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette);
-void draw_sprite_row(gb_cpu *cpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE sprite_attr);
-void draw_tiles(gb_cpu *cpu);
+void draw_tile_row(gb_gpu *gpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE palette);
+void draw_sprite_row(gb_gpu *gpu, const BYTE *data, int offset, int screen_y, int screen_x, BYTE sprite_attr);
+void draw_tiles(gb_gpu *gpu);
 
 #endif /* LINUXBOY_GPU_H */
 

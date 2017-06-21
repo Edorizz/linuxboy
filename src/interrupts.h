@@ -20,15 +20,12 @@
 #ifndef LINUXBOY_INTERRUPTS_H
 #define LINUXBOY_INTERRUPTS_H
 
-#include "cpu.h"
-
-/* INTERRUPT REGISTERS */
+/* -==+ Interrupt Registers +==- */
 #define IE			0xFFFF
 #define IF			0xFF0F
 
+/* -==+ Interrupts +==- */
 enum interrupts	{ VBLANK, LCD_STAT, TIMER, SERIAL, JOYPAD, INTERRUPT_MAX };
 
-void request_interrupt(gb_cpu *cpu, BYTE interrupt);
-void handle_interrupts(gb_cpu *cpu);
-
 #endif /* LINUXBOY_INTERRUPTS_H */
+

@@ -97,11 +97,11 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 
 		cpu->pc = 0x0;
 
-		cpu->memory[LCD_CONTROL] = /*0x91*/0x00;
 		cpu->memory[0xFF05] = 0x00;
 		cpu->memory[0xFF06] = 0x00;
 		cpu->memory[0xFF07] = 0xF8;
-		cpu->memory[LCD_STATUS] = /*0x85*/0x84;
+		cpu->memory[0xFF40] = /*0x91*/0x00;
+		cpu->memory[0xFF41] = /*0x85*/0x84;
 		cpu->memory[IE] = 0x00;
 		cpu->memory[IF] = 0xE1;
 	}
@@ -115,7 +115,6 @@ power_cpu(gb_cpu *cpu, const BYTE *bootstrap)
 	/* Initialize timers */
 	cpu->divider_cnt = CLOCK_RATE / 16384;
 	cpu->timer_cnt = CLOCK_RATE / 4096;
-	cpu->scanline_cnt = 0;
 	
 	return 0;
 }
@@ -162,6 +161,28 @@ exec_op(gb_cpu *cpu)
 }
 
 void
+handle_intr(gb_cpu *cpu)
+{
+	BYTE interrupts;
+
+	if (cpu->ime && (cpu->memory[IE] & cpu->memory[IF])) {
+		interrupts = cpu->memory[IE] & cpu->memory[IF];
+		cpu->ime = 0;
+
+		for (int i = 0; i != INTERRUPT_MAX; ++i) {
+			if (interrupts & BIT(i)) {
+				cpu->status &= ~(BIT(HALT) | BIT(STOP));
+
+				cpu->memory[IF] ^= BIT(i);
+
+				call(cpu, 0x40 + i * 8);
+				return;
+			}
+		}
+	}
+}
+
+void
 dma_transfer(gb_cpu *cpu, BYTE val)
 {
 	WORD address = val << 8;
@@ -176,50 +197,60 @@ set_frequency(gb_cpu *cpu)
 {
 	switch (read_byte(cpu, TMC) & 0x3) {
 	case 0:
-		cpu->timer_cnt += 1024;
+		cpu->timer_cnt = 1024;
 		break;
 	case 1:
-		cpu->timer_cnt += 16;
+		cpu->timer_cnt = 16;
 		break;
 	case 2:
-		cpu->timer_cnt += 64;
+		cpu->timer_cnt = 64;
 		break;
 	case 3:
-		cpu->timer_cnt += 256;
+		cpu->timer_cnt = 256;
 		break;
 	}
 }
 
 void
-divider_register(gb_cpu *cpu, int ops)
+divider_register(gb_cpu *cpu, int cycles)
 {
-	if ((cpu->divider_cnt -= ops) < 0) {
-		cpu->divider_cnt += 256;
+	if ((cpu->divider_cnt += cycles) >= 256) {
+		cpu->divider_cnt -= 256;
 		++cpu->memory[DIVIDER_REGISTER];
 	}
 }
 
 void
-update_timers(gb_cpu *cpu, int ops)
+update_timers(gb_cpu *cpu, int cycles)
 {
 	/* Update divider register */
-	divider_register(cpu, ops);
-	
+	divider_register(cpu, cycles);
+
+	if (cpu->status & BIT(TIMER_RELOAD) && (cpu->tmp_cnt -= cycles) <= 0) {
+		write_byte(cpu, TIMA, read_byte(cpu, TMA));
+		cpu->status &= ~BIT(TIMER_RELOAD);
+	}
+
 	/* Update timer */
 	if (read_byte(cpu, TMC) & BIT(2)) {
-		if ((cpu->timer_cnt -= ops) <= 0) {
+		if ((cpu->timer_cnt -= cycles) <= 0) {
 			set_frequency(cpu);
 			
 			if (read_byte(cpu, TIMA) == 255) {
-				write_byte(cpu, TIMA, read_byte(cpu, TMA));
+				write_byte(cpu, TIMA, 0);
+				cpu->tmp_cnt = 4;
+				cpu->status |= BIT(TIMER_RELOAD);
 
-				request_interrupt(cpu, TIMER);
+				/* request_interrupt(cpu, TIMER); */
+				cpu->memory[IF] |= BIT(TIMER);
 			} else {
 				write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
 			}
 		}
 	}
 }
+
+/* -==+ Banking +==- */
 
 void
 load_rom_bank(gb_cpu *cpu)
@@ -232,8 +263,6 @@ load_ram_bank(gb_cpu *cpu)
 {
 	memcpy(&cpu->memory[0xA000], &cpu->cart->rom[cpu->cart->ram_bank * 0x2000], 0x2000);
 }
-
-/* -==+ MEMORY BANK CONTROLLERS +==- */
 
 void
 mbc0(gb_cpu *cpu, WORD addr, BYTE val)
@@ -257,6 +286,10 @@ mbc1(gb_cpu *cpu, WORD addr, BYTE val)
 			++cpu->cart->rom_bank;
 		}
 		
+		if (cpu->cart->rom_bank % 0x20 == 0) {
+			++cpu->cart->rom_bank;
+		}
+
 		load_rom_bank(cpu);
 	} else if (addr < 0x6000) {
 		if (cpu->cart->flags & BIT(RAM_CHANGE)) {
@@ -352,87 +385,6 @@ mbc5(gb_cpu *cpu, WORD addr, BYTE val)
 		cpu->cart->rom_bank |= (val & BIT(0)) << 8;
 	} else if (addr < 0x6000) {
 		cpu->cart->ram_bank = val & 0x0F;
-	}
-}
-
-void
-update_graphics(gb_cpu *cpu, int ops)
-{
-	BYTE stat;
-
-	if (read_byte(cpu, LCD_CONTROL) & BIT(7)) {
-		cpu->scanline_cnt += ops;
-
-		switch ((stat = cpu->memory[LCD_STATUS]) & 0x3) {
-		case 2:
-			if (cpu->scanline_cnt >= 80) {
-				cpu->scanline_cnt -= 80;
-
-				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x3;
-			}
-			
-			break;
-		case 3:
-			if (cpu->scanline_cnt >= 172) {
-				cpu->scanline_cnt -= 172;
-
-				cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x0;
-
-				if (stat & BIT(3)) {
-					request_interrupt(cpu, LCD_STAT);
-				}
-			}
-
-			break;
-		case 0:
-			if (cpu->scanline_cnt >= 204) {
-				cpu->scanline_cnt -= 204;
-
-				draw_scanline(cpu);
-				if (++cpu->memory[CURR_SCANLINE] >= 144) {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x1;
-					request_interrupt(cpu, VBLANK);
-
-					if (stat & BIT(4)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				} else {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
-
-					if (stat & BIT(5)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				}
-			}
-
-			break;
-		case 1:
-			if (cpu->scanline_cnt >= 456) {
-				cpu->scanline_cnt -= 456;
-
-				if (++cpu->memory[CURR_SCANLINE] >= 153) {
-					cpu->memory[LCD_STATUS] = (stat & ~0x3) | 0x2;
-					cpu->memory[CURR_SCANLINE] = 0;
-
-					if (stat & BIT(5)) {
-						request_interrupt(cpu, LCD_STAT);
-					}
-				}
-			}
-
-			break;
-		}
-		
-		if (cpu->memory[CURR_SCANLINE] == cpu->memory[TARGET_SCANLINE]) {
-			cpu->memory[LCD_STATUS] |= BIT(2);
-			if (stat & BIT(6)) {
-				request_interrupt(cpu, LCD_STAT);
-			}
-		} else {
-			cpu->memory[LCD_STATUS] &= ~BIT(2);
-		}
-	} else {
-		cpu->memory[LCD_STATUS] &= ~0x3/* |= BIT(2) */;
 	}
 }
 
@@ -554,14 +506,13 @@ cpu_status(const gb_cpu *cpu)
 	       cpu->memory[IF],
 	       cpu->ime);
 
+	/*
 	printf("\nlcd: %02x\tstat: %02x\n",
 	       cpu->memory[LCD_CONTROL],
 	       cpu->memory[LCD_STATUS]);
+	*/
 
 	printf("\n ==+ TIMING +==\n");
-
-	printf("\nscanline_cnt: %d\n",
-	       cpu->scanline_cnt);
 
 	printf("timer_cnt: %d\n"
 	       "TIMA: %d (%.2x)\n"
@@ -808,6 +759,8 @@ read_byte(gb_cpu *cpu, WORD addr)
 void
 write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 {
+	int tmp;
+
 	/* Call corresponding bank controller */
 	if (addr < 0x8000) {
 		cpu->mbc(cpu, addr, val);
@@ -818,20 +771,43 @@ write_byte(gb_cpu *cpu, WORD addr, BYTE val)
 	} else if (addr >= 0xFEA0 && addr < 0xFF00) {
 		/* Not usable */
 	} else if (addr == DIVIDER_REGISTER) {
-		/* Writing to the divider register resets it */
-		cpu->memory[addr] = 0;
-	} else if (addr == TMC) {
-			set_frequency(cpu);
+		tmp = 0;
+		switch (read_byte(cpu, TMC) & 0x3) {
+		case 0:
+			tmp = 512;
+			break;
+		case 1:
+			tmp = 8;
+			break;
+		case 2:
+			tmp = 32;
+			break;
+		case 3:
+			tmp = 128;
+			break;
+		}
 
+		if (cpu->divider_cnt >= tmp) {
+			write_byte(cpu, TIMA, read_byte(cpu, TIMA) + 1);
+		}
+		printf("%d\t:%d\n", cpu->divider_cnt, tmp);
+
+		/* Writing to the divider register resets it */
+		cpu->memory[DIVIDER_REGISTER] = 0;
+		cpu->divider_cnt = 0;
+		set_frequency(cpu);
+	} else if (addr == TMC) {
 		cpu->memory[TMC] = val;
+	} else if (addr == TIMA) {
+		cpu->memory[TIMA] = val;
 	} else if (addr == 0xFF00) {
-		cpu->memory[addr] = (cpu->memory[addr] & 0xCF) | (val & ~0xCF);
+		cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xCF) | (val & ~0xCF);
 		
 		if (val & BIT(4) && val & BIT(5)) {
 		} else if (val & BIT(4)) {
-			cpu->memory[addr] = (cpu->memory[addr] & 0xF0) | (cpu->joypad & 0x0F);
+			cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xF0) | (cpu->joypad & 0x0F);
 		} else if (val & BIT(5)) {
-			cpu->memory[addr] = (cpu->memory[addr] & 0xF0) | (cpu->joypad >> 4);
+			cpu->memory[0xFF00] = (cpu->memory[0xFF00] & 0xF0) | (cpu->joypad >> 4);
 		}
 	} else if (addr == IF) {
 		cpu->memory[IF] = (cpu->memory[IF] & ~0x1F) | (val & 0x1F);

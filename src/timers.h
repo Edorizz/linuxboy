@@ -20,7 +20,7 @@
 #ifndef LINUXBOY_TIMERS_H
 #define LINUXBOY_TIMERS_H
 
-/* TIMING */
+/* [Timing Registers] */
 #define DIVIDER_REGISTER	0xFF04
 #define TIMA			0xFF05
 #define TMA			0xFF06

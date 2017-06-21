@@ -20,17 +20,17 @@
 /* Header file */
 #include "cmd.h"
 
-const cmd_option cmd_options[CMD_OPTIONS] = { { 'b', "break", cmd_breakpoint },
-					      { 'x', "width", cmd_win_width },
-					      { 'y', "height", cmd_win_height },
-					      { 's', "scale", cmd_win_scale },
-					      { 'w', "watch", cmd_add_watch },
-					      { 'l', "state", cmd_load_state },
-					      { 'h', "help", cmd_help },
-					      { 'n', "bootstrap", cmd_bootstrap } };
+const cmd_opt cmd_options[CMD_OPTIONS] = { { 'b', "break", cmd_breakpoint },
+					   { 'x', "width", cmd_win_width },
+					   { 'y', "height", cmd_win_height },
+					   { 's', "scale", cmd_win_scale },
+					   { 'w', "watch", cmd_add_watch },
+					   { 'l', "state", cmd_load_state },
+					   { 'h', "help", cmd_help },
+					   { 'n', "bootstrap", cmd_bootstrap } };
 
 int
-cmd_check(gameboy *gb, const char **argv)
+cmd_check(gb *gb, const char **argv)
 {
 	if (argv[0][1] == '-') {
 		for (int i = 0; i != CMD_OPTIONS; ++i) {
@@ -50,7 +50,7 @@ cmd_check(gameboy *gb, const char **argv)
 }
 
 int
-cmd_breakpoint(gameboy *gb, const char *arg)
+cmd_breakpoint(gb *gb, const char *arg)
 {
 	if (arg) {
 		gb->emu_flags |= BIT(BREAKPOINT);
@@ -63,22 +63,10 @@ cmd_breakpoint(gameboy *gb, const char *arg)
 }
 
 int
-cmd_win_width(gameboy *gb, const char *arg)
+cmd_win_width(gb *gb, const char *arg)
 {
 	if (arg) {
-		gb->win.width = strtol(arg, NULL, 10);
-	
-		return 1;
-	}
-
-	return 0;
-}
-
-int
-cmd_win_height(gameboy *gb, const char *arg)
-{
-	if (arg) {
-		gb->win.height = strtol(arg, NULL, 10);
+		gb->win.win_w = strtol(arg, NULL, 10);
 
 		return 1;
 	}
@@ -87,11 +75,10 @@ cmd_win_height(gameboy *gb, const char *arg)
 }
 
 int
-cmd_win_scale(gameboy *gb, const char *arg)
+cmd_win_height(gb *gb, const char *arg)
 {
 	if (arg) {
-		gb->win.width *= strtol(arg, NULL, 10);
-		gb->win.height *= strtol(arg, NULL, 10);
+		gb->win.win_h = strtol(arg, NULL, 10);
 
 		return 1;
 	}
@@ -100,7 +87,20 @@ cmd_win_scale(gameboy *gb, const char *arg)
 }
 
 int
-cmd_add_watch(gameboy *gb, const char *arg)
+cmd_win_scale(gb *gb, const char *arg)
+{
+	if (arg) {
+		gb->win.win_w *= strtol(arg, NULL, 10);
+		gb->win.win_h *= strtol(arg, NULL, 10);
+
+		return 1;
+	}
+
+	return 0;
+}
+
+int
+cmd_add_watch(gb *gb, const char *arg)
 {
 	if (arg) {
 		if (gb->watch_size == MAX_WATCH) {
@@ -116,7 +116,7 @@ cmd_add_watch(gameboy *gb, const char *arg)
 }
 
 int
-cmd_load_state(gameboy *gb, const char *arg)
+cmd_load_state(gb *gb, const char *arg)
 {
 	if (arg) {
 		gb->emu_flags |= BIT(LOAD_STATE);
@@ -129,7 +129,7 @@ cmd_load_state(gameboy *gb, const char *arg)
 }
 
 int
-cmd_help(gameboy *gb, const char *arg)
+cmd_help(gb *gb, const char *arg)
 {
 	printf("\t-b: set breakpoint at 'addr' (hex)\n"
 	       "\t-h: print this message and quit\n"
@@ -144,7 +144,7 @@ cmd_help(gameboy *gb, const char *arg)
 }
 
 int
-cmd_bootstrap(gameboy *gb, const char *arg)
+cmd_bootstrap(gb *gb, const char *arg)
 {
 	gb->emu_flags |= BIT(BOOTSTRAP);
 

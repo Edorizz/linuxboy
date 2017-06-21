@@ -21,6 +21,7 @@
 #define LINUXBOY_UTILS_H
 
 #include <stdio.h>
+#include <stdint.h>
 
 #define MAX(a, b)		((a) > (b) ? (a) : (b))
 #define MIN(a, b)		((a) < (b) ? (a) : (b))
@@ -35,15 +36,12 @@
 #define BIT(b)			(1 << (b))
 #define RESET_FLAGS(f, b)	((f) &= ~(b))
 
-/* SCREEN DIMENSIONS */
-#define SCR_W			160
-#define SCR_H			144
-
+/* Extra */
 #define IMPLEMENT(s)		(fprintf(stderr, "Missing implementation: %s", (s)))
 
-typedef unsigned char	BYTE;
-typedef signed char	SIGNED_BYTE;
-typedef unsigned short	WORD;
-typedef signed short	SIGNED_WORD;
+typedef uint8_t		BYTE;
+typedef  int8_t		SIGNED_BYTE;
+typedef uint16_t	WORD;
+typedef  int16_t	SIGNED_WORD;
 
 #endif /* LINUXBOY_UTILS_H */

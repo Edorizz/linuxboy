@@ -649,8 +649,8 @@ op_0x07(gb_cpu *cpu)
 int
 op_0x08(gb_cpu *cpu, WORD a16)
 {
-	write_byte(cpu, a16, cpu->memory[cpu->stack + 1]);
-	write_byte(cpu, a16 + 1, cpu->memory[cpu->stack]);
+	write_byte(cpu, a16, cpu->stack & 0xFF);
+	write_byte(cpu, a16 + 1, cpu->stack >> 8);
 	
 	return 20;
 }

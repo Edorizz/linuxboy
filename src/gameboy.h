@@ -21,34 +21,59 @@
 #define LINUXBOY_GAMEBOY_H
 
 #include "cpu.h"
+#include "gpu.h"
 #include "cartridge.h"
 #include "window.h"
 
 #define MAX_WATCH	16
 
-typedef struct {
-	/* MAIN COMPONENTS */
+/*
+ * -==+ Game Boy +==-
+ * Main Game Boy data structure.
+ * Contains all Game Boy components in an easy to understand
+ * (and to mantain) manner.
+ */
+typedef struct _gb {
+	/*
+	 * [Main Components]
+	 * Main Game Boy components. They mostly work in a pipeline
+	 * kind of manner, starting from the cartridge and ending
+	 * with the window.
+
+	 * cart -> cpu -> gpu -> win
+	 */
+	gb_cart cart;
 	gb_cpu cpu;
-	gb_cartridge cart;
-	gl_window win;
-	/* EMULATION */
+	gb_gpu gpu;
+	gl_win win;
+
+	/*
+	 * [Emulation]
+	 * Variables which serve the purpose of adding functionality to
+	 * the emulator. (breakpoints, change speed, watching variables,
+	 * etc.)
+	 */
 	BYTE emu_flags;
 	WORD watch_list[MAX_WATCH];
 	int watch_size;
 	WORD breakpoint;
 	const char *state_path;
-	/* TIMING */
+
+	/*
+	 * [Timing]
+	 * Controls the timing of the whole emulator.
+	 */
 	int curr_cycles;
 	int cycles;
-} gameboy;
+} gb;
 
-int  power_gb(gameboy *gb);
-void reset_gb(gameboy *gb);
-void shutdown_gb(gameboy *gb);
-void update_gb(gameboy *gb);
-void resize_gb(gameboy *gb, int width, int height);
-void save_state_gb(gameboy *gb, const char *path);
-void load_state_gb(gameboy *gb, const char *path);
+int  power_gb(gb *gb);
+void reset_gb(gb *gb);
+void shutdown_gb(gb *gb);
+void update_gb(gb *gb);
+void resize_gb(gb *gb, int width, int height);
+void save_state_gb(gb *gb, const char *path);
+void load_state_gb(gb *gb, const char *path);
 
-#endif /* LINUXBOY_GAMEBOY_H */
+#endif /* LINUXBOY_GB_H */
 

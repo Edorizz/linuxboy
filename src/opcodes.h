@@ -26,17 +26,21 @@
 
 enum rot_flags	{ RIGHT, LEFT, CIRCULAR, ARITHMETIC };
 
-/* OPCODE */
+/*
+ * -==+ Opcode Structure +==-
+ * Contains instruction data.
+ */
 typedef struct {
 	char *assembly;
 	int arg_size;
 	void *func;
 } op;
 
+/* -==+ Instruction Set +==- */
 extern const op ops[0x100];
 extern const op ext_ops[0x100];
 
-/* OPCODES */
+/* -==+ Opcodes +==- */
 int op_0x00(gb_cpu *cpu);
 int op_0x01(gb_cpu *cpu, WORD d16);
 int op_0x02(gb_cpu *cpu);

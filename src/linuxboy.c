@@ -28,7 +28,7 @@ void usage(const char **argv);
 int
 main(int argc, const char **argv)
 {
-	gameboy gb;
+	gb gb;
 	int arg_size;
 
 	reset_gb(&gb);

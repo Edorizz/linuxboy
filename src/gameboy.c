@@ -48,7 +48,7 @@ const BYTE gb_bootstrap [0x100] = {
 };
 
 int
-power_gb(gameboy *gb)
+power_gb(gb *gb)
 {
 	if (load_cartridge(&gb->cart) == -1 ||
 	    (gb->win.sdl_win == NULL && create_window(&gb->win, &gb->cpu.joypad, &gb->emu_flags) == -1)) {
@@ -56,8 +56,11 @@ power_gb(gameboy *gb)
 	}
 
 	/* Link components */
-	gb->cpu.cart = &gb->cart;
-	gb->win.scr_buf = &gb->cpu.scr_buf[0][0][0];
+	gb->cpu.cart	= &gb->cart;
+	gb->gpu.vram	= &gb->cpu.memory[0x8000];
+	gb->gpu.oam	= &gb->cpu.memory[0xFE00];
+	gb->gpu.io	= &gb->cpu.memory[0xFF00];
+	link_scr_buf(&gb->win, gb->gpu.scr_buf[0][0], SCR_H, SCR_W);
 
 	if (gb->emu_flags & BIT(LOAD_STATE)) {
 		load_state_gb(gb, gb->state_path);
@@ -72,24 +75,24 @@ power_gb(gameboy *gb)
 }
 
 void
-reset_gb(gameboy *gb)
+reset_gb(gb *gb)
 {
 	memset(gb, 0, sizeof(*gb));
 
-	gb->win.width = SCR_W;
-	gb->win.height = SCR_H;
+	gb->win.win_w = SCR_W;
+	gb->win.win_h = SCR_H;
 }
 
 void
-shutdown_gb(gameboy *gb)
+shutdown_gb(gb *gb)
 {
 	delete_window(&gb->win);
 }
 
 void
-update_gb(gameboy *gb)
+update_gb(gb *gb)
 {
-	/* Save current gameboy state to state.gbs if needed */
+	/* Save current gb state to state.gbs if needed */
 	if (gb->emu_flags & BIT(SAVE_STATE)) {
 		save_state_gb(gb, "state.gbs");
 		gb->emu_flags ^= BIT(SAVE_STATE);
@@ -129,45 +132,44 @@ update_gb(gameboy *gb)
 		
 		/* Update internals */
 		update_timers(&gb->cpu, gb->cycles);
-		update_graphics(&gb->cpu, gb->cycles);
+		update_graphics(&gb->gpu, gb->cycles);
 	}
 
 	if (gb->cpu.memory[gb->cpu.pc - 1] != 0xFB) {
-		handle_interrupts(&gb->cpu);
+		handle_intr(&gb->cpu);
 	}
 
-	/* Draw only if neccessary */
-	if (gb->curr_cycles >= CLOCK_RATE / 60 && gb->cpu.memory[CURR_SCANLINE] >= 144) {
+	if (gb->curr_cycles >= CLOCK_RATE / 60 && gb->cpu.memory[LY] >= 144) {
 		handle_input(&gb->win);
 		gb->curr_cycles -= CLOCK_RATE / 60;
 
-		flip_screen(&gb->cpu);
+		flip_screen(&gb->gpu);
 		render(&gb->win);
-		clear_screen(&gb->cpu, WHITE);
+		clear_screen(&gb->gpu, WHITE);
 
 		swap_window(&gb->win);
 	}
 }
 
 void
-save_state_gb(gameboy *gb, const char *path)
+save_state_gb(gb *gb, const char *path)
 {
 	FILE *fp = fopen(path, "wb");
 
-	fwrite(((BYTE*)(&gb->cpu)) + sizeof(gb_cartridge*),
-	       1, sizeof(gb_cpu) - sizeof(gb_cartridge*),
+	fwrite(((BYTE*)(&gb->cpu)) + sizeof(gb_cart*),
+	       1, sizeof(gb_cpu) - sizeof(gb_cart*),
 	       fp);
 
 	fclose(fp);
 }
 
 void
-load_state_gb(gameboy *gb, const char *path)
+load_state_gb(gb *gb, const char *path)
 {
 	FILE *fp = fopen(path, "rb");
 
-	fread(((BYTE*)(&gb->cpu)) + sizeof(gb_cartridge*),
-	      1, sizeof(gb_cpu) - sizeof(gb_cartridge*),
+	fread(((BYTE*)(&gb->cpu)) + sizeof(gb_cart*),
+	      1, sizeof(gb_cpu) - sizeof(gb_cart*),
 	      fp);
 
 	fclose(fp);

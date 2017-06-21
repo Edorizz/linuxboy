@@ -29,16 +29,37 @@
 enum mbc	{ MBC0, MBC1, MBC2, MBC3, MBC5, MBC_MAX }; /* Bits 0-3 */
 enum cart_flags { RAM_ENABLE = 4, RAM_CHANGE }; /* Bits 4+ */
 
-typedef struct {
+/*
+ * -==+ Game Boy Cartridge Component +==-
+ * Contains the whole cartridge in a big array ('rom') and
+ * important information about it. Serves as the input for
+ * the CPU.
+ */
+typedef struct _gb_cart {
+	/*
+	 * [ROM]
+	 * ROM path and data.
+	 */
 	const char *rom_path;
 	BYTE rom[CARTRIDGE_SIZE];
+
+	/*
+	 * [Information]
+	 * Used to indicate special information about the
+	 * current ROM.
+	 */
 	BYTE flags;
 	int rom_size;
+
+	/*
+	 * [Banking]
+	 * Variables used by the CPU for memory banking.
+	 */
 	WORD rom_bank;
 	BYTE ram_bank;
-} gb_cartridge;
+} gb_cart;
 
-int load_cartridge(gb_cartridge *cart);
+int load_cartridge(gb_cart *cart);
 
 #endif /* LINUXBOY_CARTRIDGE_H */
 
